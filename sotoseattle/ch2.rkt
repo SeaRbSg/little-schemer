@@ -10,7 +10,7 @@
   (lambda (l)                              ; lambda creates a function with arguments
     (cond                                  ; cond asks questions
       ((null? l) #t)                       ; see 1st commandment
-      ((atom? (car l)) (lat? (cdr l)))     ; 2 questions like &&
+      ((atom? (car l)) (lat? (cdr l)))     ; a list with 2 S-expressions !! a question + another question
     (else #f))))
 
 (lat?'(Jack Sprat could eat no chicken fat))
@@ -29,10 +29,12 @@
 
 ; see questions in (cond as lists with other S-expr to evaluate in order, getting out if a question is false (?)
 ;  (cond
-;    (question_1 something) if question_1 is true go on and evaluate something, then go on to question_2
-;    (question_2 something) if question_1 is false get back up so you go on to else
-; (else...
-; ((null? lat) #f) => evaluate if lat is null, if true evaluate #f and do not do the else
+;    (question_1 something) if question_1 is true go on and evaluate 'something', then go on to question_2, etc
+:                           if question_1 is false get back up a level and jump to 'else'
+;    (question_2 some_else) repeat as with question_1
+; (else #whatever           another list with else (ok, go on), and #whatever which we return
+;
+; ((null? lat) #f) => evaluate if lat is null, if so evaluate #f (kind of return it) and don't do the 'else'
 
 ; FIRST COMMANDMENT: Always, always, always ask null? first in a function
 
