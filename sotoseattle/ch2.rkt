@@ -30,7 +30,7 @@
 ; see questions in (cond as lists with other S-expr to evaluate in order, getting out if a question is false (?)
 ;  (cond
 ;    (question_1 something) if question_1 is true go on and evaluate 'something', then go on to question_2, etc
-:                           if question_1 is false get back up a level and jump to 'else'
+;                           if question_1 is false get back up a level and jump to 'else'
 ;    (question_2 some_else) repeat as with question_1
 ; (else #whatever           another list with else (ok, go on), and #whatever which we return
 ;
