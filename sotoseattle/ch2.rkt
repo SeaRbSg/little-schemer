@@ -24,15 +24,15 @@
   (lambda (a lat)
     (cond
       ((null? lat) #f)
-      (else (or (eq? (car lat) a)
-                (member? a (cdr lat)))))))
+      (else (or (eq? (car lat) a) (member? a (cdr lat)))))))
 
-; see questions in (cond as lists with other S-expr to evaluate in order, getting out if a question is false (?)
+; see questions in (cond as lists with other S-expr to evaluate in order
 ;  (cond
-;    (question_1 something) if question_1 is true go on and evaluate 'something', then go on to question_2, etc
-;                           if question_1 is false get back up a level and jump to 'else'
-;    (question_2 some_else) repeat as with question_1
-; (else #whatever           another list with else (ok, go on), and #whatever which we return
+;    (question_1 something)
+;       if question_1 is true go on and evaluate 'something' AND return it at its end
+;       if question_1 is false, we dont get to evaluate something, instead we go to the next question
+;       if we run out of questions (all false) we hit the else
+; (else #whatever
 ;
 ; ((null? lat) #f) => evaluate if lat is null, if so evaluate #f (kind of return it) and don't do the 'else'
 
