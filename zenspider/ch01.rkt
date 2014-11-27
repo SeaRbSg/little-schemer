@@ -1,6 +1,8 @@
 #lang racket/base
 
 (require "lib/shared.rkt")
+(require rackunit)
+(require (only-in racket/function thunk))
 
 ;; scheme sanity check:
 (test #f (atom? '()))
@@ -17,20 +19,29 @@
 (test (car '((a b c) x y z)) '(a b c))
 (test (car (cdr '((b) (x y) ((c))))) '(x y))
 (test (cdr (cdr '((b) (x y) ((c))))) '(((c))))
-;; (car '()) ; error on pedantic scheme
-;; (cdr '()) ; error on pedantic scheme
-;; (cdr (car '(a (b (c)) d))) ; error on pedantic scheme (cdr 'a)
+
+;; errors in pedantic scheme
+(check-exn exn:fail? (thunk (car '())))
+(check-exn exn:fail? (thunk (cdr '())))
+(check-exn exn:fail? (thunk (cdr (car '(a (b (c)) d)))))
 
 ;; pg 8
-(test (cons '(banana and) '(peanut butter and jelly))
-              '((banana and) peanut butter and jelly))
-(test (cons '((help) this) '(is very ((hard) to learn)))
-              '(((help) this) is very ((hard) to learn)))
-(test (cons '(a b (c)) '())
-              '((a b (c))))
-(test (cons 'a '()) '(a))
-;; (cons '((a b c)) 'b) ; INTERESTING: not an error in lisp
-;; (cons 'a 'b) ; ditto
+(test (cons '(banana and)
+            '(peanut butter and jelly))
+      '((banana and) peanut butter and jelly))
+(test (cons '((help) this)
+            '(is very ((hard) to learn)))
+      '(((help) this) is very ((hard) to learn)))
+(test (cons '(a b (c))
+            '())
+      '((a b (c))))
+(test (cons 'a '())
+      '(a))
+(test (cons '((a b c))
+            'b)
+      '(((a b c)) . b))            ; INTERESTING: not an error in lisp
+(test (cons 'a 'b)
+      '(a . b))                         ; ditto
 
 ;; pg 9
 

@@ -17,23 +17,33 @@
 (define lat?
   (lambda (l)
     (cond
-     ((null? l) #t)
-     ((atom? (car l)) (lat? (cdr l)))
-     (else #f))))
+     [(null? l) #t]
+     [(atom? (car l)) (lat? (cdr l))]
+     [else #f])))
 
-(test #t (mylat? '(a b c)))
-(test #f (mylat? '((a) b c d)))
-(test #f (mylat? '(a (b) c d)))
-(test #t (mylat? '()))
-(test #t (lat? '(a b c)))
-(test #f (lat? '((a) b c d)))
-(test #f (lat? '(a (b) c d)))
-(test #t (lat? '()))
+(test (mylat? '(a b c))
+      #t)
+(test (mylat? '((a) b c d))
+      #f)
+(test (mylat? '(a (b) c d))
+      #f)
+(test (mylat? '())
+      #t)
+(test (lat? '(a b c))
+      #t)
+(test (lat? '((a) b c d))
+      #f)
+(test (lat? '(a (b) c d))
+      #f)
+(test (lat? '())
+      #t)
 
 ;; pg 21 - 31
 
-(test #t (or (null? '()) (atom? '(a b c))))
-(test #t (or (null? '(a b c)) (null? '())))
+(test (or (null? '()) (atom? '(a b c)))
+      #t)
+(test (or (null? '(a b c)) (null? '()))
+      #t)
 
 (define mymember?
   (lambda (a lat)
@@ -43,11 +53,15 @@
 
 (define member?
   (lambda (a lat)
-    (cond ((null? lat) #f)
-          (else (or (eq? (car lat) a)
-                    (member? a (cdr lat)))))))
+    (cond [(null? lat) #f]
+          [else (or (eq? (car lat) a)
+                    (member? a (cdr lat)))])))
 
-(test #t (mymember? 'b '(a b c)))
-(test #f (mymember? 'd '(a b c)))
-(test #t (member? 'b '(a b c)))
-(test #f (member? 'd '(a b c)))
+(test (mymember? 'b '(a b c))
+      #t)
+(test (mymember? 'd '(a b c))
+      #f)
+(test (member? 'b '(a b c))
+      #t)
+(test (member? 'd '(a b c))
+      #f)
