@@ -1,0 +1,9 @@
+task :default => :test
+
+task :test do
+  sh "time raco test --direct *.rkt"
+end
+
+task :testslow do
+  sh "time raco test *.rkt"
+end
