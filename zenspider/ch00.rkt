@@ -1,5 +1,8 @@
 #lang racket/base
 
+;;;; Little Schemer
+
+
 ;;; Laws & Commandments:
 
 ;;; Laws:
@@ -71,3 +74,67 @@
 ;;              arithmetic expression.
 
 ;; pg 107: 8th: Use help functions to abstract from representations.
+
+;;;; Seasoned Schemer:
+
+;; 11th commandment: Use additional arguments when a function needs to
+;;                   know what other arguments to the function have
+;;                   been so far.
+
+;;; 12th Commandment
+;;
+;; Use (letrec ...) to remove arguments that do not change for
+;; recursive applications
+
+;;; 13th Commandment
+;;
+;; Use (letrec ...) to hide and to protect functions
+
+;;; 14th Commandment:
+;;
+;; Use (letcc ...) to return values abruptly and promptly.
+
+;;; 15th Commandment (preliminary)
+;;
+;; Use (let ...) to name the values of repeated expressions.
+
+;;; 15th Commandment (revised)
+;;
+;; Use (let ...) to name the values of repeated expressions in a
+;; function definition if they may be evaluated twice for one and the
+;; same use of the function.
+
+;;; The 16th Commandment
+;; Use (set! ...) only with names defined in (let ...)s.
+
+;;; The 17th Commandment (preliminary version)
+;; Use (set! x ...) for (let ((x ...)) ...) only if there is at least
+;; one (lambda ...) between it and the (let ((x ...)) ...).
+
+;;; 17th Commandment:
+;;
+;; Use (set! x ...) for (let ((x ...)) ...) only if there is at least
+;; one (lambda ...) between it and the (let ...), or if the new value
+;; for x is a function that refers to x.
+
+;;; The 18th Commandment
+;; Use (set! x ...) only when the value that x refers to is no longer
+;; needed.
+
+;;; 19th Commandment:
+;; Use (set! ...) to remember valuable things between two distinct
+;; uses of a function.
+
+;;; 20th Commandment
+;;
+;; When thinking about a value created with (letcc ...), write down
+;; the function that is equivalent but does not forget. Then, when you
+;; use it, remember to forget.
+
+;;; 15th Commandment (re-revised?)
+;;
+;; Use (let ...) to name the values of repeated expressions in a
+;; function definition if they may be evaluated twice for
+;; one-and-the-same use of the function. And use (let ...) to name the
+;; values of expressions (without set!) that are re-evaluated every
+;; time a function is used.
