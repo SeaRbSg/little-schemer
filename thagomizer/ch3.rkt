@@ -44,8 +44,7 @@
            (check-equal? (rember 'and '(bacon lettuce and tomato))
                       '(bacon lettuce tomato))
            (check-equal? (rember 'sauce '(soy sauce and tomato sauce))
-                      '(soy and tomato sauce))
-           )
+                      '(soy and tomato sauce)))
 
 
 (define firsts
@@ -69,8 +68,7 @@
            (check-equal? (firsts '(((five plums) four)
                                   (eleven green oranges)
                                   ((no) more)))
-                        '((five plums) eleven (no)))
-           )
+                        '((five plums) eleven (no))))
 
 
 (define insertR
@@ -86,8 +84,7 @@
            (check-equal? (insertR 'jalapeño 'and '(tacos tamales and salsa))
                          '(tacos tamales and jalapeño salsa))
            (check-equal? (insertR 'e 'd '(a b c d f g d h))
-                         '(a b c d e f g d h))
-           )
+                         '(a b c d e f g d h)))
 
 
 (define insertL
@@ -104,8 +101,7 @@
            (check-equal? (insertL 'jalapeño 'and '(tacos tamales and salsa))
                          '(tacos tamales jalapeño and salsa))
            (check-equal? (insertL 'e 'd '(a b c d f g d h))
-                         '(a b c e d f g d h))
-           )
+                         '(a b c e d f g d h)))
 
 
 (define subst
@@ -121,8 +117,7 @@
            (check-equal? (subst 'jalapeño 'and '(tacos tamales and salsa))
                          '(tacos tamales jalapeño salsa))
            (check-equal? (subst 'e 'd '(a b c d f g d h))
-                         '(a b c e f g d h))
-           )
+                         '(a b c e f g d h)))
 
 
 (define subst2
@@ -136,8 +131,7 @@
            (check-equal? (subst2 'a 'b 'c '()) '())
            (check-equal? (subst2 'z 'a 'b '(b e a e f)) '(z e a e f))
            (check-equal? (subst2 'vanilla 'chocolate 'banana '(banana ice cream with chocolate topping))
-                         '(vanilla ice cream with chocolate topping))
-           )
+                         '(vanilla ice cream with chocolate topping)))
 
 
 (define multirember 
@@ -154,8 +148,7 @@
            (check-equal? (multirember 'cup '(coffee cup tea cup and hick cup))
                       '(coffee tea and hick))
            (check-equal? (multirember 'bacon '(bacon lettuce and tomato))
-                      '(lettuce and tomato))
-           )
+                      '(lettuce and tomato)))
 
 
 (define multiinsertR
@@ -169,8 +162,7 @@
 (test-case "multiinsertR"
            (check-equal? (multiinsertR 'a 'b '()) '())
            (check-equal? (multiinsertR 'x 'a '(a b a c d)) '(a x b a x c d))
-           (check-equal? (multiinsertR 'x 'a '(b a c a d)) '(b a x c a x d))
-           )
+           (check-equal? (multiinsertR 'x 'a '(b a c a d)) '(b a x c a x d)))
 
 (define multiinsertL
   (lambda (new old lat)
@@ -185,8 +177,7 @@
            (check-equal? (multiinsertL 'a 'b '()) '())
            (check-equal? (multiinsertL 'x 'a '(a b a c d)) '(x a b x a c d))
            (check-equal? (multiinsertL 'x 'a '(b a c a d)) '(b x a c x a d))
-           (check-equal? (multiinsertL 'fried 'fish '(chips and fish or fish and fried)) '(chips and fried fish or fried fish and fried))
-           )
+           (check-equal? (multiinsertL 'fried 'fish '(chips and fish or fish and fried)) '(chips and fried fish or fried fish and fried)))
 
 
 (define multisubst
@@ -199,5 +190,4 @@
 (test-case "multisubstr"
            (check-equal? (multisubst 'a 'b '()) '())
            (check-equal? (multisubst 'x 'a '(a b a c a)) '(x b x c x))
-           (check-equal? (multisubst 'x 'a '(b a c a a)) '(b x c x x))
-           )
+           (check-equal? (multisubst 'x 'a '(b a c a a)) '(b x c x x)))

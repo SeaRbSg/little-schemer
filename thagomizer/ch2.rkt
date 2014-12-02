@@ -17,8 +17,7 @@
            (check-true (lat? '(Jack Sprat could eat no chicken fat)))
            (check-true (lat? '()))
            (check-false (lat? '((Jack) Sprat could eat no chicken fat)))
-           (check-false (lat? '(Jack (Sprat could) eat no chicken fat)))
-           )
+           (check-false (lat? '(Jack (Sprat could) eat no chicken fat))))
 
 ;; Member?
 (define member?
@@ -30,6 +29,5 @@
 
 (test-case "member?"
            (check-true (member? 'tea '(coffee tea or milk)))
-           (check-false (member? 'poached '(fried eggs and scrambled eggs)))
-           )
+           (check-false (member? 'poached '(fried eggs and scrambled eggs))))
 
