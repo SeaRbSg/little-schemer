@@ -47,6 +47,7 @@
                       '(soy and tomato sauce))
            )
 
+
 (define firsts
   (lambda (l)
     (cond
@@ -71,6 +72,7 @@
                         '((five plums) eleven (no)))
            )
 
+
 (define insertR
   (lambda (new old lat)
     (cond
@@ -86,6 +88,7 @@
            (check-equal? (insertR 'e 'd '(a b c d f g d h))
                          '(a b c d e f g d h))
            )
+
 
 (define insertL
   (lambda (new old lat)
@@ -104,6 +107,7 @@
                          '(a b c e d f g d h))
            )
 
+
 (define subst
   (lambda (new old lat)
     (cond
@@ -121,3 +125,79 @@
            )
 
 
+(define subst2
+  (lambda (new o1 o2 lat)
+    (cond
+     ((null? lat) '())
+     ((or (eq? o1 (car lat)) (eq? o2 (car lat))) (cons new (cdr lat)))
+     (else (cons (car lat) (subst2 new o1 o2 (cdr lat)))))))
+
+(test-case "subst2"
+           (check-equal? (subst2 'a 'b 'c '()) '())
+           (check-equal? (subst2 'z 'a 'b '(b e a e f)) '(z e a e f))
+           (check-equal? (subst2 'vanilla 'chocolate 'banana '(banana ice cream with chocolate topping))
+                         '(vanilla ice cream with chocolate topping))
+           )
+
+
+(define multirember 
+  (lambda (a lat)
+    (cond
+     ((null? lat) '())
+     ((eq? (car lat) a) (multirember a (cdr lat)))
+     (else (cons (car lat) (multirember a (cdr lat)))))))
+
+(test-case "multirember"
+           (check-equal? (multirember 'a '()) '())
+           (check-equal? (multirember 'mint '(lamb chops and mint jelly))
+                      '(lamb chops and jelly))
+           (check-equal? (multirember 'cup '(coffee cup tea cup and hick cup))
+                      '(coffee tea and hick))
+           (check-equal? (multirember 'bacon '(bacon lettuce and tomato))
+                      '(lettuce and tomato))
+           )
+
+
+(define multiinsertR
+  (lambda (new old lat)
+    (cond
+     ((null? lat) '())
+     ((eq? old (car lat)) (cons old 
+                                (cons new (multiinsertR new old (cdr lat)))))
+     (else (cons (car lat) (multiinsertR new old (cdr lat)))))))
+
+(test-case "multiinsertR"
+           (check-equal? (multiinsertR 'a 'b '()) '())
+           (check-equal? (multiinsertR 'x 'a '(a b a c d)) '(a x b a x c d))
+           (check-equal? (multiinsertR 'x 'a '(b a c a d)) '(b a x c a x d))
+           )
+
+(define multiinsertL
+  (lambda (new old lat)
+    (cond
+     ((null? lat) '())
+     ((eq? (car lat) old) (cons new 
+                                (cons old (multiinsertL new old (cdr lat)))))
+     (else 
+      (cons (car lat) (multiinsertL new old (cdr lat)))))))
+
+(test-case "multiinsertL"
+           (check-equal? (multiinsertL 'a 'b '()) '())
+           (check-equal? (multiinsertL 'x 'a '(a b a c d)) '(x a b x a c d))
+           (check-equal? (multiinsertL 'x 'a '(b a c a d)) '(b x a c x a d))
+           (check-equal? (multiinsertL 'fried 'fish '(chips and fish or fish and fried)) '(chips and fried fish or fried fish and fried))
+           )
+
+
+(define multisubst
+  (lambda (new old lat)
+    (cond
+     ((null? lat) '())
+     ((eq? (car lat) old) (cons new (multisubst new old (cdr lat))))
+     (else (cons (car lat) (multisubst new old (cdr lat)))))))
+
+(test-case "multisubstr"
+           (check-equal? (multisubst 'a 'b '()) '())
+           (check-equal? (multisubst 'x 'a '(a b a c a)) '(x b x c x))
+           (check-equal? (multisubst 'x 'a '(b a c a a)) '(b x c x x))
+           )
