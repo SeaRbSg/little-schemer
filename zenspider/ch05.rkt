@@ -1,8 +1,10 @@
 #lang racket/base
 
-(require rackunit)
 (require "lib/shared.rkt")
 (require "ch04.rkt")                    ; eqan
+
+(module+ test
+  (require rackunit))
 
 ;;; Chapter 5
 ;; pg 81
@@ -26,18 +28,17 @@
           [else (cons (rember* a (car l))
                       (rember* a (cdr l)))]))) ; appreciated on end
 
-(check-equal? (myrember* 'a '())
-              '())
-(check-equal? (myrember* 'a '(a b a c d a))
-              '(b c d))
-(check-equal? (myrember* 'a '((b) a ((c) a) (d (e)) a))
-              '((b) ((c)) (d (e))))
-(check-equal? (rember* 'a '())
-              '())
-(check-equal? (rember* 'a '(a b a c d a))
-              '(b c d))
-(check-equal? (rember* 'a '((b) a ((c) a) (d (e)) a))
-              '((b) ((c)) (d (e))))
+(module+ test
+  (define (test/rember* rember*)
+    (check-equal? (rember* 'a '())
+                  '())
+    (check-equal? (rember* 'a '(a b a c d a))
+                  '(b c d))
+    (check-equal? (rember* 'a '((b) a ((c) a) (d (e)) a))
+                  '((b) ((c)) (d (e)))))
+
+  (test/rember* myrember*)
+  (test/rember* rember*))
 
 ;; pg 82
 (define insertR*
@@ -64,14 +65,15 @@
           [else (cons (car l)
                       (myinsertR* new old (cdr l)))])))
 
-(check-equal? (myinsertR* 'a 'b '())
-              '())
-(check-equal? (myinsertR* 'b 'a '(a (a (c))))
-              '(a b (a b (c))))
-(check-equal? (insertR* 'a 'b '())
-              '())
-(check-equal? (insertR* 'b 'a '(a (a (c))))
-              '(a b (a b (c))))
+(module+ test
+  (define (test/insertR* insertR*)
+    (check-equal? (insertR* 'a 'b '())
+                  '())
+    (check-equal? (insertR* 'b 'a '(a (a (c))))
+                  '(a b (a b (c)))))
+
+  (test/insertR* myinsertR*)
+  (test/insertR* insertR*))
 
 ;; pg 84
 (define occur*
@@ -81,12 +83,13 @@
           [(eq? a (car l)) (add1 (occur* a (cdr l)))]
           [else (occur* a (cdr l))])))
 
-(check-equal? (occur* 'a '(b c d))
-              0)
-(check-equal? (occur* 'a '(((a))))
-              1)
-(check-equal? (occur* 'a '(1 a 2 (3 a 4 (5)) a))
-              3)
+(module+ test
+  (check-equal? (occur* 'a '(b c d))
+                0)
+  (check-equal? (occur* 'a '(((a))))
+                1)
+  (check-equal? (occur* 'a '(1 a 2 (3 a 4 (5)) a))
+                3))
 
 ;; pg 85
 (define subst*
@@ -99,11 +102,12 @@
           [else (cons (car l)
                       (subst* new old (cdr l)))])))
 
-(check-equal? (subst* 'z 'b '(a b c))
-              '(a z c))
-(check-equal? (subst* 'z 'b
-                      '((a) (b ((((c d))) e (f)) b) (h) (b) (j k)))
-              '((a) (z ((((c d))) e (f)) z) (h) (z) (j k)))
+(module+ test
+  (check-equal? (subst* 'z 'b '(a b c))
+                '(a z c))
+  (check-equal? (subst* 'z 'b
+                        '((a) (b ((((c d))) e (f)) b) (h) (b) (j k)))
+                '((a) (z ((((c d))) e (f)) z) (h) (z) (j k))))
 
 ;; pg 86
 (define insertL*
@@ -117,8 +121,9 @@
           [else (cons (car l)
                       (insertL* new old (cdr l)))])))
 
-(check-equal? (insertL* 'z 'a '(a b (a b (a a) c) c c))
-              '(z a b (z a b (z a z a) c) c c))
+(module+ test
+  (check-equal? (insertL* 'z 'a '(a b (a b (a a) c) c c))
+                '(z a b (z a b (z a z a) c) c c)))
 
 ;; pg 87
 (define member1*
@@ -132,14 +137,15 @@
           [(eq? a (car l)) #t]
           [else (member2* a (cdr l))])))
 
-(define (test/member* member*)
-  (check-equal? (member* 'b '((a (b)) c))
-                #t)
-  (check-equal? (member* 'z '((a (b)) c))
-                #f))
+(module+ test
+  (define (test/member* member*)
+    (check-equal? (member* 'b '((a (b)) c))
+                  #t)
+    (check-equal? (member* 'z '((a (b)) c))
+                  #f))
 
-(test/member* member1*)
-(test/member* member2*)
+  (test/member* member1*)
+  (test/member* member2*))
 
 ;; pg 88
 (define leftmost
@@ -148,12 +154,13 @@
           [(list? (car l)) (leftmost (car l))]
           [else (car l)])))
 
-(check-equal? (leftmost '((a) (b ((c) d) (e))))
-              'a)
-(check-equal? (leftmost '(((a) (b (c))) d))
-              'a)
-(check-equal? (leftmost '(((() a)) b (c)))
-              '())
+(module+ test
+ (check-equal? (leftmost '((a) (b ((c) d) (e))))
+               'a)
+ (check-equal? (leftmost '(((a) (b (c))) d))
+               'a)
+ (check-equal? (leftmost '(((() a)) b (c)))
+               '()))
 
 ;; pg 90
 (define myeqlist1?
@@ -169,19 +176,20 @@
            (myeqlist1? (cdr a) (cdr b)))]
      [else #f])))
 
-(define (test/eqlist myeqlist?)
-  (check-equal? (myeqlist? '() '())
-                #t)
-  (check-equal? (myeqlist? '(a b c) '(a b c))
-                #t)
-  (check-equal? (myeqlist? '(a (b) c) '(a (b) c))
-                #t)
-  (check-equal? (myeqlist? '(a b c) '(a b))
-                #f)
-  (check-equal? (myeqlist? '(a b c) '(a (b) c))
-                #f))
+(module+ test
+  (define (test/eqlist myeqlist?)
+    (check-equal? (myeqlist? '() '())
+                  #t)
+    (check-equal? (myeqlist? '(a b c) '(a b c))
+                  #t)
+    (check-equal? (myeqlist? '(a (b) c) '(a (b) c))
+                  #t)
+    (check-equal? (myeqlist? '(a b c) '(a b))
+                  #f)
+    (check-equal? (myeqlist? '(a b c) '(a (b) c))
+                  #f))
 
-(test/eqlist myeqlist1?)
+  (test/eqlist myeqlist1?))
 
 ;; pg 91
 (define myeqlist2?
@@ -200,7 +208,8 @@
       (and (myeqlist2? (car a) (car b))
            (myeqlist2? (cdr a) (cdr b)))])))
 
-(test/eqlist myeqlist2?)
+(module+ test
+  (test/eqlist myeqlist2?))
 
 ;; pg 92 - 93
 
@@ -217,7 +226,8 @@
       (and (myeqlist3? (car a) (car b))
            (myeqlist3? (cdr a) (cdr b)))])))
 
-(test/eqlist myeqlist3?)
+(module+ test
+  (test/eqlist myeqlist3?))
 
 (define myequal?
   (lambda (a b)
@@ -236,25 +246,25 @@
      [(or  (atom? a) (atom? b)) #f]
      [else (myeqlist? a b)]]))
 
-
-(check-equal? (myequal? 'a 'a)
-              #t)
-(check-equal? (myequal? '() '())
-              #t)
-(check-equal? (myequal? 'a 'b)
-              #f)
-(check-equal? (myequal? 'b 'a)
-              #f)
-(check-equal? (myequal? 'a '())
-              #f)
-(check-equal? (myequal? '() 'a)
-              #f)
-(check-equal? (myequal? '(a (b) c) '(a (b) c))
-              #t)
-(check-equal? (myequal? '(a b c) '(a b))
-              #f)
-(check-equal? (myequal? '(a b c) '(a (b) c))
-              #f)
+(module+ test
+  (check-equal? (myequal? 'a 'a)
+                #t)
+  (check-equal? (myequal? '() '())
+                #t)
+  (check-equal? (myequal? 'a 'b)
+                #f)
+  (check-equal? (myequal? 'b 'a)
+                #f)
+  (check-equal? (myequal? 'a '())
+                #f)
+  (check-equal? (myequal? '() 'a)
+                #f)
+  (check-equal? (myequal? '(a (b) c) '(a (b) c))
+                #t)
+  (check-equal? (myequal? '(a b c) '(a b))
+                #f)
+  (check-equal? (myequal? '(a b c) '(a (b) c))
+                #f))
 
 (define myeqlist?
   (lambda (a b)
@@ -278,7 +288,6 @@
               (rember2 s (cdr l)))])])))
 
 ;; pg 95
-
 (define rember
   (lambda (s l)
     (cond
