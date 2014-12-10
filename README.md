@@ -11,9 +11,12 @@ Here's a tentative schedule. For that week, we'll read through those two chapter
 * Week 1: Kickoff!
 * Week 2: Chapter 1 & 2
 * Week 3: Chapter 3 & 4
-* Week 4: Chapter 5 & 6
-* Week 5: Chapter 7 & 8
-* Week 6: Chapter 9 & 10
+* Week 4: Chapter 5
+* Week 5: Chapter 6
+* Week 6: Chapter 7
+* Week 7: Chapter 8
+* Week 8: Chapter 9
+* Week 9: Chapter 10
 
 Feel free to create a directory for your account name and submit any code. Please make sure to follow Ryan's James Brown Guide to git etiquette:
 
