@@ -139,10 +139,8 @@
 
 (module+ test
   (define (test/member* member*)
-    (check-equal? (member* 'b '((a (b)) c))
-                  #t)
-    (check-equal? (member* 'z '((a (b)) c))
-                  #f))
+    (check-true (member* 'b '((a (b)) c)))
+    (check-false (member* 'z '((a (b)) c))))
 
   (test/member* member1*)
   (test/member* member2*))
@@ -155,12 +153,12 @@
           [else (car l)])))
 
 (module+ test
- (check-equal? (leftmost '((a) (b ((c) d) (e))))
-               'a)
- (check-equal? (leftmost '(((a) (b (c))) d))
-               'a)
- (check-equal? (leftmost '(((() a)) b (c)))
-               '()))
+  (check-equal? (leftmost '((a) (b ((c) d) (e))))
+                'a)
+  (check-equal? (leftmost '(((a) (b (c))) d))
+                'a)
+  (check-equal? (leftmost '(((() a)) b (c)))
+                '()))
 
 ;; pg 90
 (define myeqlist1?
@@ -178,16 +176,11 @@
 
 (module+ test
   (define (test/eqlist myeqlist?)
-    (check-equal? (myeqlist? '() '())
-                  #t)
-    (check-equal? (myeqlist? '(a b c) '(a b c))
-                  #t)
-    (check-equal? (myeqlist? '(a (b) c) '(a (b) c))
-                  #t)
-    (check-equal? (myeqlist? '(a b c) '(a b))
-                  #f)
-    (check-equal? (myeqlist? '(a b c) '(a (b) c))
-                  #f))
+    (check-true (myeqlist? '() '()))
+    (check-true (myeqlist? '(a b c) '(a b c)))
+    (check-true (myeqlist? '(a (b) c) '(a (b) c)))
+    (check-false (myeqlist? '(a b c) '(a b)))
+    (check-false (myeqlist? '(a b c) '(a (b) c))))
 
   (test/eqlist myeqlist1?))
 
@@ -247,24 +240,15 @@
      [else (myeqlist? a b)]]))
 
 (module+ test
-  (check-equal? (myequal? 'a 'a)
-                #t)
-  (check-equal? (myequal? '() '())
-                #t)
-  (check-equal? (myequal? 'a 'b)
-                #f)
-  (check-equal? (myequal? 'b 'a)
-                #f)
-  (check-equal? (myequal? 'a '())
-                #f)
-  (check-equal? (myequal? '() 'a)
-                #f)
-  (check-equal? (myequal? '(a (b) c) '(a (b) c))
-                #t)
-  (check-equal? (myequal? '(a b c) '(a b))
-                #f)
-  (check-equal? (myequal? '(a b c) '(a (b) c))
-                #f))
+  (check-true (myequal? 'a 'a))
+  (check-true (myequal? '() '()))
+  (check-false (myequal? 'a 'b))
+  (check-false (myequal? 'b 'a))
+  (check-false (myequal? 'a '()))
+  (check-false (myequal? '() 'a))
+  (check-true (myequal? '(a (b) c) '(a (b) c)))
+  (check-false (myequal? '(a b c) '(a b)))
+  (check-false (myequal? '(a b c) '(a (b) c))))
 
 (define myeqlist?
   (lambda (a b)
