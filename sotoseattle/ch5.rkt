@@ -30,9 +30,9 @@
          (else #f))))))
 
 (module+ test
-  (check-equal? (lat? '((1 2 3) 1)) #f)
-  (check-equal? (lat? '(1 2 3 1))   #t)
-  (check-equal? (lat? '(1 2 ((3)) 1)) #f))
+  (check-false (lat? '((1 2 3) 1)))
+  (check-true  (lat? '(1 2 3 1)))
+  (check-false (lat? '(1 2 ((3)) 1))))
 
 (define insertR
   (lambda (new old lat)
