@@ -10,7 +10,6 @@ class Rotary
     @wheel.each { |c| yield(c) }
   end
 
-
   def last
     @wheel.last
   end
