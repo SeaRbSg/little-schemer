@@ -1,11 +1,8 @@
-; ______________INITIAL DEFINITIONS______________
 #lang racket
-; from preface
-(define atom?
-  (lambda (x)
-    (and (not (pair? x)) (not(null? x)))))
-; make sure atom? is defined #=> should output #f
-(atom? (quote()))
+
+(require "lib/shared.rkt")
+(require rackunit)
+(require (only-in racket/function thunk))
 
 ; ______________ATOMS______________
 'atom
@@ -33,26 +30,29 @@
 
 ; ______________CAR______________
 ; first element of a list, returns an element of the list (list or atom)
-(car '(a b c))        ; 'a
-(car '((a b c) x y))  ; '(a b c)
-; (car 'atom) => error, only works on lists
-; (car ()) => error THE PRIMITIVE LAW OF CAR!!!
-(car '(((hotdogs)) (and) (pickle) relish))             ; => ((hotdogs)) the list of the list of hotdogs
-(car (car '(((hotdogs)) (and) (pickle) relish)))       ; => (hotdogs)
-(car (car (car '(((hotdogs)) (and) (pickle) relish)))) ; => 'hotdogs
+
+(check-equal? (car '(a b c)) 'a)
+(check-equal? (car '((a b c) x y)) '(a b c))
+(check-exn exn:fail? (thunk (car 'atom))) ; error, only works on lists
+(check-exn exn:fail? (thunk (car '())))   ; error THE PRIMITIVE LAW OF CAR!!!
+(check-equal? (car '(((hotdogs)) (and) (pickle) relish)) '((hotdogs))) ; the list of the list of hotdogs
+(check-equal? (car (car '(((hotdogs)) (and) (pickle) relish))) '(hotdogs))
+(check-equal? (car (car (car '(((hotdogs)) (and) (pickle) relish)))) 'hotdogs)
 
 ; ______________CDR______________
 ; could'er => the list without car (the list!), returns a list
-(cdr '(a b c))
-(cdr '((a b c) x y))
-(cdr '(hamburger))
-(cdr '((x) t r))
-; (cdr 'atom) => error, only works on lists
-; (cdr ()) => error THE PRIMITIVE LAW OF CDR!!!
 
-(car (cdr '((b) (x y) ((c)))))  ; from the inside out, 1sr cdr => ((x y) ((c))), 2nd car => (x y)
-(cdr (cdr '((b) (x y) ((c)))))  ; from the inside out, 1sr cdr => ((x y) ((c))), 2nd cdr => (((c))) <== list of (( c ))
-;(cdr (car '(a (b (c)) d))) ;=> error because cdr of atom is not allowed
+(check-equal? (cdr '(a b c)) '(b c))
+(check-equal? (cdr '((a b c) x y)) '(x y))
+(check-equal? (cdr '(hamburger)) '())
+(check-equal? (cdr '((x) t r)) '(t r))
+
+(check-exn exn:fail? (thunk (cdr 'atom))) ; error, only works on lists
+(check-exn exn:fail? (thunk (cdr '())))   ; error THE PRIMITIVE LAW OF CDR!!!
+
+(check-equal? (car (cdr '((b) (x y) ((c))))) '(x y))    ; from the inside out, 1sr cdr => ((x y) ((c))), 2nd car => (x y)
+(check-equal? (cdr (cdr '((b) (x y) ((c))))) '(((c))))    ; from the inside out, 1sr cdr => ((x y) ((c))), 2nd cdr => (((c))) <== list of (( c ))
+;(check-exn exn:fail (thunk (cdr (car '(a (b (c)) d))))) ; error because cdr of atom is not allowed
 
 ; both car and cdr take as argument a non-empty list
 ; car returns an S-exp, cdr returns a list
@@ -68,36 +68,39 @@
 (cons 'a 'b)         ; => should be error because 2nd arg is not a list ############# CHEK
 ; LAW OF CONS: takes 2 args, the second must be a list, returns a list
 
-(cons 'a (car '((b) c d))) ; ############# CHEK messy way to add ' to S-expr but not to (car / (cdr / (cons
+(cons 'a (car '((b) c d)))
 (cons 'a (cdr '((b) c d)))
 
 ; ______________NULL?______________
-(null? '())
-(null? '(a b c))
-(null? 'a)  ; should be no answer, but gives false because it is always #f except for the empty list
+(check-true (null? '()))
+(check-false (null? '(a b c)))
+(check-false (null? 'a))  ; should be no answer, but gives false because it is always #f except for the empty list
 ; LAW OF NULL?: is defined only for a list
 
 ; ______________ATOM?______________
 ; atom? takes a single argument, a S-exp
-(atom? 'Harry)
-(atom? '(Harry had a heap of apples))
-(atom? (car '(Harry had a heap of apples)))
-(atom? (cdr '(Harry had a heap of apples)))
-(atom? (cdr '(Harry)))
-(atom? (car (cdr '(swing low sweet cherry oat))))
-(atom? (car (cdr '(swing (low sweet) cheery oat))))
+(check-true (atom? 'Harry))
+(check-false (atom? '(Harry had a heap of apples)))
+(check-true (atom? (car '(Harry had a heap of apples))))
+(check-false (atom? (cdr '(Harry had a heap of apples))))
+(check-false (atom? (cdr '(Harry))))
+(check-true (atom? (car (cdr '(swing low sweet cherry oat)))))
+(check-false (atom? (car (cdr '(swing (low sweet) cheery oat)))))
 
 ; ______________EQ?______________
-(eq? 'Harry 'Harry)
-(eq? 'margarine 'butter)
-(eq? '() '(strawberry))
-(eq? '() '())
-(eq? '(pepe) '(pepe))
-(eq? '6 '7)
-(eq? '6 '6)
+(check-true  (eq? 'Harry 'Harry))
+(check-false (eq? 'margarine 'butter))
+(check-false (eq? '() '(strawberry)))
+(check-true  (eq? '() '()))
+(check-false (eq? '(pepe) '(pepe)))
+(check-false (eq? '6 '7))
+(check-true  (eq? '6 '6))
 ; LAW OF EQ?: takes two non-numeric atoms as arguments
-; ########### CHECK works with empty lists and gives #t (for anything else gives #f)
-; ########### CHECK works with numbers as strings
-(eq? (car '(Mary had a litle lamb chop)) 'Mary)
-(eq? (cdr '(soured milk)) 'milk)  ; shouldn't give an answer, comparing non-atom '(milk) with 'milk
-(eq? (car '(beans beans we need jelly beans)) (car (cdr '(beans beans we need jelly beans))))
+
+; works with empty lists and gives #t (for anything else gives #f)
+; works with numbers as strings
+
+(check-true (eq? (car '(Mary had a litle lamb chop)) 'Mary))
+(check-false (eq? (cdr '(soured milk)) 'milk))
+(check-false (eq? (cdr '(soured milk)) '(milk)))
+(check-true (eq? (car '(beans beans we need jelly beans)) (car (cdr '(beans beans we need jelly beans)))))
