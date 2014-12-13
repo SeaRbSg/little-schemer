@@ -3,18 +3,16 @@ MATHLESS CALCULATOR
 
 <img src="./public/power_to_the_mathless.png" align="right"/>
 
-Why?
-----
+### Why?
 
 If you are like me, a sensitive personality grounded in the world of Humanities, you cannot but cringe at all those geeky math equations so in vogue these days (statistics, differential equations, machine learning libraries, game theory gooey, etc.) Enough is enough! Join me in the fight to take our codebase away from the 1% (the math elites) so the 99% can enjoy the fruits of technological progress!
 
-Whatf??
--------
+### Whatf??
+
 
 This is a simple math calculator for the rest of us, the mathematically challenged masses of the world. Instead of working with dry numbers we like to operate with the rich and expressive English characters, and not a single math operation is allowed in the code. No math.
 
-How?
-----
+### How?
 
 The building block is the Rotary-Continuum-Grammar-Device (Rotary for short), an array of characters in logical succession that knows how to find the next and the previous character for any given one.
 

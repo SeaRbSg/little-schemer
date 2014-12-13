@@ -10,15 +10,6 @@ class Rotary
     @wheel.each { |c| yield(c) }
   end
 
-  def next(character)
-    fail 'Unrecognized character' unless i = find_index(character)
-    character == last ? first : @wheel[i].next
-  end
-
-  def prev(character)
-    fail 'Unrecognized character' unless i = find_index(character)
-    character == first ? last : first(i).last
-  end
 
   def last
     @wheel.last
@@ -35,7 +26,7 @@ class Rotary
     new_number.empty? ? '0' : new_number
   end
 
-  private
+  protected
 
   def partition_by(number_string, char)
     number_string.split(/(#{char}+)$/)
@@ -57,5 +48,15 @@ class Rotary
 
   def convert(trailing_chars, char)
     (trailing_chars ? (char * trailing_chars.size) : '')
+  end
+
+  def next(character)
+    fail 'Unrecognized character' unless i = find_index(character)
+    character == last ? first : @wheel[i].next
+  end
+
+  def prev(character)
+    fail 'Unrecognized character' unless i = find_index(character)
+    character == first ? last : first(i).last
   end
 end
