@@ -14,35 +14,39 @@ class Rotary
     @wheel.last
   end
 
-  def add1(number_string)
-    begining_numbers, trailing_nines = partition_by(number_string, '9')
+  def add1(number)
+    begining_numbers, trailing_nines = partition_by(number, '9')
     add_with_carry(begining_numbers) + convert(trailing_nines, '0')
   end
 
-  def sub1(number_string)
-    begining_numbers, trailing_zeros = partition_by(number_string, '0')
+  def sub1(number)
+    begining_numbers, trailing_zeros = partition_by(number, '0')
     new_number = sub_with_carry(begining_numbers) + convert(trailing_zeros, '9')
     new_number.empty? ? '0' : new_number
   end
 
+  def recognizes?(n)
+    n.chars.all? { |x| @wheel.include? x }
+  end
+
   protected
 
-  def partition_by(number_string, char)
-    number_string.split(/(#{char}+)$/)
+  def partition_by(number, char)
+    number.split(/(#{char}+)$/)
   end
 
-  def add_with_carry(number_string)
-    if number_string.empty?
-      number_string.insert(0, '1')
+  def add_with_carry(number)
+    if number.empty?
+      number.insert(0, '1')
     else
-      number_string[-1] = self.next(number_string[-1])
+      number[-1] = self.next(number[-1])
     end
-    number_string
+    number
   end
 
-  def sub_with_carry(number_string)
-    number_string[-1] = prev(number_string[-1])
-    number_string.sub(/^0+/, '')
+  def sub_with_carry(number)
+    number[-1] = prev(number[-1])
+    number.sub(/^0+/, '')
   end
 
   def convert(trailing_chars, char)
@@ -50,12 +54,12 @@ class Rotary
   end
 
   def next(character)
-    fail 'Unrecognized character' unless i = find_index(character)
+    fail "Unrecognized character #{character}" unless i = find_index(character)
     character == last ? first : @wheel[i].next
   end
 
   def prev(character)
-    fail 'Unrecognized character' unless i = find_index(character)
+    fail "Unrecognized character #{character}" unless i = find_index(character)
     character == first ? last : first(i).last
   end
 end

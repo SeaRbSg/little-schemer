@@ -27,10 +27,15 @@ Armed only with those two operations we can define for any string based number t
 
 Then, it only takes a small leap of faith to create complex mathematically operations with recursion. With the power of recursion we can do things like adding and subtracting numbers, but everything done mathematica-less-ly and in style.
 
+### Usage
+
 ```ruby
 calc = MathlessCalculator.new
-calc.add('40', '2') #=> '42'
-calc.sub('10', '1') #=>  '9'
-calc.mul('5', '2')  #=> '10'
-calc.exp('2', '3')  #=>  '8'
+calc.compute('(((1 + 1) + (1 + 1)) + (1 + 1))') # => '6'
+calc.compute('(((2 ^ 2) - (1 x 1)) - (3 - (0 + 1)))') # => '1'
 ```
+
+### Disclaimer:
+
+- It is not a very efficient calculator, slow and quite limited. Enjoy its parsimony and revere its convoluted way of operating.
+- The input parenthetical expression has to be well formed, the parsing is quite brittle.
