@@ -29,7 +29,7 @@
   (lambda (aexp)
     (cond
       ((atom? aexp) (number? aexp))
-      (else (and (numbered? (car aexp)) 
+      (else (and (numbered? (car aexp))
                  (numbered? (car (cdr (cdr aexp)))))))))
 
 (module+ test
@@ -67,6 +67,16 @@
          ((eq? (car (cdr nexp)) '+) (✢ (value (car nexp)) (value (car (cdr (cdr nexp))))))
          ((eq? (car (cdr nexp)) 'x) (x (value (car nexp)) (value (car (cdr (cdr nexp))))))
          ((eq? (car (cdr nexp)) '^) (^ (value (car nexp)) (value (car (cdr (cdr nexp)))))))))))
+
+;;;;;;;;;;;;; QUESTION 1
+;;;;;;;;;;;;; Why ((atom? nexp)... why not ((number? nexp)...
+;;;;;;;;;;;;; we are talking about number expressions && numbers are a subset of atoms
+
+;;;;;;;;;;;;; QUESTION 2
+;;;;;;;;;;;;; could we somehow refactor all those +x^ into a single line?
+;;;;;;;;;;;;; the idea would be to extract the operator (see below) and then like
+;;;;;;;;;;;;; in ruby do something like (:operator
+;;;;;;;;;;;;;
 
 (module+ test
   (check-equal? (value '(2 + 3)) 5)
@@ -126,7 +136,7 @@
   (check-equal? (value_2 '(+ 2 (+ 1 2))) 5))
 
 ; EIGHTH COMMANDMENT
-; after tests pass, and simplifying, apply DRY by extracting helper methods 
+; after tests pass, and simplifying, apply DRY by extracting helper methods
 ;
 ; similar to 4 pr of simple design: 1) test pass 2) expressive/simplify 3) DRY 4) minimize
 
@@ -138,7 +148,18 @@
 
 (define edd1
   (lambda (n)
-    (cons '() n))) ; aint the same (cons '() n) than (cons n '())
+    (cons '() n)))
+
+;;;;;;;;;;;;; QUESTION 3
+;;;;;;;;;;;;; aint the same (cons '() n) than (cons n '())
+;;;;;;;;;;;;; (cons '2 '())                     => '(2)
+;;;;;;;;;;;;; (cons 2 '())                      => '(2)
+;;;;;;;;;;;;; (cons '(pepe jaime) '(ana maria)) => '((pepe jaime) ana maria)
+;;;;;;;;;;;;; (cons '(pepe jaime) '2)           => '((pepe jaime) . 2) <== dot?
+;;;;;;;;;;;;; (cons '() 2)                      => '(() . 2) <============ dot?
+;;;;;;;;;;;;; (cons '() '())                    => '(())
+;;;;;;;;;;;;; so cons inserts an atom/list into another list (not atom)
+;;;;;;;;;;;;; this is natural because we tend to cons into something that comes from recursion (lat/las)
 
 (define zub1
   (lambda (n)
