@@ -39,17 +39,17 @@
   (check-true  (numbered? '((1 x 2) ^ (2 + (1 + 1))))))
 
 ;;;;;;;;;;;; FROM CHAPTER 4
-(define ✢ ; <-------------------------------- ADD
+(define o+ ; <-------------------------------- ADD
   (lambda (n m)
     (cond
       ((zero? m) n)
-      (else (add1 (✢ n (sub1 m)))))))
+      (else (add1 (o+ n (sub1 m)))))))
 
 (define x ; <-------------------------------- MUTIPLY
   (lambda (n m)
     (cond
       ((zero? m) 0)
-      (else (✢ n (x n (sub1 m)))))))
+      (else (o+ n (x n (sub1 m)))))))
 
 (define ^ ; <-------------------------------- EXPONENTIATION
   (lambda (n m)
@@ -61,22 +61,22 @@
 (define value
   (lambda (nexp)
     (cond
-      ((atom? nexp) nexp)
+      ((number? nexp) nexp)
       (else
        (cond
-         ((eq? (car (cdr nexp)) '+) (✢ (value (car nexp)) (value (car (cdr (cdr nexp))))))
+         ((eq? (car (cdr nexp)) '+) (o+ (value (car nexp)) (value (car (cdr (cdr nexp))))))
          ((eq? (car (cdr nexp)) 'x) (x (value (car nexp)) (value (car (cdr (cdr nexp))))))
          ((eq? (car (cdr nexp)) '^) (^ (value (car nexp)) (value (car (cdr (cdr nexp)))))))))))
 
 ;;;;;;;;;;;;; QUESTION 1
 ;;;;;;;;;;;;; Why ((atom? nexp)... why not ((number? nexp)...
 ;;;;;;;;;;;;; we are talking about number expressions && numbers are a subset of atoms
+; because you would assume that only numbers are passed, and for anything else it would fail !!
 
 ;;;;;;;;;;;;; QUESTION 2
 ;;;;;;;;;;;;; could we somehow refactor all those +x^ into a single line?
-;;;;;;;;;;;;; the idea would be to extract the operator (see below) and then like
-;;;;;;;;;;;;; in ruby do something like (:operator
-;;;;;;;;;;;;;
+;;;;;;;;;;;;; the idea would be to extract the operator
+; yes, but it is not in the book. a bit more complex than it looks
 
 (module+ test
   (check-equal? (value '(2 + 3)) 5)
@@ -95,7 +95,7 @@
       ((atom? nexp) nexp)
       (else
        (cond
-         ((eq? (car nexp) '+) (✢ (value_my_prn (car (cdr nexp))) (value_my_prn (car (cdr (cdr nexp))))))
+         ((eq? (car nexp) '+) (o+ (value_my_prn (car (cdr nexp))) (value_my_prn (car (cdr (cdr nexp))))))
          ((eq? (car nexp) 'x) (x (value_my_prn (car (cdr nexp))) (value_my_prn (car (cdr (cdr nexp))))))
          ((eq? (car nexp) '^) (^ (value_my_prn (car (cdr nexp))) (value_my_prn (car (cdr (cdr nexp)))))))))))
 
@@ -125,7 +125,7 @@
       ((atom? nexp) nexp)
       (else
        (cond
-         ((eq? (operator nexp) '+) (✢ (value_2 (1st-sub-exp nexp)) (value_2 (2nd-sub-exp nexp))))
+         ((eq? (operator nexp) '+) (o+ (value_2 (1st-sub-exp nexp)) (value_2 (2nd-sub-exp nexp))))
          ((eq? (operator nexp) 'x) (x (value_2 (1st-sub-exp nexp)) (value_2 (2nd-sub-exp nexp))))
          ((eq? (operator nexp) '^) (^ (value_2 (1st-sub-exp nexp)) (value_2 (2nd-sub-exp nexp)))))))))
 
@@ -137,10 +137,7 @@
 
 ; EIGHTH COMMANDMENT
 ; after tests pass, and simplifying, apply DRY by extracting helper methods
-;
 ; similar to 4 pr of simple design: 1) test pass 2) expressive/simplify 3) DRY 4) minimize
-
-; fun with weirdness
 
 (define sero?
   (lambda (n)
@@ -153,13 +150,14 @@
 ;;;;;;;;;;;;; QUESTION 3
 ;;;;;;;;;;;;; aint the same (cons '() n) than (cons n '())
 ;;;;;;;;;;;;; (cons '2 '())                     => '(2)
-;;;;;;;;;;;;; (cons 2 '())                      => '(2)
-;;;;;;;;;;;;; (cons '(pepe jaime) '(ana maria)) => '((pepe jaime) ana maria)
-;;;;;;;;;;;;; (cons '(pepe jaime) '2)           => '((pepe jaime) . 2) <== dot?
-;;;;;;;;;;;;; (cons '() 2)                      => '(() . 2) <============ dot?
-;;;;;;;;;;;;; (cons '() '())                    => '(())
-;;;;;;;;;;;;; so cons inserts an atom/list into another list (not atom)
-;;;;;;;;;;;;; this is natural because we tend to cons into something that comes from recursion (lat/las)
+;;;;;;;;;;;;; (cons '(pepe jaime) '2)           => '((pepe jaime) . 2) <== improper list ==> messy stuff
+;;;;;;;;;;;;; (cons '() 2)                      => '(() . 2) <============ dotted list ====> messy stuff
+; so cons  does NOT insert an atom/list into another
+; think about it in terms of linked lists, you are appending the first one to the other linked list
+; (cons 'a '(b)) == cons 'a into b-->null [A linked list] == a --> b --> null !!!
+; you need to append to a list or an empty list (null itself) so it is proper !!!
+; when you cons 2 2 => a.b == a|b ==> an improper list because it is not ending in null
+; this is also natural because we tend to cons into something that comes from recursion (lat/las)
 
 (define zub1
   (lambda (n)
