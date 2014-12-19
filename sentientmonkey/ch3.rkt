@@ -50,7 +50,7 @@
     (cond
       ((null? l ) (quote ()))
       (else (cons (car (car l))
-                  (first (cdr l)))))))
+                  (firsts (cdr l)))))))
 
 (firsts '((a b) (c d) (e f)))
 

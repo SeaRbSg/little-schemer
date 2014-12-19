@@ -25,6 +25,13 @@
       [else (cons (car lat)
                   (multirember a (cdr lat)))])))
 
+(define firsts
+  (lambda (l)
+    (cond
+      [(null? l) (quote ())]
+      [else (cons (car (car l))
+                  (firsts (cdr l)))])))
+
 (define set?
   (lambda (lat)
     (cond
@@ -207,7 +214,6 @@
 (check-equal? (pair? '((2) (pair))) #t)
 (check-equal? (pair? '(full (house))) #t)
 
-
 (define a-pair?
   (lambda (x)
     (cond
@@ -231,9 +237,62 @@
   (lambda (p)
     (car (cdr (cdr p)))))
 
-
 (define build
   (lambda (s1 s2)
     (cons s1 (cons s2 (quote ())))))
 
 (check-equal? (build 'x 'y) '(x y))
+
+(define fun?
+  (lambda (rel)
+    (set? (firsts rel))))
+
+(check-true (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(check-false (fun? '((d 4) (b 0) (b 9) (e 5) (g 4))))
+
+(define revrel
+  (lambda (rel)
+    (cond
+      [(null? rel) (quote ())]
+      [else (cons (build
+                    (second (car rel))
+                    (first (car rel)))
+                  (revrel (cdr rel)))])))
+
+(check-equal? (revrel '((8 a) (pumpkin pie) (got sick))) '((a 8) (pie pumpkin) (sick got)))
+
+(define revpair
+  (lambda (pair)
+    (build (second pair) (first pair))))
+
+(check-equal? (revpair '(a b)) '(b a))
+
+(define revrel2
+  (lambda (rel)
+    (cond
+      [(null? rel) (quote ())]
+      [else (cons (revpair (car rel))
+                  (revrel2 (cdr rel)))])))
+
+(check-equal? (revrel2 '((8 a) (pumpkin pie) (got sick))) '((a 8) (pie pumpkin) (sick got)))
+
+(define seconds
+  (lambda (l)
+    (cond
+      [(null? l) (quote ())]
+      [else (cons (second (car l))
+                  (seconds (cdr l)))])))
+
+(define fullfun?
+  (lambda (rel)
+    (set? (seconds rel))))
+
+(check-false (fullfun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(check-true (fullfun? '((8 3) (4 8) (7 6) (6 2) (3 4))))
+(check-false (fullfun? '((grape raisin) (plum prune) (stewed prune))))
+
+(define one-to-one?
+  (lambda (rel)
+    (fun? (revrel rel))))
+
+(check-false (one-to-one? '((grape raisin) (plum prune) (stewed prune))))
