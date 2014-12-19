@@ -1,27 +1,29 @@
-; from preface
-(define atom?
-  (lambda (x)
-    (and (not (pair? x))  (not(null? x)))))
+#lang racket/base
 
-(atom? 14)
-(number? -3)
-(number? 3.14159)
+(require rackunit)
+(require "prelude.rkt")
+
+(provide o+ o- x div pow gt lt eq)
+
+(check-true (atom? 14))
+(check-true (number? -3))
+(check-true (number? 3.14159))
 
 (define add1
   (lambda (n)
     (+ n 1)))
 
-(add1 67)
+(check-equal? (add1 67) 68)
 
 (define sub1
   (lambda (n)
     (- n 1)))
 
-(sub1 5)
-(sub1 0)
+(check-equal? (sub1 5) 4)
+(check-equal? (sub1 0) -1)
 
-(zero? 0)
-(zero? 1492)
+(check-true (zero? 0))
+(check-false (zero? 1492))
 
 (define o+
   (lambda (n m)
@@ -29,7 +31,7 @@
       ((zero? m) n)
       (else (add1 (o+ n (sub1 m)))))))
 
-(o+ 46 12)
+(check-equal? (o+ 46 12) 58)
 
 (define o-
   (lambda (n m)
@@ -37,11 +39,9 @@
       ((zero? m) n)
       (else (sub1 (o- n (sub1 m)))))))
 
-(o- 14 3)
-(o- 17 9)
-(o- 18 25)
-
-(tup? (2 11 3 79 47 6))
+(check-equal? (o- 14 3) 11)
+(check-equal? (o- 17 9) 8)
+(check-equal? (o- 18 25) -7)
 
 (define addtup
   (lambda (tup)
@@ -49,7 +49,7 @@
       ((null? tup) 0)
       (else (o+ (car tup) (addtup (cdr tup)) )))))
 
-(addtup '(1 2 3 4 5))
+(check-equal? (addtup '(1 2 3 4 5)) 15)
 
 (define x
   (lambda (n m)
@@ -57,41 +57,10 @@
       ((zero? m) 0)
       (else (o+ n (x n (sub1 m)))))))
 
-(x 5 3)
-(x 13 4)
-(x 12 3)
+(check-equal? (x 5 3) 15)
+(check-equal? (x 13 4) 52)
+(check-equal? (x 12 3) 36)
 
-; first pass of tup+
-(define tup+
-  (lambda (tup1 tup2)
-    (cond
-      ((and (null? tup1) (null? tup2)) (quote ()))
-      (else (cons (o+ (car tup1) (car tup2))
-                  (tup+ (cdr tup1) (cdr tup2)))))))
-
-(tup+ '(3 6 9 11 4) '(8 5 2 0 7))
-(tup+ '(2 3) '(4 6))
-(tup+ '(3 7) '(4 6))
-
-; fail
-; (tup+ '(3 7 8 1) '(4 6))
-
-
-(define tup+
-  (lambda (tup1 tup2)
-    (cond
-      ((and (null? tup1) (null? tup2))
-       (quote ()))
-      ((null? tup1) tup2)
-      ((null? tup2) tup1)
-      (else
-        (cons (o+ (car tup1) (car tup2))
-              (tup+
-                (cdr tup1) (cdr tup2)))))))
-
-(tup+ '(3 7 8 1) '(4 6))
-
-; tup+ simplified
 (define tup+
   (lambda (tup1 tup2)
     (cond
@@ -102,7 +71,7 @@
               (tup+
                 (cdr tup1) (cdr tup2)))))))
 
-(tup+ '(3 7 8 1) '(4 6))
+(check-equal? (tup+ '(3 7 8 1) '(4 6)) '(7 13 8 1))
 
 ; > implementation
 (define gt
@@ -113,11 +82,10 @@
       (else
         (gt (sub1 n) (sub1 m))))))
 
-(gt 12 133)
-(gt 120 11)
+(check-false (gt 12 133))
+(check-true (gt 120 11))
 
-; works (got it right the first time)
-(gt 3 3)
+(check-false (gt 3 3))
 
 ; < definition
 (define lt
@@ -128,21 +96,10 @@
       (else
         (lt (sub1 n) (sub1 m))))))
 
-(lt 4 6)
-(lt 8 3)
-(lt 6 6)
+(check-true (lt 4 6))
+(check-false (lt 8 3))
+(check-false (lt 6 6))
 
-; = definition
-(define eq
-  (lambda (n m)
-    (cond
-      ((zero? m) (zero? n))
-      ((zero? n) #f)
-      (else (eq (sub1 n) (sub1 m))))))
-
-(eq 6 6)
-
-; = rewrite
 (define eq
   (lambda (n m)
     (cond
@@ -150,7 +107,7 @@
       ((lt n m) #f)
       (else #t))))
 
-(eq 6 6)
+(check-true (eq 6 6))
 
 (define pow
   (lambda (n m)
@@ -159,17 +116,9 @@
       (else
         (x n (pow n (sub1 m)))))))
 
-(pow 1 1)
-(pow 2 3)
-(pow 5 3)
-
-
-; mystery function
-(define ???
-  (lambda (n m)
-    (cond
-      ((lt n m) 0)
-      (else (add1 (??? (o- n m) m))))))
+(check-equal? (pow 1 1) 1)
+(check-equal? (pow 2 3) 8)
+(check-equal? (pow 5 3) 125)
 
 ; division
 (define div
@@ -178,7 +127,7 @@
       ((lt n m) 0)
       (else (add1 (div (o- n m) m))))))
 
-(div 15 4)
+(check-equal? (div 15 4) 3)
 
 ; length
 (define len
@@ -187,8 +136,8 @@
       ((null? lat) 0)
       (else (add1 (len (cdr lat)))))))
 
-(len '(hotdogs with mustard sauerkraut and pickles))
-(len '(hame and cheese on rye))
+(check-equal? (len '(hotdogs with mustard sauerkraut and pickles)) 6)
+(check-equal? (len '(hame and cheese on rye)) 5)
 
 ; pick
 (define pick
@@ -197,22 +146,10 @@
       ((zero? (sub1 n)) (car lat))
       (else (pick (sub1 n) (cdr lat))))))
 
-(pick 4 '(lasanga spaghetti ravioli macaroni meatball))
+(check-equal? (pick 4 '(lasanga spaghetti ravioli macaroni meatball)) 'macaroni)
 
-; rempick
-(define rempick
-  (lambda (n lat)
-    (cond
-      ((zero? (sub1 n)) (cdr lat))
-      (else
-        (cons (car lat)
-              (rempick (sub1 n)
-                       (cdr lat)))))))
-
-(rempick 3 '(hotdogs with hot mustard))
-
-(number? 'tomato)
-(number? 76)
+(check-false (number? 'tomato))
+(check-true (number? 76))
 
 (define no-nums
   (lambda (lat)
@@ -224,7 +161,7 @@
         (cons (car lat)
               (no-nums (cdr lat)))))))
 
-(no-nums '(5 pears 6 prunes 9 dates))
+(check-equal? (no-nums '(5 pears 6 prunes 9 dates)) '(pears prunes dates))
 
 (define all-nums
   (lambda (lat)
@@ -235,7 +172,7 @@
              (all-nums (cdr lat))))
       (else (all-nums (cdr lat))))))
 
-(all-nums '(5 pears 6 prunes 9 dates))
+(check-equal? (all-nums '(5 pears 6 prunes 9 dates)) '(5 6 9))
 
 (define eqan?
   (lambda (a1 a2)
@@ -246,9 +183,9 @@
        #f)
       (else (eq? a1 a2)))))
 
-(eqan? 1 1)
-(eqan? 1 'tomato)
-(eqan? 'tomato 'tomato)
+(check-true (eqan? 1 1))
+(check-false (eqan? 1 'tomato))
+(check-true (eqan? 'tomato 'tomato))
 
 (define occur
   (lambda (a lat)
@@ -258,15 +195,15 @@
        (add1 (occur a (cdr lat))))
       (else (occur a (cdr lat))))))
 
-(occur 'apples '(apples and apples and oranges))
+(check-equal? (occur 'apples '(apples and apples and oranges)) 2)
 
 ; defintion of one (used simple version on first attempt)
 (define one?
   (lambda (n)
     (eq n 1)))
 
-(one? 1)
-(one? 42)
+(check-true (one? 1))
+(check-false (one? 42))
 
 ; rempick refactored
 (define rempick
@@ -278,4 +215,4 @@
               (rempick (sub1 n)
                        (cdr lat)))))))
 
-(rempick 3 '(lemon meringue salty pie))
+(check-equal? (rempick 3 '(lemon meringue salty pie)) '(lemon meringue pie))
