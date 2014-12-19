@@ -1,48 +1,25 @@
-; from preface
-(define atom?
-  (lambda (x)
-    (and (not (pair? x)) (not(null? x)))))
+#lang racket/base
+
+(require rackunit)
+(require "prelude.rkt")
+(provide multirember)
 
 ; Chapter 3
 
-; first pass of rember
+(provide firsts)
+
+; rember final version
 (define rember
   (lambda (a lat)
     (cond
-      ((null? lat) (quote ()))
-      (else (cond
-              ((eq? (car lat) a) (cdr lat))
-              (else (rember a
-                            (cdr lat))))))))
-
-(rember 'bacon '(bacon lettuce and tomato))
-(rember 'and '(bacon lettuce and tomato))
-
-; fixing rember
-(define rember
-  (lambda (a lat)
-    (cond
-      ((null? lat) (quote ()))
-      (else (cond
-              ((eq? (car lat) a) (cdr lat))
-              (else (cons (car lat)
-                          (rember a
-                                  (cdr lat)))))))))
-
-(rember 'and '(bacon lettuce and tomato))
-
-; refactoring rember
-(define rember
-  (lambda (a lat)
-    (cond
-      ((null? lat) (quote ()))
-      ((eq? (car lat) a) (cdr lat))
-      (else (cons (car lat)
+      [(null? lat) (quote ())]
+      [(eq? (car lat) a) (cdr lat)]
+      [else (cons (car lat)
                   (rember a
-                          (cdr lat)))))))
+                          (cdr lat)))])))
 
-(rember 'and '(bacon lettuce and tomato))
-(rember 'sauce '(soy sauce and tomato sauce))
+(check-equal? (rember 'and '(bacon lettuce and tomato)) '(bacon lettuce tomato))
+(check-equal? (rember 'sauce '(soy sauce and tomato sauce)) '(soy and tomato sauce))
 
 ; firsts
 (define firsts
@@ -52,136 +29,63 @@
       (else (cons (car (car l))
                   (firsts (cdr l)))))))
 
-(firsts '((a b) (c d) (e f)))
+(check-equal? (firsts '((a b) (c d) (e f))) '(a c e))
 
-; insertR first pass
 (define insertR
   (lambda (new old lat)
     (cond
-      ((null? lat) (quote ()))
-      (else
-        (cond
-          ((eq? (car lat) old) (cdr lat))
-          (else (cons (car lat)
-                      (insertR new old
-                               (cdr lat)))))))))
-
-(insertR 'topping 'fudge '(ice cream with fudge for desert))
-
-; insertR second pass
-(define insertR
-  (lambda (new old lat)
-    (cond
-      ((null? lat) (quote ()))
-      (else
-        (cond
-          ((eq? (car lat) old)
-           (cons new (cdr lat )))
-          (else (cons (car lat)
-                      (insertR new old
-                               (cdr lat)))))))))
-
-(insertR 'topping 'fudge '(ice cream with fudge for desert))
-
-; insertR working version
-(define insertR
-  (lambda (new old lat)
-    (cond
-      ((null? lat) (quote ()))
-      (else
-        (cond
-          ((eq? (car lat) old)
-           (cons old
-                 (cons new (cdr lat))))
-          (else (cons (car lat)
-                      (insertR new old
-                               (cdr lat)))))))))
-
-
-(insertR 'topping 'fudge '(ice cream with fudge for desert))
-
-; insertR refactored
-(define insertR
-  (lambda (new old lat)
-    (cond
-      ((null? lat) (quote ()))
-      ((eq? (car lat) old)
+      [(null? lat) (quote ())]
+      [(eq? (car lat) old)
        (cons old
-             (cons new (cdr lat))))
-      (else (cons (car lat)
+             (cons new (cdr lat)))]
+      [else (cons (car lat)
                   (insertR new old
-                           (cdr lat)))))))
+                           (cdr lat)))])))
 
-(insertR 'topping 'fudge '(ice cream with fudge for desert))
+(check-equal? (insertR 'topping 'fudge '(ice cream with fudge for desert))
+              '(ice cream with fudge topping for desert))
 
-; insertL
 (define insertL
   (lambda (new old lat)
     (cond
-      ((null? lat) (quote ()))
-      ((eq? (car lat) old)
-       (cons new
-             (cons old (cdr lat))))
-      (else (cons (car lat)
+      [(null? lat) (quote ())]
+      [(eq? (car lat) old)
+       (cons new lat)]
+      [else (cons (car lat)
                   (insertL new old
-                           (cdr lat)))))))
+                           (cdr lat)))])))
 
-(insertL 'fudge 'topping '(ice cream with topping for desert))
-
-; insertL refactor
-(define insertL
-  (lambda (new old lat)
-    (cond
-      ((null? lat) (quote ()))
-      ((eq? (car lat) old)
-       (cons new lat))
-      (else (cons (car lat)
-                  (insertL new old
-                           (cdr lat)))))))
-
-(insertL 'fudge 'topping '(ice cream with topping for desert))
+(check-equal? (insertL 'fudge 'topping '(ice cream with topping for desert))
+              '(ice cream with fudge topping for desert))
 
 ; subst
 (define subst
   (lambda (new old lat)
     (cond
-      ((null? lat) (quote ()))
-      ((eq? (car lat) old)
-       (cons new (cdr lat)))
-      (else (cons (car lat)
+      [(null? lat) (quote ())]
+      [(eq? (car lat) old)
+       (cons new (cdr lat))]
+      [else (cons (car lat)
                   (subst new old
-                         (cdr lat)))))))
+                         (cdr lat)))])))
 
-(subst 'topping 'fudge '(ice cream with fudge for desert))
-
-; subst2
-(define subst2
-  (lambda (new o1 o2 lat)
-    (cond
-      ((null? lat) (quote ()))
-      ((eq? (car lat) o1)
-       (cons new (cdr lat)))
-      ((eq? (car lat) o2)
-       (cons new (cdr lat)))
-      (else (cons (car lat)
-                  (subst2 new o1 o2
-                          (cdr lat)))))))
-
-(subst2 'vanilla 'chocolate 'banana '(banana ice cream with chocolate topping))
+(check-equal? (subst 'topping 'fudge '(ice cream with fudge for desert))
+              '(ice cream with topping for desert))
 
 ; subst2 refactored
 (define subst2
   (lambda (new o1 o2 lat)
     (cond
-      ((null? lat) (quote ()))
-      ((or (eq? (car lat) o1)
+      [(null? lat) (quote ())]
+      [(or (eq? (car lat) o1)
            (eq? (car lat) o2))
-       (cons new (cdr lat)))
-      (else (cons (car lat)
+       (cons new (cdr lat))]
+      [else (cons (car lat)
                   (subst2 new o1 o2
-                          (cdr lat)))))))
+                          (cdr lat)))])))
 
-(subst2 'vanilla 'chocolate 'banana '(banana ice cream with chocolate topping))
+(check-equal? (subst2 'vanilla 'chocolate 'banana '(banana ice cream with chocolate topping))
+              '(vanilla ice cream with chocolate topping))
 
 ; multirember
 (define multirember
@@ -193,7 +97,8 @@
       (else (cons (car lat)
                   (multirember a (cdr lat)))))))
 
-(multirember 'cup '(coffee cup tea cup and hick cup))
+(check-equal? (multirember 'cup '(coffee cup tea cup and hick cup))
+              '(coffee tea and hick))
 
 ; multiinsertR
 (define multiinsertR
@@ -209,26 +114,10 @@
                   (multiinsertR new old
                                 (cdr lat)))))))
 
-(multiinsertR 'vanilla 'chocolate '(chocolate ice cream sundae with chocolate sauce))
+(check-equal? (multiinsertR 'vanilla 'chocolate '(chocolate ice cream sundae with chocolate sauce))
+              '(chocolate vanilla ice cream sundae with chocolate vanilla sauce))
 
-; multiinsertL first pass
-(define multiinsertL
-  (lambda (new old lat)
-    (cond
-      ((null? lat) (quote ()))
-      ((eq? (car lat) old)
-       (cons new
-             (cons old
-                   ((multiinsertL new old
-                                 lat)))))
-      (else (cons (car lat)
-                  (multiinsertL new old
-                                (cdr lat)))))))
-
-; does not complete
-; (multiinsertL 'fried 'fish '(chips and fish or fish and fried))
-
-; multiinsertL take 2
+; multiinsertL
 (define multiinsertL
   (lambda (new old lat)
     (cond
@@ -242,7 +131,8 @@
                   (multiinsertL new old
                                 (cdr lat)))))))
 
-(multiinsertL 'fried 'fish '(chips and fish or fish and fried))
+(check-equal? (multiinsertL 'fried 'fish '(chips and fish or fish and fried))
+              '(chips and fried fish or fried fish and fried))
 
 ; multisubst
 (define multisubst
@@ -257,4 +147,5 @@
                   (multisubst new old
                               (cdr lat)))))))
 
-(multisubst 'fried 'fish '(chips and fish or fish and fried))
+(check-equal? (multisubst 'fried 'fish '(chips and fish or fish and fried))
+              '(chips and fried or fried and fried))

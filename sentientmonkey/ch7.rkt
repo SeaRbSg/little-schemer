@@ -1,36 +1,9 @@
 #lang racket/base
 
 (require rackunit)
-
-; from preface
-(define atom?
-  (lambda (x)
-    (and (not (pair? x)) (not (null? x)))))
-
-; from ch2
-(define member?
-  (lambda (a lat)
-    (cond
-      [(null? lat) #f]
-      [else (or (eq? (car lat) a)
-                (member? a (cdr lat)))])))
-
-; from ch3
-(define multirember
-  (lambda (a lat)
-    (cond
-      [(null? lat) (quote ())]
-      [(eq? (car lat) a)
-       (multirember a (cdr lat))]
-      [else (cons (car lat)
-                  (multirember a (cdr lat)))])))
-
-(define firsts
-  (lambda (l)
-    (cond
-      [(null? l) (quote ())]
-      [else (cons (car (car l))
-                  (firsts (cdr l)))])))
+(require "prelude.rkt")
+(require "ch2.rkt")
+(require "ch3.rkt")
 
 (define set?
   (lambda (lat)
