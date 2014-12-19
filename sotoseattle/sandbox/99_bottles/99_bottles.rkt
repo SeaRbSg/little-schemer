@@ -28,7 +28,7 @@
 
 (define on_wall
   (lambda (n)
-    (concat (bottles_of_beer n) '(on the wall *))))
+    (concat (bottles_of_beer n) '(on the wall ♬))))
 
 ;;; verses as lines in the song, grouped in chorus
 (define verse_1
@@ -38,8 +38,8 @@
 (define verse_2
   (lambda (n)
     (cond
-      ((eq? n -1) '(Go to the store and buy some more!!!!!!))
-      (else (concat '(* Take one down and pass it around *) (on_wall n))))))
+      ((eq? n -1) '(♬ Go to the store and buy some more!!!!!!))
+      (else (concat '(♪ Take one down and pass it around ♪) (on_wall n))))))
 
 (define chorus
   (lambda (n)
@@ -51,4 +51,4 @@
       ((eq? n -1) '())
       (else (cons (chorus n) (sing (sub1 n)))))))
 
-(sing 99) ;; Bravo!!
+(sing 3) ;; Bravo!!
