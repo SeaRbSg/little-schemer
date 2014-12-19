@@ -3,15 +3,11 @@
 (require "../../lib/shared.rkt")
 (require rackunit)
 
-(define countdown_internals
-  (lambda (n m lan)
-    (cond
-      ((zero? m) lan)
-      (else (countdown_internals (add1 n) (sub1 m) (cons (add1 n) lan))))))
-
 (define countdown
   (lambda (n)
-    (countdown_internals 0 n '(0))))
+    (cond 
+      ((zero? n) '(0))
+      (else (cons n (countdown (sub1 n)))))))
 
 (module+ test
   (check-equal? (countdown 3) '(3 2 1 0)))
