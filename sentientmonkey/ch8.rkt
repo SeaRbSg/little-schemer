@@ -295,15 +295,15 @@
                          (cdr lat)
                          (lambda (newlat L R)
                            (col (cons new
-                                      (cons oldL newlat)
-                                      (add1 L) R))))]
+                                      (cons oldL newlat))
+                                (add1 L) R)))]
       [(eq? (car lat) oldR)
        (multiinsertLR&co new oldL oldR
                          (cdr lat)
                          (lambda (newlat L R)
                            (col (cons oldR
-                                      (cons new newlat)
-                                      L (add1 R)))))]
+                                      (cons new newlat))
+                                L (add1 R))))]
       [else
         (multiinsertLR&co new oldL oldR
                        (cdr lat)
@@ -314,9 +314,8 @@
   (lambda (newlat L R)
     (cons L (cons R newlat))))
 
-; TODO still not working :/
-; (check-equal? (multiinsertLR&co 'salty 'fish 'chips '(chips and fish or fish and chips) result)
-;              '(2 2 chips salty and salty fish or salty fish and chips salty))
+(check-equal? (multiinsertLR&co 'salty 'fish 'chips '(chips and fish or fish and chips) result)
+              '(2 2 chips salty and salty fish or salty fish and chips salty))
 
 (define even?
   (lambda (n)
