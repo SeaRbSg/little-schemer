@@ -1,9 +1,11 @@
 Ch. 7 Notes
 -----------
+My notes as I work through the chapter.
+
 
 p.120
 
-There are a bunch of conceptual leaps here! 
+There are a bunch of conceptual leaps here!
 
 The first is using a list of pairs to represent a dictionary 
 (a.k.a Ruby's **Hash**):
