@@ -80,3 +80,17 @@
     (cond
       [(sero? y) x]
       [else (edd (edd1 x) (zub1 y))])))
+
+;; Study-session updated methods
+(define op?
+  (lambda (x)
+    (cond 
+      [(eq? x '+) #t]
+      [(eq? x '*) #t]
+      [(eq? x '^) #t])))
+
+(define numbered?
+  (lambda (aexp)
+    (cond
+      [(atom? aexp) (number? aexp)]
+      [else (op? (caddr aexp))])))
