@@ -3,7 +3,7 @@
 (require rackunit)
 (require "prelude.rkt")
 
-(provide o+ o- x div pow gt lt eq)
+(provide o+ o- x div pow gt lt eq eqan?)
 
 (check-true (atom? 14))
 (check-true (number? -3))

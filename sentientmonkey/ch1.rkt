@@ -1,45 +1,39 @@
-; from preface
-(define atom?
-  (lambda (x)
-    (and (not (pair? x)) (not(null? x)))))
+#lang racket/base
 
-'atom
-'turkey
-'1492
-'u
-'*abc$
+(require rackunit)
+(require "prelude.rkt")
 
-(car '(((hotdogs)) (and) (pickle) relish))
-(car (car '(((hotdogs)) (and) (pickle) relish)))
-(cdr '(a b c))
-(cdr '(hamburger))
-(cdr '((x) t r))
-(car (cdr '((b) (x y) ((c)))))
-(cdr (cdr '((b) (x y) ((c)))))
+(check-equal? (car '(((hotdogs)) (and) (pickle) relish)) '((hotdogs)))
+(check-equal? (car (car '(((hotdogs)) (and) (pickle) relish))) '(hotdogs))
+(check-equal? (cdr '(a b c)) '(b c))
+(check-equal? (cdr '(hamburger)) '())
+(check-equal? (cdr '((x) t r)) '(t r))
+(check-equal? (car (cdr '((b) (x y) ((c))))) '(x y))
+(check-equal? (cdr (cdr '((b) (x y) ((c))))) '(((c))))
 
-(cons '(banana and) '(peanut butter and jelly))
-(cons '((help) this) '(is very ((hard) to learn)))
-(cons '(a b (c)) '())
-(cons 'a '())
-(cons 'a (car '((b) c d)))
-(cons 'a (cdr '((b) c d)))
+(check-equal? (cons '(banana and) '(peanut butter and jelly)) '((banana and) peanut butter and jelly))
+(check-equal? (cons '((help) this) '(is very ((hard) to learn))) '(((help) this) is very ((hard) to learn)))
+(check-equal? (cons '(a b (c)) '()) '((a b (c))))
+(check-equal? (cons 'a '()) '(a))
+(check-equal? (cons 'a (car '((b) c d))) '(a b))
+(check-equal? (cons 'a (cdr '((b) c d))) '(a c d))
 
-(null? (quote ()))
-(null? '(a b c))
+(check-true (null? (quote ())))
+(check-false (null? '(a b c)))
 
-(atom? 'Harry)
-(atom? (car '(Harry had a heap of apples)))
-(atom? (cdr '(Harry had a heap of apples)))
-(atom? (cdr '(Harry)))
-(atom? (car (cdr '(swing low sweet cherry oat))))
-(atom? (car (cdr '(swing (low sweet) cherry oat))))
+(check-true (atom? 'Harry))
+(check-true (atom? (car '(Harry had a heap of apples))))
+(check-false (atom? (cdr '(Harry had a heap of apples))))
+(check-false (atom? (cdr '(Harry))))
+(check-true (atom? (car (cdr '(swing low sweet cherry oat)))))
+(check-false (atom? (car (cdr '(swing (low sweet) cherry oat)))))
 
-(eq? 'Harry 'Harry)
-(eq? 'margarine 'butter)
-(eq? '() '(strawberry))
-(eq? '6 '7)
-(eq? (car '(Mary had a little lamb chop)) 'Mary)
-(eq? (cdr '(soured mlik)) 'milk)
+(check-true (eq? 'Harry 'Harry))
+(check-false (eq? 'margarine 'butter))
+(check-false (eq? '() '(strawberry)))
+(check-false (eq? '6 '7))
+(check-true (eq? (car '(Mary had a little lamb chop)) 'Mary))
+(check-false (eq? (cdr '(soured milk)) 'milk))
 
-(eq? (cdr '(beans beans we need jelly beans)) (car (cdr '(beans beans we need jelly beans))))
+(check-false (eq? (cdr '(beans beans we need jelly beans)) (car (cdr '(beans beans we need jelly beans)))))
 

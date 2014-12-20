@@ -3,7 +3,7 @@
 (require rackunit)
 (require "prelude.rkt")
 
-(provide member?)
+(provide member? lat?)
 
 ; Chapter 2
 (define lat?

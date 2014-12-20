@@ -1,37 +1,10 @@
 #lang racket
-(require test-engine/racket-tests)
-
-; from preface
-(define atom?
-  (lambda (x)
-    (and (not (pair? x))  (not(null? x)))))
-
-; Chapter 2
-(define lat?
-  (lambda (l)
-    (cond
-      ((null? l) #t)
-      ((atom? (car l)) (lat? (cdr l)))
-      (else #f))))
+(require rackunit)
+(require "prelude.rkt")
+(require "ch2.rkt")
+(require "ch4.rkt")
 
 ; Chapter 4
-; = definition
-(define eq
-  (lambda (n m)
-    (cond
-      ((zero? m) (zero? n))
-      ((zero? n) #f)
-      (else (eq (sub1 n) (sub1 m))))))
-
-(define eqan?
-  (lambda (a1 a2)
-    (cond
-      ((and (number? a1) (number? a2))
-       (eq a1 a2))
-      ((or (number? a1) (number? a2))
-       #f)
-      (else (eq? a1 a2)))))
-
 (define rember*
   (lambda (a l)
     (cond
@@ -45,15 +18,15 @@
       (else (cons (rember* a (car l))
                   (rember* a (cdr l)))))))
 
-(check-expect (rember* 'cup '((coffee) cup ((tea) cup) (and (hick)) cup))
+(check-equal? (rember* 'cup '((coffee) cup ((tea) cup) (and (hick)) cup))
               '((coffee) ((tea)) (and (hick))))
 
-(check-expect (rember* 'sauce '(((tomato sauce)) ((bean) sauce) (and ((flying)) sauce)))
+(check-equal? (rember* 'sauce '(((tomato sauce)) ((bean) sauce) (and ((flying)) sauce)))
               '(((tomato)) ((bean)) (and ((flying)))))
 
-(check-expect (lat? '(((tomato sauce)) ((bean) sauce) (and ((flying)) sauce))) #f)
+(check-equal? (lat? '(((tomato sauce)) ((bean) sauce) (and ((flying)) sauce))) #f)
 
-(check-expect (atom? (car '(((tomato sauce)) ((bean) sauce) (and ((flying)) sauce)))) #f)
+(check-equal? (atom? (car '(((tomato sauce)) ((bean) sauce) (and ((flying)) sauce)))) #f)
 
 (define insertR*
   (lambda (new old l)
@@ -70,7 +43,7 @@
       (else (cons (insertR* new old (car l))
                   (insertR* new old (cdr l)))))))
 
-(check-expect (insertR* 'roast 'chuck
+(check-equal? (insertR* 'roast 'chuck
                        '(((how much (wood))
                               could
                               ((a (wood) chuck))
@@ -96,7 +69,7 @@
       (else (+ (occur* a (car l))
                (occur* a (cdr l)))))))
 
-(check-expect (occur* 'banana '(((banana)
+(check-equal? (occur* 'banana '(((banana)
                                  (split ((((banana ice))
                                           (cream (banana))
                                           sherbert))
@@ -116,7 +89,7 @@
       (else (cons (subst* new old (car l))
                   (subst* new old (cdr l)))))))
 
-(check-expect (subst* 'orange 'banana '(((banana)
+(check-equal? (subst* 'orange 'banana '(((banana)
                                         (split ((((banana ice)))
                                                 (cream (banana))
                                                 sherbert))
@@ -144,7 +117,7 @@
       (else (cons (insertL* new old (car l))
                   (insertL* new old (cdr l)))))))
 
-(check-expect (insertL* 'pecker 'chuck '(((how much (wood))
+(check-equal? (insertL* 'pecker 'chuck '(((how much (wood))
                                          could
                                          ((a (wood) chuck))
                                          (((chuck)))
@@ -167,7 +140,7 @@
          (else (member* a (cdr l)))))
       (else (or (member* a (car l)) (member* a (cdr l)))))))
 
-(check-expect (member* 'chips '((potato) (chips ((with) fish) (chips)))) #t)
+(check-equal? (member* 'chips '((potato) (chips ((with) fish) (chips)))) #t)
 
 (define leftmost
   (lambda (l)
@@ -175,11 +148,11 @@
       ((atom? (car l)) (car l))
       (else (leftmost (car l))))))
 
-(check-expect (leftmost '((potato) (chops ((with fish) (chips))))) 'potato)
+(check-equal? (leftmost '((potato) (chops ((with fish) (chips))))) 'potato)
 
-(check-expect (and (atom? (car '(mozzarella pizza))) (eq? (car '(mozzarella pizza)) 'pizza)) #f)
-(check-expect (and (atom? (car '((mozzarella mushroom) pizza))) (eq? (car '((mozzarella mushroom) pizza)) 'pizza)) #f)
-(check-expect (and (atom? (car '(mozzarella pizza))) (eq? (car '(mozzarella pizza)) 'mozzarella)) #t)
+(check-equal? (and (atom? (car '(mozzarella pizza))) (eq? (car '(mozzarella pizza)) 'pizza)) #f)
+(check-equal? (and (atom? (car '((mozzarella mushroom) pizza))) (eq? (car '((mozzarella mushroom) pizza)) 'pizza)) #f)
+(check-equal? (and (atom? (car '(mozzarella pizza))) (eq? (car '(mozzarella pizza)) 'mozzarella)) #t)
 
 ; first attempt
 (define eqlist?
@@ -194,10 +167,10 @@
       (else (and (eqlist? (car l1) (car l2))
                           (eqlist? (cdr l1) (cdr l2)))))))
 
-(check-expect (eqlist? '(strawberry ice cream) '(strawberry ice cream)) #t)
-(check-expect (eqlist? '(bananna ((split))) '((banana) (split))) #f)
-(check-expect (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((salami)) (and (soda)))) #f)
-(check-expect (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((sausage)) (and (soda)))) #t)
+(check-equal? (eqlist? '(strawberry ice cream) '(strawberry ice cream)) #t)
+(check-equal? (eqlist? '(bananna ((split))) '((banana) (split))) #f)
+(check-equal? (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((salami)) (and (soda)))) #f)
+(check-equal? (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((sausage)) (and (soda)))) #t)
 
 (define equal?
   (lambda (s1 s2)
@@ -206,12 +179,12 @@
       ((or (atom? s1) (atom? s2) #f))
       (else (eqlist? s1 s2)))))
 
-(check-expect (equal? 'atom 'atom) #t)
-(check-expect (equal? 'atom 'anotheratom) #f)
-(check-expect (equal? '(a list of atoms) '(a list of atoms)) #t)
-(check-expect (equal? '(a list of atoms) '(a different  list of atoms)) #f)
-(check-expect (equal? '(a (nested) list of atoms) '(a (nested) list of atoms)) #t)
-(check-expect (equal? '(a (nested) list of atoms) '(a different (nested) list of atoms)) #f)
+(check-equal? (equal? 'atom 'atom) #t)
+(check-equal? (equal? 'atom 'anotheratom) #f)
+(check-equal? (equal? '(a list of atoms) '(a list of atoms)) #t)
+(check-equal? (equal? '(a list of atoms) '(a different  list of atoms)) #f)
+(check-equal? (equal? '(a (nested) list of atoms) '(a (nested) list of atoms)) #t)
+(check-equal? (equal? '(a (nested) list of atoms) '(a different (nested) list of atoms)) #f)
 
 ; rewrite of eqlist?
 (define eqlist2?
@@ -222,10 +195,10 @@
       (else (and (equal? (car l1) (car l2))
                  (eqlist2? (cdr l1) (cdr l2)))))))
 
-(check-expect (eqlist2? '(strawberry ice cream) '(strawberry ice cream)) #t)
-(check-expect (eqlist2? '(bananna ((split))) '((banana) (split))) #f)
-(check-expect (eqlist2? '(beef ((sausage)) (and (soda))) '(beef ((salami)) (and (soda)))) #f)
-(check-expect (eqlist2? '(beef ((sausage)) (and (soda))) '(beef ((sausage)) (and (soda)))) #t)
+(check-equal? (eqlist2? '(strawberry ice cream) '(strawberry ice cream)) #t)
+(check-equal? (eqlist2? '(bananna ((split))) '((banana) (split))) #f)
+(check-equal? (eqlist2? '(beef ((sausage)) (and (soda))) '(beef ((salami)) (and (soda)))) #f)
+(check-equal? (eqlist2? '(beef ((sausage)) (and (soda))) '(beef ((sausage)) (and (soda)))) #t)
 
 ; rember simplified
 (define rember
@@ -235,5 +208,4 @@
       ((equal? (car l) s) (cdr l))
       (else (cons (car l) (rember s (cdr l)))))))
 
-(check-expect (rember 'turkey '(ham turkey and cheese sandwhich)) '(ham and cheese sandwhich))
-(test)
+(check-equal? (rember 'turkey '(ham turkey and cheese sandwhich)) '(ham and cheese sandwhich))
