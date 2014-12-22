@@ -51,6 +51,27 @@
 ;;;;;;;;;;;;; to structure the recursive logic. Test pass for both cases. Am I missing something?
 ;;;;;;;;;;;;; a first difference is that, when using cons, the logic structure determines the order
 ;;;;;;;;;;;;; of stuff showing up in the list (beware)
+;;;;;;;;;;;;; UPDATE: As far as I have seen this symetry is a mirage, sometimes happens sometimes it doesnt
+;;;;;;;;;;;;; a great example of how we cannot take this symetry for granted: 
+
+(define countdown
+  (lambda (n)
+    (cond
+      ((zero? n) '())
+      (else (cons n (countdown (sub1 n)))))))
+
+(define countup
+  (lambda (n acc)
+    (cond
+      ((zero? n) acc)
+      (else (countup (sub1 n) (cons n acc))))))
+
+(module+ test
+  (check-equal? (countdown 3)   '(3 2 1))
+  (check-equal? (countup 3 '()) '(1 2 3)))
+
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
 
 (module+ test
   (check-true (set? (makeset_v2 '(1 2 1 3 1 3 3))))
@@ -167,7 +188,6 @@
 
 (define intersectall
   (lambda (lst)
-    (print lst)
     (cond
       ((null? (cdr lst)) (car lst))
       (else (intersect (car lst) (intersectall (cdr lst)))))))
@@ -215,10 +235,6 @@
 (module+ test
   (check-equal? (firsts '((1 2) (3 4) (5 6))) '(1 3 5)))
 
-; pair     :: a list with 2 s-expressions
-; relation :: a set of pairs
-; fun      :: a list of pairs where the firsts form a set by themselves (this implies that fun is a set of pairs too)
-
 (define fun?
   (lambda (rel)
     (set? (firsts rel))))
@@ -251,27 +267,37 @@
       ((null? rel) rel)
       (else (cons (second (car rel)) (seconds (cdr rel)))))))
 
-(define fullfun?
-  (lambda (rel)
-    (set? (seconds rel))))
+(define fullfun?                                  ; assumes it is already fun
+  (lambda (fun)
+    (set? (seconds fun))))
 
-(define one-to-one?
-  (lambda (rel)
-    (fun? (revrel rel))))
+(define one-to-one?                               ; also assumes it is already fun
+  (lambda (fun)
+    (fun? (revrel fun))))
 
-(define 100%fun? ; goes both ways: set of firsts and set of seconds, which means is a set in three ways, so set for life.
-  (lambda (rel)
-    (and (fun? rel) (fun? (revrel rel)))))
+(define 100%fun?                                  ; without assumtion, takes in a rel, yet goes both ways: 
+  (lambda (rel)                                   ; set of firsts and set of seconds,
+    (and (fun? rel) (fun? (revrel rel)))))        ; which means is a set in three ways, so set for life.
 
-;;  Term     | Meaning
-;;  ----     | ------------------
-;;  pair     | list of 2 s-expressions
-;;  first    | the first element in a pair (car pair)
-;;  second   | idem => (car (cdr pair))
-;;
-;;  relation | set of pairs
-;;
-;;  fun      | aka finite function, a `relation` with added condition:
-;;           | the first elements of all its pairs never repeat (set)
-;;  fullfun  | a `fun` with added condition:
-;;           | the second elements of all its pairs never repeat (set)
+;;;;;;;;;;;;; QUESTION 2: OMG Lito is right. A fun is a hash !!!
+;;;;;;;;;;;;; This surely deserves some talking next Tuesday
+;;;;;;;;;;;;; Here is my atempt at making fun
+
+(define update_fun
+  (lambda (key fun)
+    (cond
+      ((null? fun) fun)
+      ((eq? key (first (car fun))) (cons (build key (add1 (second (car fun)))) (update_fun key (cdr fun))))
+      (else (cons (car fun) (update_fun key (cdr fun)))))))
+
+(define wordcount
+  (lambda (lat fun)
+    (cond
+      ((null? lat) (reverse fun))                                                         ; for readability
+      ((member? (car lat) (firsts fun)) (wordcount (cdr lat) (update_fun (car lat) fun))) ; if car is key in fun add 1
+      (else (wordcount (cdr lat) (cons (build (car lat) 1) fun))))))                      ; else make new pair with  1
+
+(module+ test
+  (check-equal? (update_fun 'b '((a 3) (b 4) (c 5))) '((a 3) (b 5) (c 5)))
+  (check-equal? (wordcount '(a b c d e b a d e f g h a c f b b) '()) '((a 3) (b 4) (c 2) (d 2) (e 2) (f 2) (g 1) (h 1)))
+  (check-equal? (wordcount '(whatever lola wants lola gets) '()) '((whatever 1) (lola 2) (wants 1) (gets 1))))
