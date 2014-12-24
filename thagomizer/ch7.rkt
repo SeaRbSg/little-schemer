@@ -29,10 +29,10 @@
      [else (set? (cdr lat))])))
 
 (test-case "set?"
-           (check-false (set? '(apple peaches apple plum)))
-           (check-true  (set? '(apples peaches pears plums)))
-           (check-true  (set? '()))
-           (check-false (set? '(apple 3 pear 4 9 apple 3 4))))
+           [check-false (set? '(apple peaches apple plum))]
+           [check-true  (set? '(apples peaches pears plums))]
+           [check-true  (set? '())]
+           [check-false (set? '(apple 3 pear 4 9 apple 3 4))])
 
 
 (define makeset
@@ -42,12 +42,12 @@
      [else (cons (car lat) (makeset (multirember (car lat) (cdr lat))))])))
 
 (test-case "makeset"
-           (check-equal? 
+           [check-equal? 
             (makeset '(apple peach pear peach plum apple lemon peach)) 
-            '(apple peach pear plum lemon))
-           (check-equal?
+            '(apple peach pear plum lemon)]
+           [check-equal?
             (makeset '(apple 3 pear 4 9 apple 3 4))
-            '(apple 3 pear 4 9)))
+            '(apple 3 pear 4 9)])
 
 
 ;; (define subset?
@@ -65,9 +65,9 @@
                 (subset? (cdr set1) set2))])))
 
 (test-case "subset?"
-           (check-true (subset? '() '(apple beans)))
-           (check-true  (subset? '(5 chicken wings) '(5 hamburgers 2 pieces fried chicken and light duckling wings)))
-           (check-false (subset? '(4 pounds of horseradish) '(four pounds of chicken and 5 ounces horseradish))))
+           [check-true (subset? '() '(apple beans))]
+           [check-true  (subset? '(5 chicken wings) '(5 hamburgers 2 pieces fried chicken and light duckling wings))]
+           [check-false (subset? '(4 pounds of horseradish) '(four pounds of chicken and 5 ounces horseradish))])
 
 
 (define eqset?
@@ -75,8 +75,8 @@
     (and (subset? set1 set2) (subset? set2 set1))))
 
 (test-case "eqset?"
-           (check-true (eqset? '(6 large chickens with wings)
-                               '(6 chickens with large wings))))
+           [check-true (eqset? '(6 large chickens with wings)
+                               '(6 chickens with large wings))])
 
 ;; (define intersect?
 ;;   (lambda (set1 set2)
@@ -93,9 +93,9 @@
                (intersect? (cdr set1) set2))])))
 
 (test-case "intersect?"
-           (check-not-false (intersect? '(a) '(a b c)))
-           (check-not-false (intersect? '(stewed tomatoes and macaroni)
-                                        '(macaroni and cheese))))
+           [check-not-false (intersect? '(a) '(a b c))]
+           [check-not-false (intersect? '(stewed tomatoes and macaroni)
+                                        '(macaroni and cheese))])
 ;; NOTE: had to use check-not-false here because intersect? returns the first
 ;; no false value
 
@@ -107,9 +107,9 @@
      [else (intersect (cdr set1) set2)])))
 
 (test-case "intersect"
-           (check-equal? (intersect '(stewed tomatoes and macaroni)
+           [check-equal? (intersect '(stewed tomatoes and macaroni)
                                     '(macaroni and cheese))
-                         '(and macaroni)))
+                         '(and macaroni)])
 
 
 (define union
@@ -120,9 +120,9 @@
      [else (cons (car set1) (union (cdr set1) set2))])))
 
 (test-case "union"
-           (check-equal? (union '(stewed tomatoes and macaroni casserole)
+           [check-equal? (union '(stewed tomatoes and macaroni casserole)
                                 '(macaroni and cheese))
-                         '(stewed tomatoes casserole macaroni and cheese)))
+                         '(stewed tomatoes casserole macaroni and cheese)])
 
 
 ;; This is my solution
@@ -166,10 +166,10 @@
      [else #f])))
 
 (test-case "a-pair?"
-           (check-true (a-pair? '(pear pear)))
-           (check-true (a-pair? '(3 7)))
-           (check-true (a-pair? '((2) (pair))))
-           (check-true (a-pair? '(full (house)))))
+           [check-true (a-pair? '(pear pear))]
+           [check-true (a-pair? '(3 7))]
+           [check-true (a-pair? '((2) (pair)))]
+           [check-true (a-pair? '(full (house)))])
 
 
 ;; Given
