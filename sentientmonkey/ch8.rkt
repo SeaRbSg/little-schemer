@@ -310,11 +310,9 @@
                        (lambda (newlat L R)
                          (col (cons (car lat) newlat) L R)))])))
 
-(define result
-  (lambda (newlat L R)
-    (cons L (cons R newlat))))
-
-(check-equal? (multiinsertLR&co 'salty 'fish 'chips '(chips and fish or fish and chips) result)
+(check-equal? (multiinsertLR&co 'salty 'fish 'chips '(chips and fish or fish and chips)
+                (lambda (newlat L R)
+                    (cons L (cons R newlat))))
               '(2 2 chips salty and salty fish or salty fish and chips salty))
 
 (define even?
