@@ -75,8 +75,7 @@
 
 ;;;;;;;;;;;;; QUESTION 2
 ;;;;;;;;;;;;; could we somehow refactor all those +x^ into a single line?
-;;;;;;;;;;;;; the idea would be to extract the operator
-; yes, but it is not in the book. a bit more complex than it looks
+;;;;;;;;;;;;; the idea would be to extract the operator => chapter 8 !!!
 
 (module+ test
   (check-equal? (value '(2 + 3)) 5)
@@ -197,3 +196,6 @@
 
 (module+ test
   (check-false (lat? '(() () ()))))
+
+; needed for importing from other modules
+(provide (all-defined-out))
