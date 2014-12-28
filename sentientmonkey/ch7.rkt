@@ -5,6 +5,8 @@
 (require "ch2.rkt")
 (require "ch3.rkt")
 
+(provide build first second third a-pair? revpair)
+
 (define set?
   (lambda (lat)
     (cond
