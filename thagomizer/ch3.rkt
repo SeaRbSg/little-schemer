@@ -80,20 +80,20 @@
      [else (cons (car lat) (insertL new old (cdr lat)))])))
 
 
-[test-case "insertL"
+(test-case "insertL"
            [check-equal? (insertL 'topping 'fudge '(ice cream with fudge for dessert))
                          '(ice cream with topping fudge for dessert)]
            [check-equal? (insertL 'jalapeño 'and '(tacos tamales and salsa))
                          '(tacos tamales jalapeño and salsa)]
            [check-equal? (insertL 'e 'd '(a b c d f g d h))
-                         '(a b c e d f g d h)]]
+                         '(a b c e d f g d h)])
 
 
 (define subst
   (lambda (new old lat)
     (cond
      [(null? lat) '()]
-     [(Eq? old (car lat)) (cons new (cdr lat))]
+     [(eq? old (car lat)) (cons new (cdr lat))]
      [else (cons (car lat) (subst new old (cdr lat)))])))
 
 (test-case "subst"
