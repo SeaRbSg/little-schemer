@@ -234,3 +234,6 @@
 (module+ test
   (check-equal? (rempick2 1 '(10 20 30)) '(20 30))
   (check-equal? (rempick2 3 '(10 20 30)) '(10 20)))
+
+; needed for importing from other modules
+(provide //)
