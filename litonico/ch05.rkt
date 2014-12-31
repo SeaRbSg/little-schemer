@@ -3,8 +3,7 @@
 (require "prelude.rkt")
 (require rackunit)
 
-(define rember* ;; Recursive rember
-  (lambda (a l)
+(define rember* ;; Recursive rember (lambda (a l)
     (cond
       [(null? l) '()]
       [(atom? (car l))
