@@ -297,3 +297,5 @@
   (check-equal? (update_fun 'b '((a 3) (b 4) (c 5))) '((a 3) (b 5) (c 5)))
   (check-equal? (wordcount '(a b c d e b a d e f g h a c f b b) '()) '((a 3) (b 4) (c 2) (d 2) (e 2) (f 2) (g 1) (h 1)))
   (check-equal? (wordcount '(whatever lola wants lola gets) '()) '((whatever 1) (lola 2) (wants 1) (gets 1))))
+
+(provide (all-defined-out))

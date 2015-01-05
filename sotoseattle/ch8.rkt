@@ -191,7 +191,7 @@
 
 ; easy to get lost, so I'll walk it through
 ; seqrem is => give back just the list
-; insert-g gets 3 args: 
+; insert-g gets 3 args:
 ;   new  => false
 ;   old  => an atom
 ;   list => a list
@@ -435,6 +435,4 @@
 
 (module+ test
   (check-equal? (evens-only*&co '((9 1 2 8) 3 10 ((9 9) 7 6) 2) the-last-friend) '(38 1920 (2 8) 10 (() 6) 2)))
-
-; Needs many passes for review
 
