@@ -139,5 +139,143 @@
 ; no need to code it here, but to follow with paper and pen
 ; another good input for this: http://mvanier.livejournal.com/2897.html
 
-  
-  
+; Here are my notes about it:
+;
+; 1. Why Y?
+;    When we write a recursive function, the gist of it is that the function calls itself
+;    it calls itself
+;    so it has a name, a name that the function calls from isider
+;    The problem is, how do we do that if the function has no name, if it is annonimous?
+;    Y => allows us to do just that.
+;
+; 2. What is Y?
+;    It is just a function. It takes a function as input (argument) and outputs another funtion.
+;    It takes a non-recursive function as input and outputs a funtion that is recursive!!
+;    Aside: what is a combinator? A lambda with no free variables
+;           a lambda that can be substituted for its name and everything is bound
+;
+; 3. How does Y work?
+;    Given the following function
+     (define count
+       (lambda (lat)
+         (cond
+           [(null? lat) 0]
+           [else (add1 (count (cdr lat)))])))
+
+;    this is the same but without tghe recursive call
+;    because of the 11th Commandment (as found by Soto the XXI Century Prophet)
+;    WHEN IN DOUBT => ABSTRACT IT OUT AND MAKE IT A PARAMETER TO THE FUNCTION
+     (define almost-count
+       (lambda (f)
+         (lambda (lat)
+           (cond
+             [(null? lat) 0]
+             [else (add1 (f (cdr lat)))]))))
+
+;    So imagine that we already have the Y function ready to go, we would do:
+;    (Y almost-count) would output a fully functional recursive count, or
+     (define count (Y almost-count))
+;
+; 4. Derivation of Y
+;    lets try to write recursively with almost-count
+;    we are going to need a function that we pass as argument (that freaky f):
+     (define whatever
+       (crash-computer-with-fireworks))
+
+;    the idea here is that we don't care about f, we just want it to be something
+;    that will never be called (bear with me)
+;    then would have that the original definition works for an empty list
+     (define count_empty_list (almost-count whatever))
+
+;    if we want it to work for both empty list and lists with a single element we
+;    would insert again as recursion
+     (define count_up_to_1_element
+       (almost-count
+         (almost-count whatever)))
+
+;    so what we want is something like this
+     (define count_any_list
+       (almost-count
+         (almost-count
+           (almost-count
+             ...
+
+;    Detour: Fixpoint
+;    for a function f, input and output are the same
+;    for f = x^2, 1 is a fixpoint because f(1) = 1, input == output for that value
+;    for a given f, (f fixpoint) = fixpoint
+;    the fixpoint can be a number or a function
+     (almost-count fixpoint) = fixpoint
+
+;    reversing the order
+     fixpoint = (almost-count fixpoint)
+
+;    substituting fixpoint for its expanded version...
+     fixpoint = (almost-count (almost-count fixpoint))
+
+;    again...
+     fixpoint = (almost-count
+                  (almost-count
+                    (almost-count fixpoint))
+;    OMG!!!
+     fixpoint = (almost-count
+                  (almost-count
+                    (almost-count
+                      (almost-count
+                        ...
+
+;    So THE FIXPOINT FUNCTION OF ALMOST-COUNT IS COUNT
+;
+;    How dow we get that fixpoint function?
+;    ...well, we know from before that as we have defined it
+     (Y almost-count) = count
+
+;    , so...
+     (Y f) = fixpoint-of-f
+
+;    and we know that
+     fixpoint = (almost-count fixpoint)
+
+;    so substituting one for the other
+     (Y f) = fixpoint-of-f = (f fixpoint-of-f)
+     (Y f) = (f fixpoint-of-f)
+     (Y f) = (f (Y f))
+
+;    That's it
+     (define (Y f) (f (Y f)))
+
+;    or nicely formatted
+     (define Y
+       (lambda (f)
+         (f (Y f))))
+
+;    but that is for lazy languages. For Scheme or Ruby we need to make it lazy
+;    which means wrapping the function call inside another lambda that doesn't
+;    actually do anything (just delays evaluation untill it's being called)
+     (Y f) = (f (lambda (x) ((Y f) x))) ; or
+
+     (define Y
+       (lambda (f)
+         (f (lambda (x) ((Y f) x)))))
+
+     (define Y (lambda (f) (f (lambda (x) ((Y f) x)))))
+
+;    wrapping up
+     (define count (Y almost-count))
+
+;    substitutiong (Y f) for its definition
+     (define count (almost-count (lambda (x) ((Y almost-count) x))))
+
+;    or going back to our initial count definition
+     (define count
+       (lambda (lat)
+         (cond
+           [(null? lat) 0]
+           [else (add1 ((lambda (x) ((Y almost-count) x)) (cdr lat)))]))
+
+;    Up to this point we have Y, but not the Y Combinator, because Y refers to itself!
+
+; 5. Derivation of the Y Combinator
+
+
+
