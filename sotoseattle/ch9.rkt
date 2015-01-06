@@ -31,6 +31,7 @@
 ; this means => unnatural recursion
 ; the problem of looking is that it may end in an endless loop
 ; because of this => partial function (vs. what we have seen which are total functions)
+; partial means that for some inputs, there is no output (i.e. because never outputs)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define eternity
@@ -57,7 +58,7 @@
   (check-equal? (shift '((a b) c)) '(a (b c)))
   (check-equal? (shift '((a b) (c d))) '(a (b (c d)))))
 
-; input is a pair (where car is also pair), 
+; input is a pair (where car is also pair),
 ; output is a new pair where:
 ;  - 1st element = car of the first element of input (eoi)
 ;  - 2nd element = pair of (2nd of first eoi, whole 2nd eoi)
@@ -129,7 +130,7 @@
   (lambda (x)
     (and (will-stop? last-try) (eternity x))))
 
-; dont even try this at home
+; don't even try this at home
 ; (will-stop? (last-try '()))
 
 ; will-stop? is a function that we can define in our minds, that we can express with words,
@@ -143,16 +144,15 @@
 ;
 ; 1. Why Y?
 ;    When we write a recursive function, the gist of it is that the function calls itself
-;    it calls itself
-;    so it has a name, a name that the function calls from isider
-;    The problem is, how do we do that if the function has no name, if it is annonimous?
+;    so the function has a name, a name that the function itself calls from inside
+;    The problem is, how do we do that if the function has no name, if it is anonymous?
 ;    Y => allows us to do just that.
 ;
 ; 2. What is Y?
-;    It is just a function. It takes a function as input (argument) and outputs another funtion.
-;    It takes a non-recursive function as input and outputs a funtion that is recursive!!
+;    It is just a function. It takes a function as input and outputs another function.
+;    The input function is non-recursive function and the output function is recursive!!
 ;    Aside: what is a combinator? A lambda with no free variables
-;           a lambda that can be substituted for its name and everything is bound
+;           a lambda that can be substituted for its name and everything is defined
 ;
 ; 3. How does Y work?
 ;    Given the following function
@@ -162,8 +162,8 @@
            [(null? lat) 0]
            [else (add1 (count (cdr lat)))])))
 
-;    this is the same but without tghe recursive call
-;    because of the 11th Commandment (as found by Soto the XXI Century Prophet)
+;    this is the same but without the recursive call
+;    because of the 11th Commandment
 ;    WHEN IN DOUBT => ABSTRACT IT OUT AND MAKE IT A PARAMETER TO THE FUNCTION
      (define almost-count
        (lambda (f)
@@ -172,8 +172,8 @@
              [(null? lat) 0]
              [else (add1 (f (cdr lat)))]))))
 
-;    So imagine that we already have the Y function ready to go, we would do:
-;    (Y almost-count) would output a fully functional recursive count, or
+;    So imagine that we already have the Y function ready to go, then
+;    (Y almost-count) would output a fully functional recursive count, as
      (define count (Y almost-count))
 ;
 ; 4. Derivation of Y
@@ -226,7 +226,7 @@
 
 ;    So THE FIXPOINT FUNCTION OF ALMOST-COUNT IS COUNT
 ;
-;    How dow we get that fixpoint function?
+;    How do we get that fixpoint function?
 ;    ...well, we know from before that as we have defined it
      (Y almost-count) = count
 
@@ -251,7 +251,7 @@
 
 ;    but that is for lazy languages. For Scheme or Ruby we need to make it lazy
 ;    which means wrapping the function call inside another lambda that doesn't
-;    actually do anything (just delays evaluation untill it's being called)
+;    actually do anything (just delays evaluation until it's being called)
      (Y f) = (f (lambda (x) ((Y f) x))) ; or
 
      (define Y
@@ -263,7 +263,7 @@
 ;    wrapping up
      (define count (Y almost-count))
 
-;    substitutiong (Y f) for its definition
+;    substituting (Y f) for its definition
      (define count (almost-count (lambda (x) ((Y almost-count) x))))
 
 ;    or going back to our initial count definition
