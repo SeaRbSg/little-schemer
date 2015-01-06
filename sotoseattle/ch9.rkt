@@ -276,6 +276,109 @@
 ;    Up to this point we have Y, but not the Y Combinator, because Y refers to itself!
 
 ; 5. Derivation of the Y Combinator
+;    lets go back to our initial definition
+     (define count
+       (lambda (lat)
+         (cond
+           [(null? lat) 0]
+           [else (add1 (count (cdr lat)))])))
+
+;    we start by applying the 11 commandment
+     (define partial-count
+       (lambda (self lat)
+         (cond
+           [(null? lat) 0]
+           [else (add1 (self (cdr lat)))])))
+
+;    but that is not correct, we need to call it with the extra parameter
+     (define partial-count
+       (lambda (self lat)
+         (cond
+           [(null? lat) 0]
+           [else (add1 (self self (cdr lat)))])))
+
+;    let's make it more clear by separating the arguments
+     (define partial-count
+       (lambda (self)
+         (lambda (lat)
+           (cond
+             [(null? lat) 0]
+             [else (add1 ((self self) (cdr lat)))]))))
 
 
+     ((count count) '(1 2 3))
+     (define count (partial-count partial-count))
+     (count '(1 2 3))
+;    This is a valid definition of count based on partial-count WITHOUT recursion!
+;    BEWARE: this is all for lazy languages, to simplify, for strict ones, just wrap in lambdas
+;
+;    Changing tracks to follow (Y Y) Works! from Mathias Felleisen & Daniel Friedman
+;
+;    so we can do this to wrap everything together in a single expression
+;    (f g) => evaluate f with g as passing argument
+     ((lambda (partial-count)                                 ; <== f
+        (partial-count partial-count))
+      (lambda (partial-count)                                 ; <== g
+        (lambda (lat)
+          (cond
+            [(null? lat) 0]
+            [else (add1 ((partial-count partial-count) (cdr lat)))]))))
+
+;    Lets wrap the (self self) thing in a neutered lambda
+     ((lambda (partial-count)                                 ; <== f
+        (partial-count partial-count))
+      (lambda (partial-count)                                 ; <== g
+        (lambda (lat)
+          (cond
+            [(null? lat) 0]
+            [else (add1 ((lambda (x) ((partial-count partial-count) x)) (cdr lat)))]))))
+
+;    now we move it out
+     ((lambda (partial-count)                                 ; <== f
+        (partial-count partial-count))
+      (lambda (partial-count)                                 ; <== g
+        (
+          (lambda (count)
+            (lambda (lat)
+              (cond
+                [(null? lat) 0]
+                [else (add1 (count (cdr lat)))]))
+          (lambda (x) ((partial-count partial-count) x)))
+        )
+      )
+     )
+
+
+; we can still extract the counter function farther out
+   ((lambda (co)
+     ((lambda (partial-count)                                 ; <== f
+        (partial-count partial-count))
+      (lambda (partial-count)
+        (co (lambda (x) ((partial-count partial-count) x))))))
+     (lambda (count)                                          ; <==g
+       (lambda (lat)
+         (cond
+           [(null? lat) 0]
+           [else (add1 (count (cdr lat)))])))
+   )
+
+; let's separate f
+   (lambda (co)
+     ((lambda (partial-count)
+        (partial-count partial-count))
+      (lambda (partial-count)
+        (co (lambda (x) ((partial-count partial-count) x))))))
+
+; now lets define Y and rename partial-count as f
+     (define Y
+       (lambda (co)
+         ((lambda (f)
+            (f f))
+          (lambda (f)
+            (co (lambda (x) ((f f) x)))))))
+
+; That is the Y Combinator!!!!
+
+; this is the last bit missing !!!
+(f f) == (co (lambda (x) ((f f) x))))
 
