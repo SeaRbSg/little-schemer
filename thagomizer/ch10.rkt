@@ -9,6 +9,8 @@
   (lambda (s1 s2)
     (cons s1 (cons s2 '()))))
 
+;; This chapter
+
 (define new-entry build)
 
 (define lookup-in-entry
@@ -25,13 +27,6 @@
 (test-case "lookup-in-entry"
            [check-equal? (lookup-in-entry 'entree '((appetizer entree beverage) (food tastes good)) (lambda (name) '())) 'tastes]
            [check-equal? (lookup-in-entry 'dessert '((appetizer entree beverage) (food tastes good)) (lambda (name) 3)) 3])
-
-(define table '(((appetizer entree beverage)
-                (pate boeuf vin))
-               ((beverage dessert)
-                ((food is) (number one with us)))))
-
-(define my-table '((a b c) (1 2 3)))
 
 (define extend-table cons)
 
@@ -80,16 +75,16 @@
      [(eq? e 'add1) *const]
      [(eq? e 'sub1) *const]
      [(eq? e 'number?) *const]
-     [else '*identifier])))
+     [else *identifier])))
 
 (define list-to-action
   (lambda (l)
     (cond
-     [(not (atom? (car l))) '*application]
-     [(eq? (car l) 'quote) '*quote]
-     [(eq? (car l) 'lambda) '*lambda]
-     [(eq? (car l) 'cond) '*cond]
-     [else '*application])))
+     [(not (atom? (car l))) *application]
+     [(eq? (car l) 'quote) *quote]
+     [(eq? (car l) 'lambda) *lambda]
+     [(eq? (car l) 'cond) *cond]
+     [else *application])))
 
 (define value
   (lambda (e)
@@ -107,26 +102,130 @@
      [(eq? e #f) #f]
      [else (build 'primitive e)])))
 
+(define *quote
+  (lambda (e table)
+    (text-of e)))
+
+(define text-of second)
+
+(define initial-table
+  (lambda (name)
+    (car '())))
+
+(define *identifier
+  (lambda (e table)
+    (lookup-in-table e table initial-table)))
+
+(define *lambda
+  (lambda (e table)
+    (build 'non-primitive (cons table (cdr e)))))
+
+(define table-of first)
+(define formals-of second)
+(define body-of third)
+
+(define evcon
+  (lambda (lines table)
+    (cond 
+     [(else? (question-of (car lines)))
+      (meaning (answer-of (car lines)) table)]
+     [(meaning (question-of (car lines)) table)
+      (meaning (answer-of (car lines)) table)]
+     [else (evcon (cdr lines) table)])))
+
+(define else? 
+  (lambda (l)
+    (and (atom? l) (eq? l 'else))))
+
+(define question-of first)
+(define answer-of second)
+
+(define *cond
+  (lambda (e table)
+    (evcon (cond-lines-of e) table)))
+
+(define cond-lines-of cdr)
+
+(define evlis
+  (lambda (args table)
+    (cond [(null? args) '()]
+          [else (cons (meaning (car args) table)
+                      (evlis (cdr args) table))])))
+
+(define *application
+  (lambda (e table)
+    (my-apply
+     (meaning (function-of e) table)
+     (evlis (arguments-of e) table))))
+
+(define function-of car)
+(define arguments-of cdr)
+
+(define primitive?
+  (lambda (l)
+    (eq? (first l) 'primitive)))
+
+(define non-primitive?
+  (lambda (l)
+    (eq? (first l) 'non-primitive)))
+
+(define my-apply
+  (lambda (fun vals)
+    (cond
+     [(primitive? fun) (apply-primitive (second fun) vals)]
+     [(non-primitive? fun) (apply-closure (second fun) vals)])))
+
+(define apply-primitive
+  (lambda (name vals)
+    (cond
+     [(eq? name 'cons) (cons (first vals) (second vals))]
+     [(eq? name 'car) (car (first vals))]
+     [(eq? name 'cdr) (cdr (first vals))]
+     [(eq? name 'eq?) (eq? (first vals) (second vals))]
+     [(eq? name 'atom?) (atom? (first vals))]
+     [(eq? name 'zero?) (zero? (first vals))]
+     [(eq? name 'add1) (add1 (first vals))]
+     [(eq? name 'sub1) (sub1 (first vals))]
+     [(eq? name 'number? (number? (first vals)))])))
+
+(define apply-closure
+  (lambda (closure vals)
+    (meaning (body-of closure)
+             (extend-table
+              (new-entry
+               (formals-of closure)
+               vals)
+              (table-of closure)))))
+
 (define type expression-to-action)
 (test-case "type"
-           [check-eq? (type 6) *const]
-           [check-eq? (type #f) *const]
-           [check-eq? (type 'cons) *const]
-           [check-eq? (type '(quote nothing)) '*quote]
-           [check-eq? (type 'nothing) '*identifier]
-           [check-eq? (type '(lambda (x y) (cons x y))) '*lambda]
-           [check-eq? (type '((lambda (nothing) (cond (nothing (quote something)) (else (quote nothing)))) #t)) '*application]
-           [check-eq? (type '(cond (nothing (quote something)) (else (quote onthing)))) '*cond])
+           [check-equal? (type 6) 
+                         *const]
+           [check-equal? (type #f) 
+                         *const]
+           [check-equal? (type 'cons) 
+                         *const]
+           [check-equal? (type '(quote nothing)) *quote]
+           [check-equal? (type 'nothing) *identifier]
+           [check-equal? (type '(lambda (x y) (cons x y))) *lambda]
+           [check-equal? (type '((lambda (nothing) (cond (nothing (quote something)) (else (quote nothing)))) #t)) *application]
+           [check-equal? (type '(cond (nothing (quote something)) (else (quote onthing)))) *cond]
+           [check-equal? (type '(car (quote (a b c)))) *application])
 
 (test-case "value"
-;;            [check-eq? (value '(car (quote (a b c)))) 'a]
-;;            [check-eq? (value '(quote (car (quote (a b c))))) '(car (quote (a b c)))]
-;;            [check-eq? (value '(add1 6)) 7]
-           [check-eq? (value 6) 6]
-;;            [check-eq? (value '(quote nothing)) 'nothing]
-;;            [check-eq? (value 'nothing) '()]
-;;            [check-qual? (value '((lambda (nothig) (cons nothing (quote ())))) (quote (from nothing comes something))) '((from nothing comes something))]
-           [check-eq? (value '#f) #f]
+           [check-equal? (value 6) 6]
+           [check-equal? (value '#f) #f]
+           [check-equal? (value 'cons) '(primitive cons)]
+           [check-equal? (value '(quote nothing)) 'nothing]
+           [check-equal? (value '(quote (car (quote (a b c))))) '(car (quote (a b c)))]
            [check-equal? (value 'car) '(primitive car)]
-           )
+           [check-equal? (value '(car (quote (a b c)))) 'a]
+           [check-equal? (value '(add1 6)) 7]
+           [check-equal? (value '((lambda (nothing)
+                                    (cond [nothing (quote something)]
+                                          [else (quote nothing)])) #t))
+                         'something]
+           [check-equal? (value '((lambda (nothing) (cons nothing (quote ())))
+                         (quote (from nothing comes something))))
+                '((from nothing comes something))])
 
