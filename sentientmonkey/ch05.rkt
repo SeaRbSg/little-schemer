@@ -1,8 +1,8 @@
 #lang racket
 (require rackunit)
 (require "prelude.rkt")
-(require "ch2.rkt")
-(require "ch4.rkt")
+(require "ch02.rkt")
+(require "ch04.rkt")
 
 ; Chapter 4
 (define rember*

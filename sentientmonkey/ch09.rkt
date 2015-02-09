@@ -2,9 +2,9 @@
 
 (require rackunit)
 (require "prelude.rkt")
-(require "ch3.rkt")
-(require "ch4.rkt")
-(require "ch7.rkt")
+(require "ch03.rkt")
+(require "ch04.rkt")
+(require "ch07.rkt")
 
 (define keep-looking
   (lambda (a sorn lat)

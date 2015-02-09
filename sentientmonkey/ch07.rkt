@@ -2,8 +2,8 @@
 
 (require rackunit)
 (require "prelude.rkt")
-(require "ch2.rkt")
-(require "ch3.rkt")
+(require "ch02.rkt")
+(require "ch03.rkt")
 
 (provide build first second third a-pair? revpair)
 

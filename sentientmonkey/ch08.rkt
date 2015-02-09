@@ -2,8 +2,8 @@
 
 (require rackunit)
 (require "prelude.rkt")
-(require "ch4.rkt")
-(require "ch6.rkt")
+(require "ch04.rkt")
+(require "ch06.rkt")
 
 (define remember-f
   (lambda (test?)

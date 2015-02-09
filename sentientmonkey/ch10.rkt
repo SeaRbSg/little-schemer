@@ -2,7 +2,7 @@
 
 (require rackunit)
 (require "prelude.rkt")
-(require "ch7.rkt")
+(require "ch07.rkt")
 
 (define new-entry build)
 

@@ -2,7 +2,7 @@
 
 (require rackunit)
 (require "prelude.rkt")
-(require "ch4.rkt")
+(require "ch04.rkt")
 
 (provide operator 1st-sub-exp 2nd-sub-exp)
 
