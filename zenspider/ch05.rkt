@@ -176,9 +176,14 @@
 
 (module+ test
   (define (test/eqlist myeqlist?)
-    (check-true (myeqlist? '() '()))
-    (check-true (myeqlist? '(a b c) '(a b c)))
-    (check-true (myeqlist? '(a (b) c) '(a (b) c)))
+    (check-true  (myeqlist? '() '()))
+    (check-false (myeqlist? '() '(a)))
+    (check-false (myeqlist? '() '('())))
+    (check-true  (myeqlist? '(a b c) '(a b c)))
+    (check-true  (myeqlist? '(a (b) c) '(a (b) c)))
+
+    (check-false (myeqlist? '(()) '()))
+
     (check-false (myeqlist? '(a b c) '(a b)))
     (check-false (myeqlist? '(a b c) '(a (b) c))))
 
@@ -229,6 +234,21 @@
      [(or  (atom? a) (atom? b)) #f]
      [else (myeqlist3? a b)])))
 
+(module+ test
+  (define (test/myequal myequal?)
+    (check-true  (myequal? 'a 'a))
+    (check-true  (myequal? '() '()))
+    (check-false (myequal? 'a 'b))
+    (check-false (myequal? 'b 'a))
+    (check-false (myequal? 'a '()))
+    (check-false (myequal? '() 'a))
+    (check-true  (myequal? 1 1))
+    (check-true  (myequal? '(a (b) c) '(a (b) c)))
+    (check-false (myequal? '(a b c) '(a b)))
+    (check-false (myequal? '(a b c) '(a (b) c))))
+
+  (test/myequal myequal?))
+
 ;; version with eqan inlined:
 (define myequal2?
   (lambda (a b)
@@ -240,15 +260,7 @@
      [else (myeqlist? a b)]]))
 
 (module+ test
-  (check-true (myequal? 'a 'a))
-  (check-true (myequal? '() '()))
-  (check-false (myequal? 'a 'b))
-  (check-false (myequal? 'b 'a))
-  (check-false (myequal? 'a '()))
-  (check-false (myequal? '() 'a))
-  (check-true (myequal? '(a (b) c) '(a (b) c)))
-  (check-false (myequal? '(a b c) '(a b)))
-  (check-false (myequal? '(a b c) '(a (b) c))))
+  (test/myequal myequal2?))
 
 (define myeqlist?
   (lambda (a b)
@@ -271,6 +283,13 @@
         (cons (car l)
               (rember2 s (cdr l)))])])))
 
+(module+ test
+  (define (test/rember myrember)
+    (check-equal? (myrember 'b '(a b c)) '(a c))
+    (check-equal? (myrember 'd '(a b c)) '(a b c)))
+
+  (test/rember rember2))
+
 ;; pg 95
 (define rember
   (lambda (s l)
@@ -279,3 +298,6 @@
      [(equal? (car l) s) (cdr l)]
      [else (cons (car l)
                  (rember s (cdr l)))])))
+
+(module+ test
+  (test/rember rember))

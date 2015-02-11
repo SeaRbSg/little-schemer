@@ -19,6 +19,7 @@
 
 (module+ test
   (test-case "two-in-a-row?"
+    (check-false (two-in-a-row? '()))
     (check-false (two-in-a-row? '(a b c d)))
     (check-false (two-in-a-row? '(a b a d)))
     (check-true (two-in-a-row? '(a b b d)))

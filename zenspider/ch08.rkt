@@ -22,6 +22,8 @@
                  (rember-f1 test? s (cdr l)))])))
 
 (module+ test
+  (check-equal? (rember-f1 = 5 '())
+                '())
   (check-equal? (rember-f1 = 5 '(6 2 5 3))
                 '(6 2 3))
   (check-equal? (rember-f1 eq? 'jelly '(jelly beans are good))
@@ -58,6 +60,10 @@
 (define rember-eq? (rember-f eq?))
 
 (module+ test
+  (check-equal? (rember-eq? 'tuna '())
+                '())
+  (check-equal? (rember-eq? 'tuna '(tuna salad is good))
+                '(salad is good))
   (check-equal? (rember-eq? 'tuna '(tuna salad is good))
                 '(salad is good))
   (check-equal? ((rember-f eq?) 'tuna
@@ -91,10 +97,14 @@
                         ((insertR-f test?) new old (cdr lat)))]))))
 
 (module+ test
+  (check-equal? ((insertR-f eq?) 'z 'c '())
+                '())
   (check-equal? ((insertR-f eq?) 'z 'c '(a b c d e))
                 '(a b c z d e))
   (check-equal? ((insertR-f eq?) 'e 'd '(a b c d f g d h))
                 '(a b c d e f g d h))
+  (check-equal? ((insertL-f eq?) 'z 'c '())
+                '())
   (check-equal? ((insertL-f eq?) 'z 'c '(a b c d e))
                 '(a b z c d e))
   (check-equal? ((insertL-f eq?) 'e 'd '(a b c d f g d h))
@@ -116,10 +126,14 @@
 (define insertL-fm (insertX-f seqL))
 
 (module+ test
+  (check-equal? ((insertR-fm eq?) 'z 'c '())
+                '())
   (check-equal? ((insertR-fm eq?) 'z 'c '(a b c d e))
                 '(a b c z d e))
   (check-equal? ((insertR-fm eq?) 'e 'd '(a b c d f g d h))
                 '(a b c d e f g d h))
+  (check-equal? ((insertL-fm eq?) 'z 'c '())
+                '())
   (check-equal? ((insertL-fm eq?) 'z 'c '(a b c d e))
                 '(a b z c d e))
   (check-equal? ((insertL-fm eq?) 'e 'd '(a b c d f g d h))
@@ -131,7 +145,7 @@
   (lambda (x)
     (cond [(eq? x '+) +]
           [(eq? x '*) *]
-          [else **])))
+          [else expt])))
 
 (define value4
   (lambda (exp)
@@ -143,8 +157,9 @@
        (value4 (2nd-sub-exp exp)))])))
 
 (module+ test
-  (check-true (eq? 4 (value4 '(+ 1 3))))
-  (check-true (eq? 13 (value4 '(+ 1 (* 3 4))))))
+  (check-true (eq? 4  (value4 '(+ 1 3))))
+  (check-true (eq? 13 (value4 '(+ 1 (* 3 4)))))
+  (check-true (eq? 9  (value4 '(+ 1 (^ 2 3))))))
 
 (define multirember-f
   (lambda (test?)
@@ -156,7 +171,7 @@
                         ((multirember-f test?) a (cdr lat)))]))))
 
 (module+ test
-  (check-equal? '(a c d e) (multirember 'b '(b a b c b d b e b))))
+  (check-equal? '(a c d e) ((multirember-f equal?) 'b '(b a b c b d b e b))))
 
 ;; pg 137
 
@@ -200,33 +215,38 @@
           [else (cons (car lat)
                       (multiinsertLR new oldL oldR (cdr lat)))])))
 
+(module+ test
+  (check-equal? (multiinsertLR 'a 'b 'c '())      '())
+  (check-equal? (multiinsertLR 'a 'b 'c '(b))     '(a b))
+  (check-equal? (multiinsertLR 'a 'b 'c '(c))     '(c a))
+  (check-equal? (multiinsertLR 'a 'b 'c '(d e f)) '(d e f)))
+
 (define multiinsertLR&co
   (lambda (new oldL oldR lat col)
-    (cond [(null? lat) '()]
+    (cond [(null? lat) (col '() 0 0)]
           [(eq? (car lat) oldL)
-           (cons new
-                 (cons oldL
-                       (multiinsertLR&co new oldL oldR (cdr lat)
-                                         (lambda (newlat L R)
-                                           (col (cons new
-                                                      (cons oldL
-                                                            newlat))
-                                                (add1 L) R)))))]
+           (multiinsertLR&co new oldL oldR (cdr lat)
+                             (lambda (newlat L R)
+                               (col (cons new (cons oldL newlat))
+                                    (add1 L) R)))]
           [(eq? (car lat) oldR)
-           (cons oldR
-                 (cons new
-                       (multiinsertLR&co new oldL oldR (cdr lat)
-                                         (lambda (newlat L R)
-                                           (col (cons oldR
-                                                      (cons new
-                                                            newlat))
-                                                L (add1 R))))))]
-          [else (cons (car lat)
-                      (multiinsertLR&co new oldL oldR (cdr lat)
-                                        (lambda (newlat L R)
-                                          (col (cons (car lat)
-                                                     newlat)
-                                               L R))))])))
+           (multiinsertLR&co new oldL oldR (cdr lat)
+                             (lambda (newlat L R)
+                               (col (cons oldR (cons new newlat))
+                                    L (add1 R))))]
+          [else
+           (multiinsertLR&co new oldL oldR (cdr lat)
+                             (lambda (newlat L R)
+                               (col (cons (car lat) newlat)
+                                    L R)))])))
+
+(module+ test
+  (check-equal? (multiinsertLR&co 'salty 'fish 'chips
+                                  '(chips and fish or fish and chips)
+                                  (lambda (newlat L R)
+                                    (cons L (cons R newlat))))
+                '(2 2 chips salty and salty fish or salty fish and chips salty))
+  )
 
 ;; I don't get where this is going at all... I'm gonna try to go
 ;; faster to get to the next section.
@@ -273,8 +293,8 @@
 
 ;; pg 151
 
-(define eternity
-  (lambda (x) (eternity x)))
+;; (define eternity
+;;   (lambda (x) (eternity x)))
 
 ;; pg 152
 
@@ -297,6 +317,11 @@
            (align (shift pora))]
           [else (build (first pora)
                        (align (second pora)))])))
+
+(module+ test
+  (check-equal? (align 42) 42)
+  ;; ugh
+  )
 
 (define length*
   (lambda (pora)

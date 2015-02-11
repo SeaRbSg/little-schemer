@@ -114,10 +114,13 @@
          (intersect? (cdr set1) set2)))))
 
 (module+ test
-  (check-true  (intersect? '(a b c d) '(d c e)))
-  (check-false (intersect? '(a b c) '(d e f)))
-  (check-false (intersect? '() '(d c e)))
-  (check-false (intersect? '(d c e) '())))
+  (define (test/intersect intersect?)
+    (check-true  (intersect? '(a b c d) '(d c e)))
+    (check-false (intersect? '(a b c) '(d e f)))
+    (check-false (intersect? '() '(d c e)))
+    (check-false (intersect? '(d c e) '())))
+  (test/intersect intersect?)
+  (test/intersect intersect1?))
 
 ;; pg 116
 
@@ -188,7 +191,13 @@
           [else #f])))
 
 (module+ test
-  (check-true (a-pair? '(full (house)))))
+  (check-true  (a-pair? '(full (house))))
+  (check-false (a-pair? 42))
+  (check-false (a-pair? '()))
+  (check-false (a-pair? '(a)))
+  (check-true  (a-pair? '(a b)))
+  (check-false (a-pair? '(a b c)))
+  )
 
 ;; pg 119
 
@@ -240,8 +249,13 @@
 (define seconds
   (lambda (l)
     (cond [(null? l) '()]
-          [else (cons (cadr l)
+          [else (cons (cadar l)
                       (seconds (cdr l)))])))
+
+(module+ test
+  (check-equal? (seconds '()) '())
+  (check-equal? (seconds '((a b))) '(b))
+  (check-equal? (seconds '((a b) (c d))) '(b d)))
 
 (define fullfun?
   (lambda (fun)

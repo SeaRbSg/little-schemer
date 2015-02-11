@@ -1,21 +1,24 @@
 task :default => :test
 
+def files
+  n = ENV["N"]
+  f = (n && "ch%02d.rkt" % n.to_i) || ENV["F"] || "ch*.rkt"
+end
+
 task :test do
-  sh "time raco test --direct *.rkt"
+  sh "time raco test --direct #{files}"
 end
 
 task :slow do
-  sh "time raco test *.rkt"
+  sh "time raco test #{files}"
 end
 
 task :run do
-  n = ENV["N"]
-  f = (n && "ch%02d.rkt" % n.to_i) || ENV["F"] or raise "rake run F=<path>"
-  sh "time raco test #{f}"
+  sh "time raco test #{files}"
 end
 
 task :cov do
-  sh "raco cover ch*.rkt"
+  sh "raco cover #{files}"
 end
 
 task :clean do
