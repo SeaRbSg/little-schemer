@@ -64,6 +64,8 @@
                       (insertR new old (cdr lat)))])))
 
 (module+ test
+  (check-equal? (insertR 'z 'q '(a b c d e))
+                '(a b c d e))
   (check-equal? (insertR 'z 'c '(a b c d e))
                 '(a b c z d e))
   (check-equal? (insertR 'e 'd '(a b c d f g d h))
@@ -81,6 +83,8 @@
                       (insertL new old (cdr lat)))])))
 
 (module+ test
+  (check-equal? (insertL 'z 'q '(a b c d e))
+                '(a b c d e))
   (check-equal? (insertL 'z 'c '(a b c d e))
                 '(a b z c d e))
   (check-equal? (insertL 'e 'd '(a b c d f g d h))
@@ -95,6 +99,8 @@
                       (subst new old (cdr lat)))])))
 
 (module+ test
+  (check-equal? (subst 'z 'q '(a b c))
+                '(a b c))
   (check-equal? (subst 'z 'b '(a b c))
                 '(a z c)))
 

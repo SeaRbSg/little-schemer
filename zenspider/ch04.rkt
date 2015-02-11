@@ -21,10 +21,12 @@
 (define ++
   (lambda (m n)
     (cond [(zero? n) m]
-          [else (+ (add1 m) (sub1 n))])))
+          [else (++ (add1 m) (sub1 n))])))
 
 (module+ test
   (check-equal? (++ 3 4)
+                7)
+  (check-equal? (++ 4 3)
                 7))
 
 ;; pg 61
@@ -133,6 +135,8 @@
           [else (** n (^^ n (sub1 exp)))])))
 
 (module+ test
+  (check-equal? (^^ 5 0)
+                1)
   (check-equal? (^^ 1 1)
                 1)
   (check-equal? (^^ 2 3)
@@ -213,6 +217,13 @@
     (cond [(and (number? a1) (number? a2)) (= a1 a2)]
           [(and (atom? a1) (atom? a2)) (eq? a1 a2)]
           [else #f])))
+
+(module+ test
+  (check-false (eqan? 1 2))
+  (check-true (eqan? 2 2))
+  (check-true (eqan? 'a 'a))
+  (check-false (eqan? 'a 'b))
+  (check-false (eqan? 1 '(why))))
 
 (define occur
   (lambda (a lat)
