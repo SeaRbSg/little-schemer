@@ -5,7 +5,7 @@
 (require "ch02.rkt")
 (require "ch03.rkt")
 
-(provide build first second third a-pair? revpair)
+(provide build first second third a-pair? revpair union)
 
 (define set?
   (lambda (lat)
@@ -271,3 +271,4 @@
     (fun? (revrel rel))))
 
 (check-false (one-to-one? '((grape raisin) (plum prune) (stewed prune))))
+

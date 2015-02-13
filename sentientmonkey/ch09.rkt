@@ -6,6 +6,8 @@
 (require "ch04.rkt")
 (require "ch07.rkt")
 
+(provide Y)
+
 (define keep-looking
   (lambda (a sorn lat)
     (cond

@@ -5,7 +5,9 @@
 (require "ch04.rkt")
 (require "ch06.rkt")
 
-(define remember-f
+(provide rember-f)
+
+(define rember-f
   (lambda (test?)
     (lambda (a l)
       (cond
@@ -13,11 +15,11 @@
         [(test? (car l) a) (cdr l)]
         [else
           (cons (car l)
-                ((remember-f test?) a (cdr l)))]))))
+                ((rember-f test?) a (cdr l)))]))))
 
-(check-equal? ((remember-f =) 5 '(6 2 5 3)) '(6 2 3))
-(check-equal? ((remember-f eq?) 'jelly '(jelly beans are good)) '(beans are good))
-(check-equal? ((remember-f equal?) '(pop corn) '(lemonade (pop corn) and (cake))) '(lemonade and (cake)))
+(check-equal? ((rember-f =) 5 '(6 2 5 3)) '(6 2 3))
+(check-equal? ((rember-f eq?) 'jelly '(jelly beans are good)) '(beans are good))
+(check-equal? ((rember-f equal?) '(pop corn) '(lemonade (pop corn) and (cake))) '(lemonade and (cake)))
 
 (define eq?-c
   (lambda (a)
@@ -33,10 +35,10 @@
 (check-true (eq?-salad 'salad))
 (check-false (eq?-salad 'tuna))
 
-(check-equal? ((remember-f eq?) 'tuna '(shrimp salad and tuna salad))
+(check-equal? ((rember-f eq?) 'tuna '(shrimp salad and tuna salad))
               '(shrimp salad and salad))
 
-(check-equal? ((remember-f eq?) 'eq? '(equal? eq? eqan? eqlist? epair?))
+(check-equal? ((rember-f eq?) 'eq? '(equal? eq? eqan? eqlist? epair?))
               '(equal? eqan? eqlist? epair?))
 
 (define insertL-f
