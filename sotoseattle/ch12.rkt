@@ -107,10 +107,185 @@
 
 ; THE TWELFTH COMMANDMENT: Use letrec to remove arguments that don't change in recursion
 
+;;;;; BREATHE ;;;;;
+
+; write rember for atoms
+
+(define rember-atom
+  (lambda (a lat)
+    (cond
+      [(null? lat) lat]
+      [(eq? a (car lat)) (cdr lat)]
+      [else (cons (car lat) (rember-atom a (cdr lat)))])))
+
+(module+ test
+  [check-equal? (rember-atom 'a '(1 2 a 3 a 4 a a)) '(1 2 3 a 4 a a)])
+
+; ...generalize for all S-expressions by passing the testing function as argument
+
+(define rember-f
+  (lambda (test?)
+    (lambda (a lat)
+      (cond
+        [(null? lat) lat]
+        [(test? a (car lat)) (cdr lat)]
+        [else (cons (car lat) ((rember-f test?) a (cdr lat)))]))))
+
+(module+ test
+  [check-equal? ((rember-f eq?) '1 '(1 2 3 4 1)) '(2 3 4 1)])
+
+; ...do the same for multirember
+
+(define my-multirember-f
+  (lambda (test?)
+    (lambda (a lat)
+      (cond
+        [(null? lat) lat]
+        [(test? a (car lat)) ((my-multirember-f test?) a (cdr lat))]
+        [else (cons (car lat) ((my-multirember-f test?) a (cdr lat)))]))))
 
 
+(module+ test
+  [check-equal? ((my-multirember-f eq?) 'a '(v a c a w a)) '(v c w)]
+  [check-equal? ((my-multirember-f eq?) 'sardines '(sardines)) '()])
+
+; can we letreccify it (considering that (my-multirember-f test?) doesn't change)
+; very easy, just remember that the letrec returns a value, which can be a function
+; that abbreviates our call (my-multirember-f test?)
+
+(define my-multirember-f2
+  (lambda (test?)
+    (letrec
+        ((m-f (lambda (a lat)
+                 (cond
+                   [(null? lat) lat]
+                   [(test? a (car lat)) (m-f a (cdr lat))]
+                   [else (cons (car lat) (m-f a (cdr lat)))]))))
+       m-f)))
 
 
+(module+ test
+  [check-equal? ((my-multirember-f2 eq?) 'a '(v a c a w a)) '(v c w)]
+  [check-equal? ((my-multirember-f2 eq?) 'sardines '(sardines)) '()])
 
+; another
+; write member?
 
+(define my-member?
+  (lambda (a lat)
+    (cond
+      [(null? lat) #f]
+      [(eq? a (car lat)) #t]
+      [else (my-member? a (cdr lat))])))
+
+; a does not change => letreccify
+
+(define member-v1?
+  (lambda (a lat)
+    (letrec
+        ((includes? (lambda (l)
+                      (cond
+                        [(null? l) #f]
+                        [(eq? a (car l)) #t]
+                        [else (includes? (cdr l))]))))
+      (includes? lat))))
+
+; write it too with in ((letrec format
+
+(define member-v2?
+  (lambda (a lat)
+    ((letrec
+        ((includes? (lambda (l)
+                      (cond
+                        [(null? l) #f]
+                        [(eq? a (car l)) #t]
+                        [else (includes? (cdr l))]))))
+      includes?)
+     lat)))
+
+(module+ test
+  [check-true (member-v1? '1 '(9 2 3 1 0))]
+  [check-true (member-v2? '1 '(9 2 3 1 0))])
+
+;;;;; BREATHE ;;;;;
+
+; another
+; write union of sets
+
+(define my-union
+  (lambda (s1 s2)
+    (cond
+      [(null? s1) s2]
+      [(member-v1? (car s1) s2) (my-union (cdr s1) s2)]
+      [else (my-union (cdr s1) (cons (car s1) s2))])))
+
+; no, not that way, the other dyslexic way!
+
+(define my-union-v2
+  (lambda (s1 s2)
+    (cond
+      [(null? s1) s2]
+      [(member-v1? (car s1) s2) (my-union-v2 (cdr s1) s2)]
+      [else (cons (car s1) (my-union-v2 (cdr s1) s2))])))
+
+(module+ test
+  [check-equal? (my-union '(1 2 3 4) '(2 4 6 8)) '(3 1 2 4 6 8)]
+  [check-equal? (my-union-v2 '(1 2 3 4) '(2 4 6 8)) '(1 3 2 4 6 8)])
+
+; in this version s2 never changes (we just use it to compare) => letreccify
+
+(define union-v1
+  (lambda (s1 s2)
+    (letrec
+        ((+ (lambda (set)
+              (cond
+                [(null? set) s2]
+                [(member-v2? (car set) s2) (+ (cdr set))]
+                [else (cons (car set) (+ (cdr set)))]))))
+      (+ s1))))
+
+(define union-v2
+  (lambda (s1 s2)
+    ((letrec
+        ((+ (lambda (set)
+              (cond
+                [(null? set) s2]
+                [(member-v2? (car set) s2) (+ (cdr set))]
+                [else (cons (car set) (+ (cdr set)))]))))
+       +)
+     s1)))
+
+(module+ test
+  [check-equal? (union-v1 '(1 2 3 4) '(2 4 6 8)) '(1 3 2 4 6 8)]
+  [check-equal? (union-v2 '(1 2 3 4) '(2 4 6 8)) '(1 3 2 4 6 8)])
+
+; outside
+; (+ 1 2) => 3
+; (+ '(1 2) '(3 4)) => error - not numbers
+; DOUBT => Does this means that the (+ defined above only exists inside that union-v1 lambda?
+
+; for completly different...
+; since member-v2? is references inside the lambda => this is a potential for mischieve
+; push it inside the letrec too with double parens (easy)
+
+(define union-v3
+  (lambda (s1 s2)
+    (letrec
+        ((+ (lambda (set)
+              (cond
+                [(null? set) s2]
+                [(in? (car set) s2) (+ (cdr set))]
+                [else (cons (car set) (+ (cdr set)))])))
+         (in? (lambda (a l)
+                      (cond
+                        [(null? l) #f]
+                        [(eq? a (car l)) #t]
+                        [else (in? a (cdr l))])))
+         )
+      (+ s1))))
+
+(module+ test
+  [check-equal? (union-v3 '(1 2 3 4) '(2 4 6 8)) '(1 3 2 4 6 8)])
+
+; THE THIRTEEN COMMANDMENT: Letreccify to hide and protect functions
 
