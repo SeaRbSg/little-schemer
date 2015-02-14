@@ -277,10 +277,10 @@
                 [(in? (car set) s2) (+ (cdr set))]
                 [else (cons (car set) (+ (cdr set)))])))
          (in? (lambda (a l)
-                      (cond
-                        [(null? l) #f]
-                        [(eq? a (car l)) #t]
-                        [else (in? a (cdr l))])))
+              (cond
+                [(null? l) #f]
+                [(eq? a (car l)) #t]
+                [else (in? a (cdr l))])))
          )
       (+ s1))))
 
@@ -289,3 +289,155 @@
 
 ; THE THIRTEEN COMMANDMENT: Letreccify to hide and protect functions
 
+; but we have not finished with union because the fucking elephant is never happy!!
+; let's get rid of the in? call to a fixed 'a
+
+(define union-v4
+  (lambda (s1 s2)
+    (letrec
+        ((+ (lambda (set)
+              (cond
+                [(null? set) s2]
+                [(in? (car set) s2) (+ (cdr set))]
+                [else (cons (car set) (+ (cdr set)))])))
+         (in? 
+          (lambda (a lat)
+            (letrec 
+                ((? (lambda (lali)
+                     (cond
+                       [(null? lali) #f]
+                       [(eq? a (car lali)) #t]
+                       [else (? (cdr lali))]))))
+              (? lat))))
+         )
+      (+ s1))))
+
+(module+ test
+  [check-equal? (union-v4 '(1 2 3 4) '(2 4 6 8)) '(1 3 2 4 6 8)])
+
+; QUESTION: Why this last refactoring? Is better organized but it adds lines. Doing this in a massive scale
+; can make the code a letrecfest difficult to understand.
+
+;;;;; BREATHE ;;;;;
+
+; Let's go now to te way we defined functions in Ch 11. Start copying two-in-a-row
+
+(define two-in-a-row-b?
+  (lambda (preceding lat)
+    (cond
+      [(null? lat) #f]
+      [else
+       (or (eq? preceding (car lat))
+       (two-in-a-row-b? (car lat) (cdr lat)))])))
+
+(define two-in-a-row-a?
+  (lambda (lat)
+    (cond
+      [(null? lat) #f]
+      [else (two-in-a-row-b? (car lat) (cdr lat))])))
+
+(module+ test
+  [check-true (two-in-a-row-a? '(b c a a s e))])
+
+; letreccify
+
+(define two-in-a-row?
+  (lambda (lat)
+    (letrec
+        ((æ? (lambda (pre l)
+               (cond
+                 [(null? l) #f]
+                 [else
+                  (or (eq? pre (car l))
+                      (æ? (car l) (cdr l)))]))))
+      (cond                                         ; \
+        [(null? lat) #f]                            ;  | All this is the value returned by the letrec!!!
+        [else (æ? (car lat) (cdr lat))]))))         ; /
+
+(module+ test
+  [check-true (two-in-a-row? '(b c a a s e))])
+
+; beautiful, now chapter 11 makes sense. We can create local functions inside the scope of more publicly
+; available ones and minimize complexity.
+
+; we can re-assemble lines
+
+(define two-in-a-row-v2?
+  (letrec
+      ((æ? (lambda (pre l)
+             (cond
+               [(null? l) #f]
+               [else
+                (or (eq? pre (car l))
+                    (æ? (car l) (cdr l)))]))))
+    (lambda (lat)
+      (cond                                         ; \
+        [(null? lat) #f]                            ;  | All this is the value returned by the letrec!!!
+        [else (æ? (car lat) (cdr lat))]))))         ; /
+
+(module+ test
+  [check-true (two-in-a-row-v2? '(b c a a s e))])
+
+; protect sum-of-prefixes
+
+(define sum-of-prefixes
+  (letrec
+      ((Σ (lambda (accsum tup)
+            (cond
+              [(null? tup) tup]
+              [else (cons (+ (car tup) accsum)
+                          (Σ (+ (car tup) accsum) (cdr tup)))]))))
+    (lambda (tup)
+      (Σ 0 tup))))
+
+(module+ test
+  (check-equal? (sum-of-prefixes '(1 1 1 1 1)) '(1 2 3 4 5)))
+
+; and finally, scramble!
+
+(define scramble-v1
+  (letrec
+      ((pick (lambda (n lat)
+            (cond
+              [(eq? n '1) (car lat)]
+              [else (pick (- n 1) (cdr lat))])))
+       (experiment (lambda (wtf lat)
+            (cond
+              ((null? lat) lat)
+              (else 
+               (cons (pick (car lat) (cons (car lat) wtf))
+                     (experiment (cons (car lat) wtf) (cdr lat))))))))
+    (lambda (lat)
+      (experiment '() lat))))
+
+(module+ test
+  (check-equal? (scramble-v1 '(1 1 1 3 4 2 1 1 9 2)) '(1 1 1 1 1 4 1 1 1 9))
+  (check-equal? (scramble-v1 '(1 2 3 4 5 6 7 8 9 10)) '(1 1 1 1 1 1 1 1 1 1))
+  (check-equal? (scramble-v1 '(1 2 3 1 2 3 4 1 8 2 10)) '(1 1 1 1 1 1 1 1 2 8 2)))
+
+; it would be better with pick inside experiment
+
+
+(define scramble-v2
+  (letrec
+      ((X
+        (letrec
+            ((pick (lambda (n l)
+                     (cond
+                       [(eq? n '1) (car l)]
+                       [else (pick (- n 1) (cdr l))]))))
+          (lambda (wtf l)
+            (cond
+              ((null? l) l)
+              (else (and
+                     (cons (pick (car l) (cons (car l) wtf))
+                           (X (cons (car l) wtf) (cdr l))))))))))
+    (lambda (lat)
+      (X '() lat))))
+
+(module+ test
+  (check-equal? (scramble-v2 '(1 1 1 3 4 2 1 1 9 2)) '(1 1 1 1 1 4 1 1 1 9))
+  (check-equal? (scramble-v2 '(1 2 3 4 5 6 7 8 9 10)) '(1 1 1 1 1 1 1 1 1 1))
+  (check-equal? (scramble-v2 '(1 2 3 1 2 3 4 1 8 2 10)) '(1 1 1 1 1 1 1 1 2 8 2)))
+
+; now since I used ch11 to code game of life, all is left to do is to letreccify GoL
