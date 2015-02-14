@@ -12,9 +12,6 @@
 (define (y-coord cell)
     (car (cdr cell)))
 
-(define (same-cell? c1 c2)
-    (and (eq? (x-coord c1) (x-coord c2)) (eq? (y-coord c1) (y-coord c2))))
-
 (define uniq  ; remove duplicate cells in a list
   (lambda (lat)
     (cond
@@ -58,9 +55,13 @@
 
 (define include?
   (lambda (cell board)
-    (cond
-      [(null? board) #f]
-      [else (or (same-cell? cell (car board)) (include? cell (cdr board)))])))
+    (letrec
+      ((==? (lambda (c2) (and (eq? (x-coord cell) (x-coord c2)) (eq? (y-coord cell) (y-coord c2)))))
+       (in? (lambda (l)
+              (cond
+                [(null? l) #f]
+                [else (or (==? (car l)) (in? (cdr l)))]))))
+      (in? board))))
 
   (module+ test
     [check-true (include? '(1 1) '((0 0) (2 1) (1 1) (-1 -1)))]
