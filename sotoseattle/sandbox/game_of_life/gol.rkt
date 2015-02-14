@@ -112,49 +112,38 @@
 
 ; Rule 2: say if a dead cell will be alive after a tick of the clock ----------
 
-(define raise?
-  (lambda (cell board)
-    (cond
-      [(eq? 3 (living-neigbors cell board)) #t]
-      [else #f])))
-
-; get the perimeter of all living cells ---------------------------------------
-
-(define perimeter-cells
-  (lambda (board potentials living)
-    (cond
-      [(null? board) potentials]
-      [else (perimeter-cells (cdr board)
-                               (cell-cons (neighbors (car board)) potentials living)
-                               living)])))
-
-; special cons for cells removing living ones ---------------------------------
-
-(define cell-cons
-  (lambda (latofcells lat living)
-    (cond
-      [(null? latofcells) lat]
-      [(include? (car latofcells) living) (cell-cons (cdr latofcells) lat living)]
-      [else (cell-cons (cdr latofcells) (cons (car latofcells) lat) living)])))
-
-(define potential-cells
-  (lambda (board)
-    (uniq (perimeter-cells board '() board))))
-
 (define new-living-cells
-  (lambda (board)
-    (new-living-cells-b (potential-cells board) board)))
+  (lambda (living)
+    (letrec
+      ((perimeter (lambda (space possibles)
+         (letrec
+             ((cell-cons
+               (lambda (l1 l2)
+                 (cond
+                   [(null? l1) l2]
+                   [(include? (car l1) living) (cell-cons (cdr l1) l2)]
+                   [else (cell-cons (cdr l1) (cons (car l1) l2))]))))
+           (cond
+             [(null? space) possibles]
+             [else (perimeter (cdr space) (cell-cons (neighbors (car space)) possibles))])
+           )))
+       (rec (lambda (maybe)
+          (letrec
+              ((raise? (lambda (cell)
+                 (cond
+                   [(eq? 3 (living-neigbors cell living)) #t]
+                   [else #f])))
+               (germinate (lambda (potentials)
+                 (cond
+                   [(null? potentials) potentials]
+                   [(raise? (car potentials)) (cons (car potentials) (rec (cdr potentials)))]
+                   [else (rec (cdr potentials))]))))
+            (germinate maybe)))))
+      (rec (uniq (perimeter living '()))))))
 
-  (define new-living-cells-b
-    (lambda (potentials living)
-    (cond
-      [(null? potentials) potentials]
-      [(raise? (car potentials) living) (cons (car potentials) (new-living-cells-b (cdr potentials) living))]
-      [else (new-living-cells-b (cdr potentials) living)])))
-
-  (module+ test
-    (check-equal? (new-living-cells '((0 0) (0 1) (0 2))) '((-1 1) (1 1)))
-    (check-equal? (new-living-cells '((0 0) (0 1) (1 0))) '((1 1))))
+(module+ test
+  (check-equal? (new-living-cells '((0 0) (0 1) (0 2))) '((-1 1) (1 1)))
+  (check-equal? (new-living-cells '((0 0) (0 1) (1 0))) '((1 1))))
 
 ; Both rules together to create the new board ---------------------------------
 ; uncomment to use
@@ -204,7 +193,7 @@
                          (* (y-coord (car living-cells)) SIDE)
                          (draw-board-on-empty-scene (cdr living-cells)))])))
 
-;(big-bang SEED
-;          (on-tick tick-of-the-clock 0.3)
-;          (to-draw draw-board-on-empty-scene))
+(big-bang SEED
+          (on-tick tick-of-the-clock 0.3)
+          (to-draw draw-board-on-empty-scene))
 
