@@ -19,14 +19,6 @@
       [(include? (car lat) (cdr lat)) (uniq (cdr lat))]
       [else (cons (car lat) (uniq (cdr lat)))])))
 
-  (module+ test
-    (check-equal? (uniq '((0 1))) '((0 1)))
-    (check-equal? (uniq '((0 -1) (1 1) (1 -1) (2 1) (2 0) (2 -1) (-1 2)
-                          (-1 1) (-1 0) (0 2) (1 2) (1 1) (-1 1) (-1 0)
-                          (-1 -1) (0 -1) (1 1) (1 -1)))
-                  '((2 1) (2 0) (2 -1) (-1 2) (0 2) (1 2) (-1 1) (-1 0)
-                    (-1 -1) (0 -1) (1 1) (1 -1))))
-
 (define add-lats  ; just add two lists of cells
   (lambda (lat1 lat2)
     (cond
@@ -48,9 +40,6 @@
     (cons (cons (- x 1) (cons y '()))
     (cons (cons (- x 1) (cons (+ y 1) '())) '()))))))))))
 
-  (module+ test
-    (check-equal? (neighbors '(0 0)) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1))))
-
 ; does a board include a specific cell? ---------------------------------------
 
 (define include?
@@ -63,29 +52,17 @@
                 [else (or (==? (car l)) (in? (cdr l)))]))))
       (in? board))))
 
-  (module+ test
-    [check-true (include? '(1 1) '((0 0) (2 1) (1 1) (-1 -1)))]
-    [check-true (include? '(1 1) '((1 1)))]
-    [check-false (include? '(1 1) '())]
-    [check-false (include? '(1 1) '((2 2)))]
-    )
-
 ; count the number of living neighbors around a cell --------------------------
 
 (define living-neigbors
   (lambda (cell living)
-    (living-neighbors-b 0 (neighbors cell) living)))
-
-  (define living-neighbors-b
-    (lambda (n cells living)
-      (cond
-        [(null? cells) n]
-        [(include? (car cells) living) (living-neighbors-b (+ n 1) (cdr cells) living)]
-        [else (living-neighbors-b n (cdr cells) living)])))
-
-  (module+ test
-    [check-equal? 2 (living-neigbors '(0 0) '((0 0) (2 1) (1 1) (-1 -1)))]
-    [check-equal? 8 (living-neigbors '(0 0) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1)))])
+    (letrec
+      ((rec (lambda (n cells)
+          (cond
+            [(null? cells) n]
+            [(include? (car cells) living) (rec (+ n 1) (cdr cells))]
+            [else (rec n (cdr cells))]))))
+      (rec 0 (neighbors cell)))))
 
 ; Rule 1: say if a cell will be alive after a tick of the clock ---------------
 
@@ -105,10 +82,6 @@
               (survivors board new-board)))))
      (lambda (board)
        (rec board board '()))))
-
-  (module+ test
-    (check-equal? (staying-alive '((0 0) (0 1) (1 0))) '((1 0) (0 1) (0 0)))
-    (check-equal? (staying-alive '((0 0) (0 1) (0 2))) '((0 1))))
 
 ; Rule 2: say if a dead cell will be alive after a tick of the clock ----------
 
@@ -141,7 +114,24 @@
             (germinate maybe)))))
       (rec (uniq (perimeter living '()))))))
 
+;;;;;;;;; TESTS 
+
 (module+ test
+  (check-equal? (uniq '((0 1))) '((0 1)))
+  (check-equal? (uniq '((0 -1) (1 1) (1 -1) (2 1) (2 0) (2 -1) (-1 2)
+                        (-1 1) (-1 0) (0 2) (1 2) (1 1) (-1 1) (-1 0)
+                        (-1 -1) (0 -1) (1 1) (1 -1)))
+                      '((2 1) (2 0) (2 -1) (-1 2) (0 2) (1 2) (-1 1) (-1 0)
+                        (-1 -1) (0 -1) (1 1) (1 -1)))
+  (check-equal? (neighbors '(0 0)) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1)))
+  [check-true   (include? '(1 1) '((0 0) (2 1) (1 1) (-1 -1)))]
+  [check-true   (include? '(1 1) '((1 1)))]
+  [check-false  (include? '(1 1) '())]
+  [check-false  (include? '(1 1) '((2 2)))]
+  [check-equal? 2 (living-neigbors '(0 0) '((0 0) (2 1) (1 1) (-1 -1)))]
+  [check-equal? 8 (living-neigbors '(0 0) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1)))]
+  (check-equal? (staying-alive '((0 0) (0 1) (1 0))) '((1 0) (0 1) (0 0)))
+  (check-equal? (staying-alive '((0 0) (0 1) (0 2))) '((0 1)))
   (check-equal? (new-living-cells '((0 0) (0 1) (0 2))) '((-1 1) (1 1)))
   (check-equal? (new-living-cells '((0 0) (0 1) (1 0))) '((1 1))))
 
@@ -163,13 +153,6 @@
 
 ; VISUALIZATION ---------------------------------------------------------------
 
-(define tick-of-the-clock
-  (lambda (render_board)
-    (uniq (add-lats (new-living-cells render_board) (staying-alive render_board)))))
-
-(define COLOR "firebrick")
-(define WIDTH 800)
-(define SIDE 16)
 (define SEED '((6 18)  (6 19)  (6 31)  (6 32)  (7 18)  (7 19)  (7 31)  (7 32)  (10 13) (10 37) (11 12)
                (11 14) (11 20) (11 30) (11 36) (11 38) (12 11) (12 14) (12 20) (12 22) (12 23)
                (12 27) (12 28) (12 30) (12 36) (12 39) (13 12) (13 13) (13 24) (13 26) (13 37)
@@ -182,18 +165,25 @@
                (35 38) (36 11) (36 14) (36 20) (36 22) (36 23) (36 27) (36 28) (36 30) (36 36) (36 39)
                (37 12) (37 14) (37 20) (37 30) (37 36) (37 38) (38 13) (38 37) (41 18) (41 19) (41 31)
                (41 32) (42 18) (42 19) (42 31) (42 32)))
+(define WIDTH 800)
+(define SIDE 16)
+(define COLOR "firebrick")
+(define GREYISH (make-color  245  245 245))
 (define WTF (rectangle (- SIDE 1) (- SIDE 1) "solid" COLOR))
 
-(define draw-board-on-empty-scene
+(define tick-of-the-clock
+  (lambda (render_board)
+    (uniq (add-lats (new-living-cells render_board) (staying-alive render_board)))))
+
+(define draw-board
   (lambda (living-cells)
     (cond
-      [(null? living-cells) (empty-scene WIDTH WIDTH (make-color  245  245 245))]
+      [(null? living-cells) (empty-scene WIDTH WIDTH GREYISH)]
       [else (place-image WTF
                          (* (x-coord (car living-cells)) SIDE)
                          (* (y-coord (car living-cells)) SIDE)
-                         (draw-board-on-empty-scene (cdr living-cells)))])))
+                         (draw-board (cdr living-cells)))])))
 
 (big-bang SEED
           (on-tick tick-of-the-clock 0.3)
-          (to-draw draw-board-on-empty-scene))
-
+          (to-draw draw-board))
