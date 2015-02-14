@@ -3,14 +3,25 @@
 (require 2htdp/universe)
 (require 2htdp/image)
 
-
 ; Cell Utility Functions ------------------------------------------------------
 
-(define (x-coord cell)
-    (car cell))
+(define (x-coord cell) 
+  (car cell))
 
 (define (y-coord cell)
-    (car (cdr cell)))
+  (car (cdr cell)))
+
+(define include?  ; does a board include a specific cell?
+  (lambda (cell list)
+    (letrec
+      ((==? (lambda (c2) 
+          (and (eq? (x-coord cell) (x-coord c2)) 
+               (eq? (y-coord cell) (y-coord c2)))))
+       (in? (lambda (l)
+          (cond
+            [(null? l) #f]
+            [else (or (==? (car l)) (in? (cdr l)))]))))
+      (in? list))))
 
 (define uniq  ; remove duplicate cells in a list
   (lambda (lat)
@@ -19,15 +30,7 @@
       [(include? (car lat) (cdr lat)) (uniq (cdr lat))]
       [else (cons (car lat) (uniq (cdr lat)))])))
 
-(define add-lats  ; just add two lists of cells
-  (lambda (lat1 lat2)
-    (cond
-      [(null? lat1) lat2]
-      [else (cons (car lat1) (add-lats (cdr lat1) lat2))])))
-
-; 8 neighboring cells around a cell -------------------------------------------
-
-(define neighbors
+(define adj  ; 8 adjacent neighboring cells around a cell
   (lambda (cell)
     (define x (x-coord cell))
     (define y (y-coord cell))
@@ -40,21 +43,7 @@
     (cons (cons (- x 1) (cons y '()))
     (cons (cons (- x 1) (cons (+ y 1) '())) '()))))))))))
 
-; does a board include a specific cell? ---------------------------------------
-
-(define include?
-  (lambda (cell board)
-    (letrec
-      ((==? (lambda (c2) (and (eq? (x-coord cell) (x-coord c2)) (eq? (y-coord cell) (y-coord c2)))))
-       (in? (lambda (l)
-              (cond
-                [(null? l) #f]
-                [else (or (==? (car l)) (in? (cdr l)))]))))
-      (in? board))))
-
-; count the number of living neighbors around a cell --------------------------
-
-(define living-neigbors
+(define n-adj-alive  ; count the number of living neighbors around a cell
   (lambda (cell living)
     (letrec
       ((rec (lambda (n cells)
@@ -62,33 +51,36 @@
             [(null? cells) n]
             [(include? (car cells) living) (rec (+ n 1) (cdr cells))]
             [else (rec n (cdr cells))]))))
-      (rec 0 (neighbors cell)))))
+      (rec 0 (adj cell)))))
 
-; Rule 1: say if a cell will be alive after a tick of the clock ---------------
+; Rule 1: when a cell will remains alive after a tick of the clock ------------
 
-(define staying-alive
+(define stay-alive
   (letrec
      ((rec (lambda (board living new-board)
             (letrec
-              ((alive? (lambda (cell)
-                 (cond
-                   [(or (eq? 2 (living-neigbors cell living)) (eq? 3 (living-neigbors cell living))) #t]
-                   [else #f])))
-               (survivors (lambda (old new)
-                 (cond
-                   [(null? old) new]
-                   [(alive? (car old)) (survivors (cdr old) (cons (car old) new))]
-                   [else (survivors (cdr old) new)]))))
+              ((survivors
+                (letrec
+                    ((alive? (lambda (cell)
+                        (cond
+                          [(eq? 2 (n-adj-alive cell living)) #t]
+                          [(eq? 3 (n-adj-alive cell living)) #t]
+                          [else #f]))))
+                    (lambda (old new)
+                      (cond
+                        [(null? old) new]
+                        [(alive? (car old)) (survivors (cdr old) (cons (car old) new))]
+                        [else (survivors (cdr old) new)])))))
               (survivors board new-board)))))
      (lambda (board)
        (rec board board '()))))
 
-; Rule 2: say if a dead cell will be alive after a tick of the clock ----------
+; Rule 2: when a dead cell becomes alive after a tick of the clock ------------
 
-(define new-living-cells
+(define become-alive
   (lambda (living)
     (letrec
-      ((perimeter (lambda (space possibles)
+      ((perimeter (lambda (alive potentials)
          (letrec
              ((cell-cons
                (lambda (l1 l2)
@@ -96,23 +88,25 @@
                    [(null? l1) l2]
                    [(include? (car l1) living) (cell-cons (cdr l1) l2)]
                    [else (cell-cons (cdr l1) (cons (car l1) l2))]))))
-           (cond
-             [(null? space) possibles]
-             [else (perimeter (cdr space) (cell-cons (neighbors (car space)) possibles))])
+             (cond
+               [(null? alive) potentials]
+               [else (perimeter (cdr alive) (cell-cons (adj (car alive)) potentials))])
            )))
-       (rec (lambda (maybe)
+       (germinate
           (letrec
-              ((raise? (lambda (cell)
-                 (cond
-                   [(eq? 3 (living-neigbors cell living)) #t]
-                   [else #f])))
-               (germinate (lambda (potentials)
-                 (cond
-                   [(null? potentials) potentials]
-                   [(raise? (car potentials)) (cons (car potentials) (rec (cdr potentials)))]
-                   [else (rec (cdr potentials))]))))
-            (germinate maybe)))))
-      (rec (uniq (perimeter living '()))))))
+              ((rec (lambda (potentials)
+                 (letrec
+                     ((raise? (lambda (cell)
+                         (cond
+                           [(eq? 3 (n-adj-alive cell living)) #t]
+                           [else #f]))))
+                   (cond
+                     [(null? potentials) potentials]
+                     [(raise? (car potentials)) (cons (car potentials) (germinate (cdr potentials)))]
+                     [else (germinate (cdr potentials))])))))
+              (lambda (maybe)
+                (rec maybe)))))
+      (germinate (uniq (perimeter living '()))))))
 
 ;;;;;;;;; TESTS 
 
@@ -123,33 +117,17 @@
                         (-1 -1) (0 -1) (1 1) (1 -1)))
                       '((2 1) (2 0) (2 -1) (-1 2) (0 2) (1 2) (-1 1) (-1 0)
                         (-1 -1) (0 -1) (1 1) (1 -1)))
-  (check-equal? (neighbors '(0 0)) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1)))
+  (check-equal? (adj '(0 0)) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1)))
   [check-true   (include? '(1 1) '((0 0) (2 1) (1 1) (-1 -1)))]
   [check-true   (include? '(1 1) '((1 1)))]
   [check-false  (include? '(1 1) '())]
   [check-false  (include? '(1 1) '((2 2)))]
-  [check-equal? 2 (living-neigbors '(0 0) '((0 0) (2 1) (1 1) (-1 -1)))]
-  [check-equal? 8 (living-neigbors '(0 0) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1)))]
-  (check-equal? (staying-alive '((0 0) (0 1) (1 0))) '((1 0) (0 1) (0 0)))
-  (check-equal? (staying-alive '((0 0) (0 1) (0 2))) '((0 1)))
-  (check-equal? (new-living-cells '((0 0) (0 1) (0 2))) '((-1 1) (1 1)))
-  (check-equal? (new-living-cells '((0 0) (0 1) (1 0))) '((1 1))))
-
-; Both rules together to create the new board ---------------------------------
-; uncomment to use
-
-;(define time-passes
-;  (lambda (n board)
-;    (cond
-;      [(zero? n) (print 'bye)]
-;      [else (and
-;             (print board)
-;             (time-passes (- n 1)
-;                          (uniq (add-lats (new-living-cells board)
-;                                          (staying-alive board)))))])))
-;
-;(time_passes 10 '((0 0) (0 1) (0 2)))
-;(time_passes 3 '((0 0) (0 1) (1 0)))
+  [check-equal? 2 (n-adj-alive '(0 0) '((0 0) (2 1) (1 1) (-1 -1)))]
+  [check-equal? 8 (n-adj-alive '(0 0) '((1 -1) (1 0) (1 1) (0 -1) (0 1) (-1 -1) (-1 0) (-1 1)))]
+  (check-equal? (stay-alive '((0 0) (0 1) (1 0))) '((1 0) (0 1) (0 0)))
+  (check-equal? (stay-alive '((0 0) (0 1) (0 2))) '((0 1)))
+  (check-equal? (become-alive '((0 0) (0 1) (0 2))) '((-1 1) (1 1)))
+  (check-equal? (become-alive '((0 0) (0 1) (1 0))) '((1 1))))
 
 ; VISUALIZATION ---------------------------------------------------------------
 
@@ -172,8 +150,13 @@
 (define WTF (rectangle (- SIDE 1) (- SIDE 1) "solid" COLOR))
 
 (define tick-of-the-clock
-  (lambda (render_board)
-    (uniq (add-lats (new-living-cells render_board) (staying-alive render_board)))))
+  (letrec
+      ((+ (lambda (l1 l2)
+           (cond
+             [(null? l1) l2]
+             [else (cons (car l1) (+ (cdr l1) l2))]))))
+      (lambda (render_board)
+        (uniq (+ (become-alive render_board) (stay-alive render_board))))))
 
 (define draw-board
   (lambda (living-cells)
