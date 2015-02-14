@@ -89,24 +89,22 @@
 
 ; Rule 1: say if a cell will be alive after a tick of the clock ---------------
 
-(define alive?
-  (lambda (cell board)
-    (cond
-      [(or (eq? 2 (living-neigbors cell board)) (eq? 3 (living-neigbors cell board))) #t]
-      [else #f])))
-
-; new list with living cells after a tick (only apply Rule 1) -----------------
-
 (define staying-alive
-  (lambda (board)
-    (staying-alive-b board board '())))
-
-  (define staying-alive-b
-    (lambda (board living new_board)
-      (cond
-        [(null? board) new_board]
-        [(alive? (car board) living) (staying-alive-b (cdr board) living (cons (car board) new_board))]
-        [else (staying-alive-b (cdr board) living new_board)])))
+  (letrec
+     ((rec (lambda (board living new-board)
+            (letrec
+              ((alive? (lambda (cell)
+                 (cond
+                   [(or (eq? 2 (living-neigbors cell living)) (eq? 3 (living-neigbors cell living))) #t]
+                   [else #f])))
+               (survivors (lambda (old new)
+                 (cond
+                   [(null? old) new]
+                   [(alive? (car old)) (survivors (cdr old) (cons (car old) new))]
+                   [else (survivors (cdr old) new)]))))
+              (survivors board new-board)))))
+     (lambda (board)
+       (rec board board '()))))
 
   (module+ test
     (check-equal? (staying-alive '((0 0) (0 1) (1 0))) '((1 0) (0 1) (0 0)))
@@ -206,7 +204,7 @@
                          (* (y-coord (car living-cells)) SIDE)
                          (draw-board-on-empty-scene (cdr living-cells)))])))
 
-(big-bang SEED
-          (on-tick tick-of-the-clock 0.3)
-          (to-draw draw-board-on-empty-scene))
+;(big-bang SEED
+;          (on-tick tick-of-the-clock 0.3)
+;          (to-draw draw-board-on-empty-scene))
 
