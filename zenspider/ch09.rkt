@@ -2,6 +2,8 @@
 
 (require "lib/shared.rkt")
 
+(provide (rename-out [Y4 Y]))
+
 (module+ test
   (require rackunit))
 

@@ -77,14 +77,11 @@
 
 ;;;; Seasoned Schemer:
 
-;; 11th commandment: Use additional arguments when a function needs to
-;;                   know what other arguments to the function have
-;;                   been so far.
+;; pg 11: 11th: Use additional arguments when a function needs to know
+;;              what other arguments to the function have been so far.
 
-;;; 12th Commandment
-;;
-;; Use (letrec ...) to remove arguments that do not change for
-;; recursive applications
+;; pg 22: 12th: Use (letrec ...) to remove arguments that do not
+;;              change for recursive applications
 
 ;;; 13th Commandment
 ;;
