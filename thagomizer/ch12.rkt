@@ -285,23 +285,21 @@
            [check-equal? (sum-of-prefixes '()) '()])
 
 
-(define pick
-  (lambda (n lat)
-    (cond
-     [(eq? n 1) (car lat)]
-     [else (pick (sub1 n) (cdr lat))])))
-
 (define scramble 
   (lambda (tup)
     (letrec
-        ((P (lambda (tup rev-pre)
+        [(pick (lambda (n lat)
+                 (cond
+                  [(eq? n 1) (car lat)]
+                  [else (pick (sub1 n) (cdr lat))])))
+         (P (lambda (tup rev-pre)
               (cond
                [(null? tup) '()]
                [else 
                 (cons (pick (car tup)
                             (cons (car tup) rev-pre))
                       (P (cdr tup)
-                         (cons (car tup) rev-pre)))]))))
+                         (cons (car tup) rev-pre)))])))]
       (P tup '()))))
 
 (test-case "scramble"
