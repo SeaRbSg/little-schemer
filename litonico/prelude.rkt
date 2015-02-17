@@ -22,3 +22,15 @@
     (cond
       [(zero? (sub1 n)) (car lat)]
       [else (pick (sub1 n) (cdr lat))])))
+
+(provide build)
+
+(define build
+  (lambda (x y)
+    (cons x (cons y '()))))
+
+(provide first)
+(define first car)
+
+(provide second)
+(define second cadr)
