@@ -70,8 +70,7 @@
   [check-equal? (intersectall-v2 '()) '()]
   [check-equal? (intersectall-v2 '((3 mangos and) (3 kiwis and) (3 hamburgers))) '(3)]
   [check-equal? (intersectall-v2 '((3 steaks and) (no food and) (three baked potatoes) (3 diet hamburgers))) '()]
-  [check-equal? (intersectall-v2 '((3 mangoes and) () (3 diet hamburgers))) '()]
-)
+  [check-equal? (intersectall-v2 '((3 mangoes and) () (3 diet hamburgers))) '()])
 
 ; in the last test we have an empty set '(), and we know that automatically we could stop and say
 ; that the intersectall is empty (saving us some work) ==> we use letcc
@@ -113,8 +112,6 @@
 ; (intersect (car lset) (intersectall-v2 (cdr lset)))
 ; but we could also shortcircuit the recursion when the second set is empty => (intersectall-v2 (cdr lset))
 ; change (intersect to take that into consideration
-
-
 
 ; this helps but doesn't solve the whole problem because in (intersectall...) what we want is to exit directly
 ; do two things:
@@ -178,8 +175,7 @@
         ;(cond
         ;  [(null? list-of-sets) '()]
         ;  [else (∩∩ list-of-sets)])
-        (∩∩ list-of-sets)
-        ))))
+        (∩∩ list-of-sets)))))
 
 ; STEP 2
 ; now we can get rid of top level letrec !!
@@ -204,8 +200,7 @@
                 [(null? list-of-sets) '()]
                 [(null? (cdr list-of-sets)) (car list-of-sets)]
                 [else (intersect (car list-of-sets) (intersectall-v6 (cdr list-of-sets)))])))))
-        ;(∩∩ list-of-sets)
-        ;)))
+        ;(∩∩ list-of-sets))))
 
 ; FINAL FORM REFACTORED :: beautiful!
 
@@ -235,3 +230,69 @@
   [check-equal? (intersectall-v7 '((3 steaks and) (no food and) (three baked potatoes) (3 diet hamburgers))) '()]
   [check-equal? (intersectall-v7 '((3 mangoes and) () (3 diet hamburgers))) '()])
 
+;;;;;; BREATHE ;;;;;;;
+
+; write rember letreccified
+
+(define rember-original
+  (lambda (a lat)
+    (cond
+      [(null? lat) lat]
+      [(eq? a (car lat)) (cdr lat)]
+      [else (cons (car lat) (rember-original a (cdr lat)))])))
+
+(define rember
+  (lambda (a lat)
+    (letrec
+        ((✄ (lambda (l)
+            (cond
+              [(null? l) l]
+              [(eq? a (car l)) (cdr l)]
+              [else (cons (car l) (✄ (cdr l)))]))))
+        (✄ lat))))
+
+(module+ test
+  [check-equal? (rember '2 '(1 2 3)) '(1 3)])
+  
+; write rember-beyond-first (which is a shitty name so I will call it slice-upto
+
+(define slice-upto
+  (lambda (a lat)
+    (letrec
+        ((✄ (lambda (l)
+            (cond
+              [(null? l) '()]
+              [(eq? a (car l)) '()]
+              [else (cons (car l) (✄ (cdr l)))]))))
+        (✄ lat))))
+
+(module+ test
+  [check-equal? (slice-upto 'roots '(noodles wtf bla ouch roots potatoes yam others rice)) 
+                                   '(noodles wtf bla ouch)]
+  [check-equal? (slice-upto 'rice  '(noodles wtf bla ouch roots potatoes yam others rice)) 
+                                   '(noodles wtf bla ouch roots potatoes yam others)]
+  [check-equal? (slice-upto 'pepes '(noodles wtf bla ouch roots potatoes yam others rice)) 
+                                   '(noodles wtf bla ouch roots potatoes yam others rice)])
+
+; now write the complementary slice-beyond
+; I want to go over each atom of the list, and when we find it, we restart!
+; if not, we return the whole list
+
+(define slice-beyond
+  (lambda (a lat)
+    (let/cc reset
+      (letrec
+          ((✄ (lambda (l)
+              (cond
+                [(null? l) l]
+                [(eq? a (car l)) (reset (✄ (cdr l)))]
+                [else (cons (car l) (✄ (cdr l)))]))))
+          (✄ lat)))))
+
+(module+ test
+  [check-equal? (slice-beyond 'roots '(noodles wtf bla ouch roots potatoes yam others rice)) 
+                                     '(potatoes yam others rice)]
+  [check-equal? (slice-beyond 'rice  '(noodles wtf bla ouch roots potatoes yam others rice)) 
+                                     '()]
+  [check-equal? (slice-beyond 'pepes '(noodles wtf bla ouch roots potatoes yam others rice))
+                                     '(noodles wtf bla ouch roots potatoes yam others rice)])
