@@ -262,7 +262,7 @@
 ; outside
 ; (+ 1 2) => 3
 ; (+ '(1 2) '(3 4)) => error - not numbers
-; DOUBT => Does this means that the (+ defined above only exists inside that union-v1 lambda?
+; This means that the (+ defined above only exists inside that union-v1 lambda
 
 ; for completly different...
 ; since member-v2? is references inside the lambda => this is a potential for mischieve
@@ -314,9 +314,6 @@
 
 (module+ test
   [check-equal? (union-v4 '(1 2 3 4) '(2 4 6 8)) '(1 3 2 4 6 8)])
-
-; QUESTION: Why this last refactoring? Is better organized but it adds lines. Doing this in a massive scale
-; can make the code a letrecfest difficult to understand.
 
 ;;;;; BREATHE ;;;;;
 
