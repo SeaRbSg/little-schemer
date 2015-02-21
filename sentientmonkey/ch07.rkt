@@ -5,7 +5,7 @@
 (require "ch02.rkt")
 (require "ch03.rkt")
 
-(provide build first second third a-pair? revpair union)
+(provide build first second third a-pair? revpair union intersect)
 
 (define set?
   (lambda (lat)
