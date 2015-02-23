@@ -43,3 +43,29 @@
                               (2 4)
                               (1 2 3)))
               '(2))
+
+
+(define rember-beyond-first
+  (lambda (a lat)
+    (letrec
+        [(R (lambda (lat)
+              (cond [(null? lat) '()]
+                    [(eq? (car lat) a) '()]
+                    [else (cons (car lat)
+                                (R (cdr lat)))])))]
+      (R lat))))
+
+(check-equal? (rember-beyond-first 'caramel '(cookies chocolate mints caramel delign ginger))
+              '(cookies chocolate mints))
+
+(define rember-upto-last
+  (lambda (a lat)
+    (let/cc skip
+            (letrec [(R (lambda (lat)
+                          (cond [(null? lat) '()]
+                                [(eq? (car lat) a) (skip (R (cdr lat)))]
+                                [else (cons (car lat) (R (cdr lat)))])))]
+              (R lat)))))
+
+(check-equal? (rember-upto-last 'roots '(noodles spahgetti spatzle roots potatoes yam others rice))
+              '(potatoes yam others rice))
