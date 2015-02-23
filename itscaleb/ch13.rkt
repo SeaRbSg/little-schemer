@@ -1,4 +1,5 @@
 #lang racket
+(require rackunit)
 
 (define member?
   (lambda (a lat)
@@ -12,19 +13,33 @@
 
 (define intersect
   (lambda (set1 set2)
-    (letrec
-        [(I (lambda (set)
-              (cond [(null? set) '()]
-                    [(member? (car set) set2)
-                     (cons (car set)
-                           (I (cdr set)))]
-                    [else
-                     (I (cdr set))])))]
+    (letrec [(I (lambda (set)
+                  (cond [(null? set) '()]
+                        [(member? (car set) set2)
+                         (cons (car set)
+                               (I (cdr set)))]
+                        [else
+                         (I (cdr set))])))]
       (I set1))))
 
 (define intersectall
   (lambda (lset)
-    (cond [(null? (cdr lset)) (car lset)]
-          [else
-           (intersect (car lset)
-                      (intersectall (cdr lset)))])))
+    (let/cc hop
+            (letrec 
+                [(I (lambda (lset)
+                      (cond [(null? (car lset)) (hop '())]
+                            [(null? (cdr lset)) (car lset)]
+                            [else
+                             (intersect (car lset)
+                                        (intersectall (cdr lset)))])))]
+              (cond [(null? lset) '()]
+                    [else (I lset)])))))
+
+(check-equal? (intersectall '((1 2 3)
+                              ()
+                              (1 2 3)))
+              '())
+(check-equal? (intersectall '((1 2 3)
+                              (2 4)
+                              (1 2 3)))
+              '(2))
