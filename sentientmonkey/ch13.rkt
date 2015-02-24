@@ -14,7 +14,8 @@
             [else (I (cdr set1))]))])
     (I set1)))
 
-(check-equal? (intersect '(tomatoes and macaroni) '(macaroni and cheese)) '(and macaroni))
+(test-case "intersect"
+    (check-equal? (intersect '(tomatoes and macaroni) '(macaroni and cheese)) '(and macaroni)))
 
 (define (intersectall-1 lset)
   (cond
@@ -23,20 +24,21 @@
     [else (intersect (car lset)
                      (intersectall-1 (cdr lset)))]))
 
-(check-equal? (intersectall-1 '((3 mangos and)
-                                (3 kiwis and)
-                                (3 hamburgers))) '(3))
+(define (test-intersect-all intersectall)
+  (test-case "intersectall"
+     (check-equal? (intersectall '((3 mangos and)
+                                   (3 kiwis and)
+                                   (3 hamburgers))) '(3))
+     (check-equal? (intersectall '((3 steaks and)
+                                   (no food and)
+                                   (three backed potatoes)
+                                   (3 diet hamburgers))) '())
+     (check-equal? (intersectall '((3 mangos and)
+                                   ()
+                                   (3 diet hamburgers))) '())
+     (check-equal? (intersectall '()) '())))
 
-(check-equal? (intersectall-1 '((3 steaks and)
-                                (no food and)
-                                (three backed potatoes)
-                                (3 diet hamburgers))) '())
-
-(check-equal? (intersectall-1 '((3 mangos and)
-                                ()
-                                (3 diet hamburgers))) '())
-
-(check-equal? (intersectall-1 '()) '())
+(test-intersect-all intersectall-1)
 
 (define (intersectall-2 lset)
   (letrec
@@ -49,20 +51,8 @@
       [(null? lset) '()]
       [else (A lset)])))
 
-(check-equal? (intersectall-2 '((3 mangos and)
-                                (3 kiwis and)
-                                (3 hamburgers))) '(3))
 
-(check-equal? (intersectall-2 '((3 steaks and)
-                                (no food and)
-                                (three backed potatoes)
-                                (3 diet hamburgers))) '())
-
-(check-equal? (intersectall-2 '((3 mangos and)
-                                ()
-                                (3 diet hamburgers))) '())
-
-(check-equal? (intersectall-2 '()) '())
+(test-intersect-all intersectall-2)
 
 (define (intersectall-3 lset)
   (let/cc hop
@@ -77,19 +67,7 @@
           [(null? lset) '()]
           [else (A lset)]))))
 
-
-(check-equal? (intersectall-3 '((3 mangos and)
-                                (3 kiwis and)
-                                (3 hamburgers))) '(3))
-
-(check-equal? (intersectall-3 '((3 steaks and)
-                                (no food and)
-                                (three backed potatoes)
-                                (3 diet hamburgers))) '())
-
-(check-equal? (intersectall-3 '((3 mangos and)
-                                ()
-                                (3 diet hamburgers))) '())
+(test-intersect-all intersectall-3)
 
 (define (intersectall-4 lset)
   (let/cc hop
@@ -115,19 +93,7 @@
           [(null? lset) '()]
           [else (A lset)]))))
 
-
-(check-equal? (intersectall-4 '((3 mangos and)
-                                (3 kiwis and)
-                                (3 hamburgers))) '(3))
-
-(check-equal? (intersectall-4 '((3 steaks and)
-                                (no food and)
-                                (three backed potatoes)
-                                (3 diet hamburgers))) '())
-
-(check-equal? (intersectall-4 '((3 mangos and)
-                                ()
-                                (3 diet hamburgers))) '())
+(test-intersect-all intersectall-4)
 
 (define (rember a lat)
   (letrec
@@ -139,8 +105,9 @@
                         (R (cdr lat)))]))])
     (R lat)))
 
-(check-equal? (rember 'and '(bacon lettuce and tomato)) '(bacon lettuce tomato))
-(check-equal? (rember 'sauce '(soy sauce and tomato sauce)) '(soy and tomato sauce))
+(test-case "rember"
+   (check-equal? (rember 'and '(bacon lettuce and tomato)) '(bacon lettuce tomato))
+   (check-equal? (rember 'sauce '(soy sauce and tomato sauce)) '(soy and tomato sauce)))
 
 (define (rember-beyond-first a lat)
   (letrec
@@ -152,54 +119,39 @@
                         (R (cdr lat)))]))])
     (R lat)))
 
-(check-equal? (rember-beyond-first 'roots
-                                   '(noodles
-                                     spaghetti spätzle bean-thread
-                                     roots
-                                     potatoes yam
-                                     others
-                                     rice))
-              '(noodles spaghetti spätzle bean-thread))
+(define starches '(noodles
+                    spaghetti spätzle bean-thread
+                    roots
+                    potatoes yam
+                    others
+                    rice))
 
-(check-equal? (rember-beyond-first 'others
-                                   '(noodles
-                                     spaghetti spätzle bean-thread
-                                     roots
-                                     potatoes yam
-                                     others
-                                     rice))
-              '(noodles
-                spaghetti spätzle bean-thread
-                roots
-                potatoes yam))
+(define desserts '(cookies
+                    chocolate mints
+                    caramel delight ginger snaps
+                    desserts
+                    chocolate mousse
+                    vanilla ice cream
+                    German chocolate cake
+                    more desserts
+                    gingerbreadman chocolate chip brownies))
 
-(check-equal? (rember-beyond-first 'sweetthing
-                                   '(noodles
-                                     spaghetti spätzle bean-thread
-                                     roots
-                                     potatoes yam
-                                     others
-                                     rice))
-              '(noodles
-                spaghetti spätzle bean-thread
-                roots
-                potatoes yam
-                others
-                rice))
+(test-case "rember-beyond-first"
+   (check-equal? (rember-beyond-first 'roots starches)
+                 '(noodles spaghetti spätzle bean-thread))
 
-(check-equal? (rember-beyond-first 'desserts
-                                   '(cookies
-                                     chocolate mints
-                                     caramel delight ginger snaps
-                                     desserts
-                                     chocolate mousse
-                                     vanilla ice cream
-                                     German chocolate cake
-                                     more desserts
-                                     gingerbreadman chocolate chip brownies))
-              '(cookies
-                 chocolate mints
-                 caramel delight ginger snaps))
+   (check-equal? (rember-beyond-first 'others starches)
+                 '(noodles
+                    spaghetti spätzle bean-thread
+                    roots
+                    potatoes yam))
+
+   (check-equal? (rember-beyond-first 'sweetthing starches) starches)
+
+   (check-equal? (rember-beyond-first 'desserts desserts)
+                 '(cookies
+                    chocolate mints
+                    caramel delight ginger snaps)))
 
 
 (define (rember-upto-last a lat)
@@ -213,60 +165,24 @@
                             (R (cdr lat)))]))])
         (R lat))))
 
+(test-case "rember-upto-last"
+   (check-equal? (rember-upto-last 'roots starches)
+                 '(potatoes yam
+                            others
+                            rice))
 
-(check-equal? (rember-upto-last 'roots
-                                '(noodles
-                                   spaghetti spätzle bean-thread
-                                   roots
-                                   potatoes yam
-                                   others
-                                   rice))
-              '(potatoes yam
-                         others
-                         rice))
+   (check-equal? (rember-upto-last 'sweetthing starches) starches)
 
-(check-equal? (rember-upto-last 'sweetthing
-                                '(noodles
-                                   spaghetti spätzle bean-thread
-                                   roots
-                                   potatoes yam
-                                   others
-                                   rice))
-              '(noodles
-                 spaghetti spätzle bean-thread
-                 roots
-                 potatoes yam
-                 others
-                 rice))
+   (check-equal? (rember-upto-last 'desserts desserts)
+                 '(gingerbreadman chocolate chip brownies))
 
-(check-equal? (rember-upto-last 'desserts
-                                   '(cookies
-                                     chocolate mints
-                                     caramel delight ginger snaps
-                                     desserts
-                                     chocolate mousse
-                                     vanilla ice cream
-                                     German chocolate cake
-                                     more desserts
-                                     gingerbreadman chocolate chip brownies))
-              '(gingerbreadman chocolate chip brownies))
-
-(check-equal? (rember-upto-last 'cookies
-                                '(cookies
-                                   chocolate mints
-                                   caramel delight ginger snaps
-                                   desserts
-                                   chocolate mousse
-                                   vanilla ice cream
-                                   German chocolate cake
-                                   more desserts
-                                   gingerbreadman chocolate chip brownies))
-              '(chocolate mints
-                 caramel delight ginger snaps
-                 desserts
-                 chocolate mousse
-                 vanilla ice cream
-                 German chocolate cake
-                 more desserts
-                 gingerbreadman chocolate chip brownies))
+   (check-equal? (rember-upto-last 'cookies desserts)
+                 '(chocolate mints
+                             caramel delight ginger snaps
+                             desserts
+                             chocolate mousse
+                             vanilla ice cream
+                             German chocolate cake
+                             more desserts
+                             gingerbreadman chocolate chip brownies)))
 
