@@ -98,15 +98,8 @@
 ; it seems that let/cc defines a function hop, which when called it will exit the function 
 ; and return its argument (meaning that exits the whole recursion well and returns '()
 ; FOURTEENTH COMMANDMENT: Use let/cc to return values directly (screw the recursion!)
-
-; The way I visualize it. All lets are frames / boxes / scopes / space-time continuum frames of reference
-; Inside the (let/cc we define a scope with two things:
-;   - 1st: definition ==> the exit of a worm-hole        :: the same as with letrecc
-;   - 2nd: value      ==> the code as it is evaluated    :: the same as with letrecc
-; It works the same as letrecc, but now instead of having the definition available through the recursion,
-; the definition is an exit point
-; Inside the value part, we can enter the worm-hole by passing something to get through the worm-hole (a return value)
-; but I disgress, getting back to the code...
+;
+; check ch13_bis.rkt for philosophical mussings about let/cc
 ;
 ; ...we can do better. This is the line where everything happens:
 ; (intersect (car lset) (intersectall-v2 (cdr lset)))
