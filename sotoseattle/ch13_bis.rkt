@@ -61,7 +61,7 @@
 ;   (define hop
 ;     (lambda (x)
 ;       (+ 3 x)
-;       ('get_the_fuck_out)))  ; exit at the level of the scope where hop is defined
+;     ))               ; exit at the level of the scope where hop is defined
 ;
 ; step 2: evaluate body of hop
 ;   (/4 (hop 5))
@@ -86,7 +86,7 @@
 ;   (define hop2
 ;     (lambda (x)
 ;       (* 3 (+ 8 x))
-;       ('get_the_fuck_out)))  ; exit at the level of the scope where hop is defined
+;     ))               ; exit at the level of the scope where hop is defined
 ;
 ; step 2: evaluate body of hop
 ;   (/ (hop2 5) 4)
@@ -112,7 +112,7 @@
 ;   (define hop3
 ;     (lambda (x)
 ;       (+ 3 x)
-;       ('get_the_fuck_out)))
+;     ))               ; exit at the level of the scope where hop is defined
 ;
 ; step 2: evaluate body of hop
 ;   (begin ...)
