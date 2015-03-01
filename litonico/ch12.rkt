@@ -95,3 +95,12 @@
             [else (or (eq? (car lat) a)
                       (W (car lat)
                          (cdr lat)))]))))))
+
+
+(define fixpt
+  (lambda (f x)
+    (fixpt f (f x))))
+
+(define y
+  (lambda (f)
+    (f (y f))))
