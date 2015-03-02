@@ -42,21 +42,20 @@
                    (hop (quote ())))
                   ((null? (cdr lset))
                    (car lset))
-                  (else
-                   (I (car lset)
-                      (A (cdr lset)))))))
+                  (else (I (car lset)
+                           (A (cdr lset)))))))
            (I (lambda (s1 s2)
                 (letrec
                     ((J (lambda (s1)
                           (cond
                             ((null? s1) (quote ()))
-                            ((member? (car s1) s2)
-                             (J (cdr s1)))
-                            (else (cons (car s1)
-                                        (J (cdr s1))))))))
-                  (cond
-                    ((null? s2) (hop '()))
-                    (else (J s1)))))))
+                          ((member? (car s1) s2)
+                           (J (cdr s1)))
+                          (else (cons (car s1)
+                                      (J (cdr s1))))))))
+                (cond
+                  ((null? s2) (quote ()))
+                  (else (J s1)))))))
         (cond
           ((null? lset) (quote ()))
           (else (A lset)))))))
