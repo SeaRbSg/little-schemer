@@ -57,7 +57,15 @@
                    '((pasta)
                      pasta
                      (noodles meat sauce)
-                     meat tomatoes))))
+                     meat tomatoes))
+     (check-equal? (rember1* 'cheese '((nacho chips)
+                                       salsa
+                                       (pico de gallo)
+                                       guacamole))
+                   '((nacho chips)
+                     salsa
+                     (pico de gallo)
+                     guacamole))))
 
 (testcase-rember1* rember1*)
 
