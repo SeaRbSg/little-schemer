@@ -4,12 +4,6 @@
   (lambda (x)
     (and (not (pair? x)) (not(null? x)))))
 
-(define pick
-  (lambda (n lat)
-    (cond
-      [(eq? n '1) (car lat)]
-      [else (pick (- n 1) (cdr lat))])))
-
 (define member?
   (lambda (a lat)
     (letrec
@@ -98,8 +92,6 @@
         (R lat)))))
 
 
-
-(displayln (intersect '(a b c) '(c d e)))
 
 (displayln (intersect '(3 mangos and) '(3 hamburgers)))
 
