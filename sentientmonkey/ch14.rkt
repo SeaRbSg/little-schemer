@@ -41,22 +41,25 @@
                   [else (cons av (cdr l))]))]))])
     (R l)))
 
-(test-case "rember1*"
-   (check-equal? (rember1* 'salad '((Swedish rye)
-                                    (French (mustard salad turkey))
-                                    salad))
-                 '((Swedish rye)
-                   (French (mustard turkey))
-                   salad))
+(define (testcase-rember1* rember1*)
+  (test-case "rember1*"
+     (check-equal? (rember1* 'salad '((Swedish rye)
+                                      (French (mustard salad turkey))
+                                      salad))
+                   '((Swedish rye)
+                     (French (mustard turkey))
+                     salad))
 
-   (check-equal? (rember1* 'meat '((pasta meat)
-                                   pasta
-                                   (noodles meat sauce)
-                                   meat tomatoes))
-                 '((pasta)
-                   pasta
-                   (noodles meat sauce)
-                   meat tomatoes)))
+     (check-equal? (rember1* 'meat '((pasta meat)
+                                     pasta
+                                     (noodles meat sauce)
+                                     meat tomatoes))
+                   '((pasta)
+                     pasta
+                     (noodles meat sauce)
+                     meat tomatoes))))
+
+(testcase-rember1* rember1*)
 
 (define (max n m)
   (if (> n m) n m))
@@ -110,3 +113,48 @@
         (lm l))))
 
 (test-leftmost* leftmost2*)
+
+; try from book - didn't work :(
+
+; (define (try x a b)
+;   (let/cc success
+;       (let/cc x
+;           (success a))
+;       b))
+
+; Try has to be defined with macros
+(define-syntax try
+  (syntax-rules ()
+    ((try var a b)
+     (let/cc success
+        (let/cc var (success a)) b))))
+
+; originally from https://github.com/viswanathgs/The-Seasoned-Schemer/blob/master/ch-14-let-there-be-names.ss#L422
+
+(define (rm a l oh)
+  (cond
+    [(null? l) (oh 'no)]
+    [(atom? (car l))
+     (if (eq? (car l) a)
+       (cdr l)
+       (cons (car l) (rm a (cdr l) oh)))]
+    [else
+      (try oh2
+        (cons (rm a (car l) oh2) (cdr l))
+        (cons (car l) (rm a (cdr l) oh)))]))
+
+(test-case "rm"
+    (check-equal? (let/cc Say (rm 'noodles '((food) more (food)) Say)) 'no))
+
+(define (rember1*-2 a l)
+  (let ([new-l (let/cc oh (rm a l oh))])
+    (if (atom? new-l)
+      l
+      new-l)))
+
+(testcase-rember1* rember1*-2)
+
+(define (rember1*-3 a l)
+  (try oh (rm a l oh) l))
+
+(testcase-rember1* rember1*-3)
