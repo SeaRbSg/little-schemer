@@ -16,14 +16,10 @@
       ((null? l) (quote ()))
       ((atom? (car l)) (car l))
       (else 
-       (let 
-           ((a leftmost (car l))))
+       (let ((a (leftmost (car l))))
        (cond
          ((atom? a) a)
-         (else (leftmost (cdr l))))))))
-
-
-
+         (else (leftmost (cdr l)))))))))
 
 
 (displayln (leftmost '(((a) b) (cd))))
