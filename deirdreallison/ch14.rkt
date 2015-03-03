@@ -72,10 +72,10 @@
 (displayln (eqlist? '(a b c) '(a b c)))
 (displayln (eqlist? '(b c a) '(a b c)))
 (displayln rember1*)
-(displayln (rember1* '(salad) '((Swedish rye)
+(displayln (rember1* 'salad '((Swedish rye)
                                 (French (mustard salad turkey))
                                 salad)))
-(displayln (rember1* '(meat) '((pasta meat)
+(displayln (rember1* 'meat '((pasta meat)
                               pasta
                               (noodles meat sauce)
                               meat tomatoes)))
