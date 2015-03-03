@@ -1,5 +1,7 @@
 #lang racket
 
+;try + eqlist? from https://github.com/SeaRbSg/little-schemer/blob/master/sotoseattle/ch14.rkt
+
 (define atom?
   (lambda (x)
     (and (not (pair? x)) (not(null? x)))))
@@ -9,6 +11,14 @@
     ((try var a . b) 
      (let/cc success 
        (let/cc var (success a)) . b))))
+
+(define eqlist?
+  (lambda (l1 l2)
+    (cond
+      [(null? l1) (null? l2)]
+      [(null? l2) #f]
+      [(eq? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2))]
+      [else #f])))
 
 (define leftmost
   (lambda (l)
@@ -21,7 +31,35 @@
          ((atom? a) a)
          (else (leftmost (cdr l)))))))))
 
+(define rember1*
+  (lambda (a l)
+    (letrec
+        ((R (lambda (l)
+              (cond
+                ((null? l) (quote ()))
+                ((atom? (car l))
+                 (cond
+                   ((eq? (car l) a) (cdr l))
+                   (else (cons (car l)
+                         (R (cdr l))))))
+                (else
+                 (let ((av (R (car l))))
+                   (cond
+                     ((eqlist? (car l) av)
+                      (cons (car l) (R (cdr l))))
+                     (else (cons av (cdr l))))))))))
+      (R l))))
 
+
+(displayln leftmost)
 (displayln (leftmost '(((a) b) (cd))))
 (displayln (leftmost '(((() a) ()))))
 (displayln (leftmost '(((a) ()) () (e))))
+(displayln rember1*)
+(displayln (rember1* '(salad) '((Swedish rye)
+                                (French (mustard salad turkey))
+                                salad)))
+(displayln (rember1* '(meat) '((pasta meat)
+                              pasta
+                              (noodles meat sauce)
+                              meat tomatoes)))
