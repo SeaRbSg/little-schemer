@@ -44,9 +44,8 @@
                           (cond
                             ((null? s1) (quote ()))
                           ((member? (car s1) s2)
-                           (J (cdr s1)))
-                          (else (cons (car s1)
-                                      (J (cdr s1))))))))
+                           (cons (car s1) (J (cdr s1))))
+                          (else (J (cdr s1)))))))
                 (cond
                   ((null? s2) (quote ()))
                   (else (J s1)))))))
