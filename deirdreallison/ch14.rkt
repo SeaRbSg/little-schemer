@@ -50,6 +50,19 @@
                      (else (cons av (cdr l))))))))))
       (R l))))
 
+(define depth*
+  (lambda (l)
+         (cond
+           ((null? l) 1)
+           ((atom? (car l))
+            (depth* (cdr l)))
+           (else
+            (cond
+              ((> (depth* (cdr l))
+                  (+ 1 (depth* (car l))))
+               (depth* (cdr l)))
+              (else
+               (+ 1 (depth* (car l)))))))))
 
 (displayln leftmost)
 (displayln (leftmost '(((a) b) (cd))))
@@ -67,3 +80,5 @@
                               pasta
                               (noodles meat sauce)
                               meat tomatoes)))
+(displayln depth*)
+(displayln (depth* '((pickled) peppers (peppers pickled))))
