@@ -52,17 +52,16 @@
 
 (define depth*
   (lambda (l)
+    (cond
+      ((null? l) 1)
+      ((atom? (car l))
+       (depth* (cdr l)))
+      (else
+       (let ((a (+ 1 (depth* (car l))))
+             (d (depth* (cdr l))))
          (cond
-           ((null? l) 1)
-           ((atom? (car l))
-            (depth* (cdr l)))
-           (else
-            (cond
-              ((> (depth* (cdr l))
-                  (+ 1 (depth* (car l))))
-               (depth* (cdr l)))
-              (else
-               (+ 1 (depth* (car l)))))))))
+           ((> d a) d)
+           (else a)))))))
 
 (displayln leftmost)
 (displayln (leftmost '(((a) b) (cd))))
@@ -82,3 +81,8 @@
                               meat tomatoes)))
 (displayln depth*)
 (displayln (depth* '((pickled) peppers (peppers pickled))))
+(displayln (depth* '(margarine
+                     ((bitter butter)
+                      (makes)
+                      (batter (bitter)))
+                     butter)))
