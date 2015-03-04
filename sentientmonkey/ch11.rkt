@@ -10,7 +10,9 @@
     [else (or (eq? a (car lat))
               (member? a (cdr lat)))]))
 
-(check-equal? (member? 'sardines '(Italian sardines spaghetti parsley)) #t)
+(test-case "member?"
+  (check-true (member? 'sardines '(Italian sardines spaghetti parsley)))
+  (check-false (member? 'sardines '(pizza))))
 
 (define (equal-next? a lat)
   (cond
@@ -30,8 +32,13 @@
         [else
           (two-in-a-row? (cdr lat))])]))
 
-(check-equal? (two-in-a-row? '(Italian sardines spaghetti parsley)) #f)
-(check-equal? (two-in-a-row? '(Italian sardines sardines spaghetti parsley)) #t)
+(define (test-case-two-in-a-row? two-in-a-row?)
+  (test-case "two-in-a-row?"
+    (check-false (two-in-a-row? '(Italian sardines spaghetti parsley)))
+    (check-true (two-in-a-row? '(Italian sardines sardines spaghetti parsley)))
+    (check-false (two-in-a-row? '()))))
+
+(test-case-two-in-a-row? two-in-a-row?)
 
 (define (is-first-b? a lat)
   (cond
@@ -49,8 +56,7 @@
 (check-equal? (is-first-b? 'sardines '(parsley)) #f)
 (check-equal? (is-first-b? 'sardines '()) #f)
 
-(check-equal? (two-in-a-row-a? '(Italian sardines spaghetti parsley)) #f)
-(check-equal? (two-in-a-row-a? '(Italian sardines sardines spaghetti parsley)) #t)
+(test-case-two-in-a-row? two-in-a-row-a?)
 
 (define (two-in-a-row-b? preceeding lat)
   (cond
@@ -66,8 +72,7 @@
     [(null? lat) #f]
     [else (two-in-a-row-b? (car lat) (cdr lat))]))
 
-(check-equal? (two-in-a-row-final? '(Italian sardines spaghetti parsley)) #f)
-(check-equal? (two-in-a-row-final? '(Italian sardines sardines spaghetti parsley)) #t)
+(test-case-two-in-a-row? two-in-a-row-final?)
 
 ; first pass - ending up being backwards because of consing!
 ;

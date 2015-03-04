@@ -107,7 +107,8 @@
 
 (test-case "rember"
    (check-equal? (rember 'and '(bacon lettuce and tomato)) '(bacon lettuce tomato))
-   (check-equal? (rember 'sauce '(soy sauce and tomato sauce)) '(soy and tomato sauce)))
+   (check-equal? (rember 'sauce '(soy sauce and tomato sauce)) '(soy and tomato sauce))
+   (check-equal? (rember 'ketchup '()) '()))
 
 (define (rember-beyond-first a lat)
   (letrec
