@@ -22,33 +22,38 @@
 
 (define leftmost
   (lambda (l)
+    (let/cc skip
+      (letrec
+          ((lm (lambda (l)
+                 (cond
+                   ((null? l) (quote ()))
+                   ((atom? (car l))
+                    (skip (car l)))
+                   (else
+                    (let ()
+                      (lm (car l))
+                      (lm (cdr l))))))))
+        (lm l)))))
+
+(define rm
+  (lambda (a l oh)
     (cond
-      ((null? l) (quote ()))
-      ((atom? (car l)) (car l))
-      (else 
-       (let ((a (leftmost (car l))))
-       (cond
-         ((atom? a) a)
-         (else (leftmost (cdr l)))))))))
+      ((null? l) (oh (quote no)))
+      ((atom? (car l))
+       (if (eq? (car l) a)
+           (cdr l)
+           (cons (car l)
+                 (rm a (cdr l) oh))))
+      (else
+       (try oh2
+            (cons (rm a (car l) oh2)
+                  (cdr l))
+            (cons (car l)
+                  (rm a (cdr l) oh)))))))
 
 (define rember1*
   (lambda (a l)
-    (letrec
-        ((R (lambda (l)
-              (cond
-                ((null? l) (quote ()))
-                ((atom? (car l))
-                 (cond
-                   ((eq? (car l) a) (cdr l))
-                   (else (cons (car l)
-                         (R (cdr l))))))
-                (else
-                 (let ((av (R (car l))))
-                   (cond
-                     ((eqlist? (car l) av)
-                      (cons (car l) (R (cdr l))))
-                     (else (cons av (cdr l))))))))))
-      (R l))))
+    (try oh (rm a l oh) l)))
 
 (define depth*
   (lambda (l)
@@ -57,11 +62,10 @@
       ((atom? (car l))
        (depth* (cdr l)))
       (else
-       (let ((a (+ 1 (depth* (car l))))
-             (d (depth* (cdr l))))
-         (cond
-           ((> d a) d)
-           (else a)))))))
+       (max
+        (+ 1 (depth* (car l)))
+        (depth* (cdr l)))))))
+
 
 (displayln leftmost)
 (displayln (leftmost '(((a) b) (cd))))
