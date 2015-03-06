@@ -37,13 +37,33 @@
                         [else  (I (cdr set))]))))
       (I set1))))
 
+(module+ test
+  (define (test/intersectall intersectall version)
+    (test-case "intersectall"
+      (check-equal? (intersectall '((3 mangos and)
+                                    (3 kiwis and)
+                                    (3 hamburgers))) '(3) version)
+      (check-equal? (intersectall '((3 steaks and)
+                                    (no food and)
+                                    (three backed potatoes)
+                                    (3 diet hamburgers))) '() version)
+      (check-equal? (intersectall '((3 mangos and)
+                                    ()
+                                    (3 diet hamburgers))) '() version)
+      (check-equal? (intersectall '()) '() version))))
+
 (define intersectall1
   (lambda (lset)
     (letrec ((I (lambda (lset)
-                  (cond [(null? (cdr lset)) (car lset)]
-                        [else (intersect2 (car lset) (I (cdr lset)))]))))
+                  (cond [(null? (car lset)) '()]
+                        [(null? (cdr lset)) (car lset)]
+                        [else (intersect1 (car lset) (I (cdr lset)))]))))
       (cond ((null? lset) '())
-            (else (I lset))))))
+            (else (I lset)))
+      )))
+
+(module+ test
+  (test/intersectall intersectall1 'intersectall1))
 
 (define intersectall2
   (lambda (lset)
@@ -57,20 +77,7 @@
                     (else (I lset)))))))
 
 (module+ test
-  (check-equal? (intersectall2 '((a b c) (b c) (b)))
-                '(b)))
-
-(define intersect3
-  (lambda (set1 set2)
-    (letrec ((I (lambda (set)
-                  (cond [(null? set) '()]
-                        [(member? (car set) set2)
-                         (cons (car set)
-                               (I (cdr set)))]
-                        [else  (I (cdr set))]))))
-      (cond
-       ((null? set2) '())
-       (else (I set1))))))
+  (test/intersectall intersectall2 'intersectall2))
 
 (define intersectall3
   (lambda (lset)
@@ -79,21 +86,21 @@
                 ((A (lambda (lset)
                       (cond [(null? (car lset)) (hop '())]
                             [(null? (cdr lset)) (car lset)]
-                            [else (intersect3 (car lset) (A (cdr lset)))])))
+                            [else (I (car lset) (A (cdr lset)))])))
                  (I (lambda (s1 s2)
                       (letrec ((J (lambda (s1)
                                     (cond [(null? s1) '()]
-                                          [(member? (car s1) s2) (J (cdr s1))]
-                                          [else (cons (car s1)
-                                                      (J (cdr s1)))]))))
+                                          [(member? (car s1) s2)
+                                           (cons (car s1)
+                                                 (J (cdr s1)))]
+                                          [else (J (cdr s1))]))))
                         (cond [(null? s2) (hop '())]
                               [else (J s1)])))))
               (cond [(null? lset) '()]
                     [else (A lset)])))))
 
 (module+ test
-  (check-equal? (intersectall3 '((a b c) (b c) (b)))
-                '(b)))
+  (test/intersectall intersectall3 'intersectall3))
 
 (define rember
   (lambda (a lat)
