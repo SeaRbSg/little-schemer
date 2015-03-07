@@ -41,7 +41,12 @@
     [(eq? (car lat) a) #t]
     [else (member? a (cdr lat))]))
 
-(check-false (member? 'ice '(salad greens with pears brie cheese frozen yogurt)))
+(define (test-case-member? member?)
+  (test-case "member?"
+    (check-false (member? 'ice '(salad greens with pears brie cheese frozen yogurt)))
+    (check-true (member? 'brie '(salad greens with pears brie cheese frozen yogurt)))))
+
+(test-case-member? member?)
 
 (define (member-let? a lat)
   (letrec
@@ -52,7 +57,7 @@
                [else (yes? (cdr l))]))])
      (yes? lat)))
 
-(check-false (member-let? 'ice '(salad greens with pears brie cheese frozen yogurt)))
+(test-case-member? member-let?)
 
 (define (union set1 set2)
   (letrec
@@ -71,7 +76,9 @@
              (N? lat)))])
     (U set1)))
 
-(check-equal? (union '(tomatoes and macaroni cheese) '(macaroni and cheese)) '(tomatoes macaroni and cheese))
+(test-case "union"
+    (check-equal? (union '(tomatoes and macaroni cheese) '(macaroni and cheese)) '(tomatoes macaroni and cheese))
+    (check-equal? (union '() '(macaroni and cheese)) '(macaroni and cheese)))
 
 (define two-in-a-row?
   (letrec
@@ -84,8 +91,10 @@
         [(null? lat) #f]
         [else (T? (car lat) (cdr lat))]))))
 
-(check-equal? (two-in-a-row? '(Italian sardines spaghetti parsley)) #f)
-(check-equal? (two-in-a-row? '(Italian sardines sardines spaghetti parsley)) #t)
+(test-case "two-in-a-row?"
+   (check-equal? (two-in-a-row? '(Italian sardines spaghetti parsley)) #f)
+   (check-equal? (two-in-a-row? '(Italian sardines sardines spaghetti parsley)) #t)
+   (check-equal? (two-in-a-row? '()) #f))
 
 (define (sum-of-prefixes tup)
   (letrec

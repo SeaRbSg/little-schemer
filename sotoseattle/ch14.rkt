@@ -121,7 +121,7 @@
 
 (module+ test
   [check-equal? (rember1*-v1 'salad '((Swedish rye) (French (mustard salad turkey)) salad))
-                                 '((Swedish rye) (French (mustard turkey)) salad)])
+                                    '((Swedish rye) (French (mustard turkey)) salad)])
 
 ; letreccifying...
 
@@ -173,8 +173,7 @@
       [else (cond 
               [(> (depth*-v1 (cdr l)) (+ 1 (depth*-v1 (car l)))) (depth*-v1 (cdr l))]
               [else (+ 1 (depth*-v1 (car l)))])])))
-    
-    
+
 (module+ test 
   [check-equal? (depth*-v1 '((pickled) peppers (peppers pickled))) 2]
   [check-equal? (depth*-v1 '(1 2 (3 4 (5 6 7 8)))) 3]
@@ -191,8 +190,7 @@
                         (cond 
                           [(> d_cdr (+ 1 d_car)) d_cdr]
                           [else (+ 1 d_car)]))]))])))
-  
-    
+
 (module+ test 
   [check-equal? (depth*-v2 '((pickled) peppers (peppers pickled))) 2]
   [check-equal? (depth*-v2 '(1 2 (3 4 (5 6 7 8)))) 3]
@@ -305,10 +303,9 @@
     (cond
       ((null? l) l)
       ((atom? (car l)) (out (car l)))
-      (else ;(let ()  <========================= this let is not necessary!!
-              (lm (car l) out)
-              (lm (cdr l) out)))));)
-
+      (else
+       (lm (car l) out)
+       (lm (cdr l) out)))))
 
 (define leftmost-ß2
   (lambda (l)
@@ -325,9 +322,9 @@
              (cond
                ((null? l) l)
                ((atom? (car l)) (out (car l)))
-               (else ;(let ()
+               (else
                 (lm (car l) out)
-                (lm (cdr l) out))))));)
+                (lm (cdr l) out))))))
       (let/cc skip
         (lm l skip)))))
 
@@ -342,11 +339,10 @@
                  (cond
                    ((null? l) l)
                    ((atom? (car l)) (out (car l)))
-                   (else ;(let ()
+                   (else
                     (lm (car l) out)
-                    (lm (cdr l) out))))));)
-        (lm l skip)
-      ))))
+                    (lm (cdr l) out))))))
+        (lm l skip)))))
 
 (module+ tes
   (check-equal? (leftmost-ß4 '(((a)) b (c))) 'a))
@@ -362,8 +358,7 @@
                    (else 
                     (lm (car l))
                     (lm (cdr l)))))))
-        (lm l)
-      ))))
+        (lm l)))))
 
 (module+ tes
   (check-equal? (leftmost-ß5 '(((a 1 2)) b 3 (c 4))) 'a)
@@ -372,13 +367,92 @@
 (define rm
   (lambda (a l hop)
     (cond
-      ((null? l) 'no)
+      ((null? l) (hop 'no))
       ((atom? (car l)) 
          (if (eq? a (car l)) 
              (cdr l) 
-             (cons (car l) (rm (a (cdr l) hop)))))
+             (cons (car l) (rm a (cdr l) hop))))
       (else 
          (if (atom? (let/cc hop (rm a (car l) hop))) 
              (cons (car l) (rm a (cdr l) hop)) 
              (cons (rm a (car l) 0) (cdr l)))))))
 
+(module+ test
+  [check-equal? (let/cc Say (rm 'noodles '((food) more (food)) Say)) 'no]
+  [check-equal? (let/cc Say (rm 'noodles '(more (food)) Say)) 'no]
+  [check-equal? (let/cc Say (rm 'noodles '((food)) Say)) 'no])
+
+(define rember1*-ß
+  (lambda (a l)
+    (if (atom? (let/cc oh (rm a l oh)))
+        l
+        (rm a l '()))))
+
+(module+ test
+  [check-equal? (rember1*-ß 'noodles '((food) more (food))) '((food) more (food))])
+
+; lets use let to avoid recomputing expressions
+
+(define rm2
+  (lambda (a l hop)
+    (cond
+      ((null? l) (hop 'no))
+      ((atom? (car l)) 
+         (if (eq? a (car l)) 
+             (cdr l) 
+             (cons (car l) (rm2 a (cdr l) hop))))
+      (else
+       (let ((kar (rm2 a (car l) hop)))
+         (if (atom? (let/cc hop kar)) 
+             (cons (car l) (rm2 a (cdr l) hop)) 
+             (cons kar (cdr l))))))))
+
+; we can do better
+
+(define rm3
+  (lambda (a l hop)
+    (cond
+      ((null? l) (hop 'no))
+      ((atom? (car l)) 
+         (if (eq? a (car l)) 
+             (cdr l) 
+             (cons (car l) (rm3 a (cdr l) hop))))
+      (else
+       (let ((kar (let/cc hop (rm3 a (car l) hop))))
+         (if (atom? kar) 
+             (cons (car l) (rm3 a (cdr l) hop)) 
+             (cons kar (cdr l))))))))
+
+(define rember1*-ß2
+  (lambda (a l)
+    (let ((smaller-list (let/cc oh (rm3 a l oh))))
+      (if (atom? smaller-list) l smaller-list))))
+
+; (try is not defined in Racket, so here is a patch from http://community.schemewiki.org/?seasoned-schemer
+(define-syntax try 
+  (syntax-rules () 
+    ((try var a . b) 
+     (let/cc success 
+       (let/cc var (success a)) . b)))) 
+
+(define rember1*
+  (lambda (a l)
+    (try oh (rm4 a l oh) l)))
+
+; furthermore, pluging in try like we did in rember1*
+
+(define rm4
+  (lambda (a l hop)
+    (cond
+      ((null? l) (hop 'no))
+      ((atom? (car l)) 
+         (if (eq? a (car l)) 
+             (cdr l) 
+             (cons (car l) (rm4 a (cdr l) hop))))
+      (else
+         (try mini-hop
+              (cons (rm4 a (car l) mini-hop) (cdr l))
+              (cons (car l) (rm4 a (cdr l) hop)))))))
+
+(module+ test
+  [check-equal? (rember1* 'noodles '((food) more (food))) '((food) more (food))])

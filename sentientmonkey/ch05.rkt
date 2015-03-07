@@ -4,6 +4,8 @@
 (require "ch02.rkt")
 (require "ch04.rkt")
 
+(provide eqlist?)
+
 ; Chapter 4
 (define rember*
   (lambda (a l)
