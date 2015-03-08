@@ -179,7 +179,8 @@
 (test-case "deepR"
   (set! Ns '())
   (check-equal? (deepR 3) '(((pizza))))
-  (check-equal? Ns '(3)))
+  (check-equal? Ns '(3))
+  (check-equal? (deepR 0) 'pizza))
 
 (define Rs '())
 
@@ -195,7 +196,8 @@
   (set! Rs '())
   (check-equal? (deepR2 3) '(((pizza))))
   (check-equal? Ns '(3))
-  (check-equal? Rs '((((pizza))))))
+  (check-equal? Rs '((((pizza)))))
+  (check-equal? (deepR2 0) 'pizza))
 
 (define (deepR3 m)
   (let ([result (deep m)])
@@ -276,7 +278,8 @@
 
 (test-case "deepM3"
   (check-equal? (deepM3 9) '(((((((((pizza))))))))))
-  (check-equal? Ns '(9 8 7 6 5 3)))
+  (check-equal? Ns '(9 8 7 6 5 3))
+  (check-equal? (deepM3 0) 'pizza))
 
 (define deepM4
   (let ([Rs '()]
@@ -290,6 +293,7 @@
             result)))))
 
 (test-case "deepM4"
+  (check-equal? (deepM4 16) '((((((((((((((((pizza)))))))))))))))))
   (check-equal? (deepM4 16) '((((((((((((((((pizza))))))))))))))))))
 ; Can't test new Rs & Ns because they are inside closure
 
@@ -303,7 +307,8 @@
     (F Ns Rs)))
 
 (test-case "find2"
-   (check-equal? (find2 3 '() '()) #f))
+  (check-equal? (find2 3 '() '()) #f)
+  (check-equal? (find2 3 '(5 3) '((((((pizza))))) (((pizza))))) '(((pizza)))))
 
 (define deepM5
   (let ([Rs '()]
@@ -318,7 +323,8 @@
           exists)))))
 
 (test-case "deepM5"
-   (check-equal? (deepM5 16) '((((((((((((((((pizza))))))))))))))))))
+  (check-equal? (deepM5 16) '((((((((((((((((pizza)))))))))))))))))
+  (check-equal? (deepM4 16) '((((((((((((((((pizza))))))))))))))))))
 
 (define length
   (let ([h (lambda (l) 0)])
@@ -328,4 +334,6 @@
               [else (add1 ((lambda (arg) (h arg)) (cdr l)))])))
     h))
 
-(check-equal? (length '(1 2 3 4)) 4)
+(test-case "length"
+  (check-equal? (length '()) 0)
+  (check-equal? (length '(1 2 3 4)) 4))
