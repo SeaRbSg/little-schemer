@@ -3,6 +3,7 @@
 (require rackunit)
 (require "prelude.rkt")
 (require "ch02.rkt")
+(require "ch09.rkt")
 
 (define (sweet-tooth food)
   (cons food
@@ -216,14 +217,94 @@
   (check-equal? (deepM5 16) '((((((((((((((((pizza)))))))))))))))))
   (check-equal? (deepM4 16) '((((((((((((((((pizza))))))))))))))))))
 
-(define length
+(define (length l)
+  (cond
+    [(null? l) 0]
+    [else (add1 (length (cdr l)))]))
+
+(define (test-case-length length)
+  (test-case "length"
+      (check-equal? (length '()) 0)
+      (check-equal? (length '(1 2 3 4)) 4)))
+
+(test-case-length length)
+
+(define length-2
   (let ([h (lambda (l) 0)])
     (set! h
       (lambda (l)
-        (cond [(null? l) 0]
-              [else (add1 ((lambda (arg) (h arg)) (cdr l)))])))
+        (cond
+          [(null? l) 0]
+          [else (add1 (h (cdr l)))])))
     h))
 
-(test-case "length"
-  (check-equal? (length '()) 0)
-  (check-equal? (length '(1 2 3 4)) 4))
+(test-case-length length-2)
+
+(define (L length)
+  (lambda (l)
+    (cond
+      [(null? l) 0]
+      [else (add1 (length (cdr l)))])))
+
+(define length-3
+  (let ([h (lambda (l) 0)])
+    (set! h
+      (L (lambda (arg) (h arg))))
+    h))
+
+(test-case-length length-3)
+
+(define (Y! L)
+  (let ([h (lambda (l) '())])
+    (set! h
+      (L (lambda (arg) (h arg))))
+    h))
+
+; Y! is the applicitive order imperative Y-combinator
+
+; Peter J. Landin
+; The mechanical evaluation of expressions
+; http://www.cs.cmu.edu/afs/cs/user/crary/www/819-f09/Landin64.pdf
+
+(define length-4 (Y! L))
+
+(test-case-length length-4)
+
+(define (Y-bang f)
+  (letrec
+    ((h (f (lambda (arg) (h arg)))))
+    h))
+
+(define length-5 (Y-bang L))
+
+(test-case-length length-5)
+
+(define (D depth*)
+  (lambda (s)
+    (cond
+      [(null? s) 1]
+      [(atom? (car s)) (depth* (cdr s))]
+      [else (max (add1 (depth* (car s)))
+                 (depth* (cdr s)))])))
+
+(define depth* (Y! D))
+
+(test-case "depth*"
+  (check-equal? (depth* '()) 1)
+  (check-equal? (depth* '(1 1)) 1)
+  (check-equal? (depth* '((1 1) (1 1) (1 (2 (3))))) 4))
+
+(define biz
+  (let ([x 0])
+    (lambda (f)
+      (set! x (add1 x))
+      (lambda (a)
+        (if (= a x)
+          0
+          (f a))))))
+
+(test-case "biz"
+  (check-equal? ((Y biz) 5) 0)
+; (check-equal? ((Y! biz) 5) 0)
+; => infinite
+  )
