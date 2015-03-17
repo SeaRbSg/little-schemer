@@ -2,7 +2,6 @@
 
 ;;;; Little Schemer
 
-
 ;;; Laws & Commandments:
 
 ;;; Laws:
@@ -77,61 +76,49 @@
 
 ;;;; Seasoned Schemer:
 
-;; pg 11: 11th: Use additional arguments when a function needs to know
-;;              what other arguments to the function have been so far.
+;; pg  11: 11th: Use additional arguments when a function needs to know
+;;               what other arguments to the function have been so far.
 
-;; pg 22: 12th: Use (letrec ...) to remove arguments that do not
-;;              change for recursive applications
+;; pg  22: 12th: Use (letrec ...) to remove arguments that do not
+;;               change for recursive applications
 
-;;; 13th Commandment
-;;
-;; Use (letrec ...) to hide and to protect functions
+;; pg  31: 13th: Use (letrec ...) to hide and to protect functions
 
-;;; 14th Commandment:
-;;
-;; Use (letcc ...) to return values abruptly and promptly.
+;; pg  44: 14th: Use (letcc ...) to return values abruptly and promptly.
 
-;;; 15th Commandment (preliminary)
-;;
-;; Use (let ...) to name the values of repeated expressions.
+;; pg  69: 15th: (preliminary) Use (let ...) to name the values of
+;;               repeated expressions.
 
-;;; 15th Commandment (revised)
-;;
-;; Use (let ...) to name the values of repeated expressions in a
-;; function definition if they may be evaluated twice for one and the
-;; same use of the function.
+;; pg  74: 15th: (revised) Use (let ...) to name the values of repeated
+;;               expressions in a function definition if they may be
+;;               evaluated twice for one and the same use of the
+;;               function.
 
-;;; The 16th Commandment
-;; Use (set! ...) only with names defined in (let ...)s.
+;; pg 195: 15th: (final) Use (let ...) to name the values of repeated
+;;               expressions in a function definition if they may be
+;;               evaluated twice for one-and-the-same use of the
+;;               function. And use (let ...) to name the values of
+;;               expressions (without set!) that are re-evaluated
+;;               every time a function is used.
 
-;;; The 17th Commandment (preliminary version)
-;; Use (set! x ...) for (let ((x ...)) ...) only if there is at least
-;; one (lambda ...) between it and the (let ((x ...)) ...).
+;; pg  98: 16th: Use (set! ...) only with names defined in (let ...)s.
 
-;;; 17th Commandment:
-;;
-;; Use (set! x ...) for (let ((x ...)) ...) only if there is at least
-;; one (lambda ...) between it and the (let ...), or if the new value
-;; for x is a function that refers to x.
+;; pg 101: 17th: (preliminary) Use (set! x ...) for (let ([x ...])
+;;                ...) only if there is at least one (lambda ...)
+;;                between it and the (let ...).
 
-;;; The 18th Commandment
-;; Use (set! x ...) only when the value that x refers to is no longer
-;; needed.
+;; pg 119: 17th: (final) Use (set! x ...) for (let ([x ...]) ...) only
+;;               if there is at least one (lambda ...) between it and
+;;               the (let ...), or if the new value for x is a
+;;               function that refers to x.
 
-;;; 19th Commandment:
-;; Use (set! ...) to remember valuable things between two distinct
-;; uses of a function.
+;; pg 104: 18th: Use (set! x ...) only when the value that x refers to
+;;               is no longer needed.
 
-;;; 20th Commandment
-;;
-;; When thinking about a value created with (letcc ...), write down
-;; the function that is equivalent but does not forget. Then, when you
-;; use it, remember to forget.
+;; pg 112: 19th: Use (set! ...) to remember valuable things between
+;;               two distinct uses of a function.
 
-;;; 15th Commandment (re-revised?)
-;;
-;; Use (let ...) to name the values of repeated expressions in a
-;; function definition if they may be evaluated twice for
-;; one-and-the-same use of the function. And use (let ...) to name the
-;; values of expressions (without set!) that are re-evaluated every
-;; time a function is used.
+;; pg 160: 20th: When thinking about a value created with (letcc ...),
+;;               write down the function that is equivalent but does
+;;               not forget. Then, when you use it, remember to
+;;               forget.
