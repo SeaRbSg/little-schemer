@@ -230,7 +230,7 @@
 (test-case-length length)
 
 (define length-2
-  (let ([h (lambda (l) 0)])
+  (let ([h 0])
     (set! h
       (lambda (l)
         (cond
@@ -247,7 +247,7 @@
       [else (add1 (length (cdr l)))])))
 
 (define length-3
-  (let ([h (lambda (l) 0)])
+  (let ([h 0])
     (set! h
       (L (lambda (arg) (h arg))))
     h))
@@ -255,10 +255,9 @@
 (test-case-length length-3)
 
 (define (Y! L)
-  (let ([h (lambda (l) '())])
-    (set! h
-      (L (lambda (arg) (h arg))))
-    h))
+  (define h
+    (L (lambda (arg) (h arg))))
+  h)
 
 ; Y! is the applicitive order imperative Y-combinator
 
