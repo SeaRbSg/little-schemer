@@ -7,18 +7,18 @@
 
 (require "lib/shared.rkt")
 
-(define (find n Ns Rs)
+(define (find n Ns Rs)                  ; pg 113
   (letrec ([A (lambda (ns rs)
                 (cond [(= (car ns) n) (car rs)]
                       [else (A (cdr ns) (cdr rs))]))])
     (A Ns Rs)))
 
-(define (deep m)
+(define (deep m)                        ; pg 115
   (cond [(zero? m) 'pizza]
         [else (cons (deepM (sub1 m))
                     '())]))
 
-(define deepM
+(define deepM                           ; pg 116
   (let ([Ns '()]
         [Rs '()])
     (lambda (n)
@@ -37,24 +37,37 @@
 
 ;; pg 119:
 
-(define (length l)
-  (cond [(null? l) 0]
-        [else (add1 (length (cdr l)))]))
+(module+ test
+  (define (test/length length)
+    (check-equal? (length '(1 2 3))
+                  3))
 
-(set! length (lambda (l) 0))
+  (define (length l)                    ; pg 118
+    (cond [(null? l) 0]
+          [else (add1 (length (cdr l)))]))
 
-(set! length
-      (lambda (l)
-        (cond [(null? l) 0]
-              [else (add1 (length (cdr l)))])))
+  (test/length length)
 
-(set! length
-      (let ((h (lambda (l) 0)))
-        (set! h
-              (lambda (l)
-                (cond [(null? l) 0]
-                      [else (add1 (h (cdr l)))])))
-        h))
+  (set! length (lambda (l) 0))          ; pg 119
+
+  (check-equal? (length '(1 2 3)) 0)    ; explicitly wrong
+
+  (set! length
+        (lambda (l)
+          (cond [(null? l) 0]
+                [else (add1 (length (cdr l)))])))
+
+  (test/length length)
+
+  (set! length
+        (let ((h (lambda (l) 0)))
+          (set! h
+                (lambda (l)
+                  (cond [(null? l) 0]
+                        [else (add1 (h (cdr l)))])))
+          h))
+
+  (test/length length))
 
 ;; pg 122
 
@@ -64,10 +77,11 @@
       (cond [(null? l) 0]
             [else (add1 (length (cdr l)))]))))
 
-(set! length
-      (let ([h (lambda (l) 0)])
-        (set! h (L (lambda (arg) (h arg))))
-        h))
+(module+ test
+  (set! length
+        (let ([h (lambda (l) 0)])
+          (set! h (L (lambda (arg) (h arg))))
+          h)))
 
 (module+ test
   (check-equal? (length '(1 2 3))
@@ -84,12 +98,12 @@
     (letrec ((h (f (lambda (arg) (h arg)))))
       h)))
 
-(set! length (Y! L))
-(set! length (Y-bang L))
-
 (module+ test
-  (check-equal? (length '(1 2 3))
-                3))
+  (define (test/y-length length)
+    (check-equal? (length '(1 2 3))
+                  3))
+  (test/y-length (Y! L))
+  (test/y-length (Y-bang L)))
 
 (define D
   (lambda (depth*)
