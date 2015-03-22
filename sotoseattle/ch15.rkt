@@ -100,12 +100,21 @@
 ; to something but not (never) having a value? Isn't it the same? Doesn't x have a value while
 ; gobbler or omnivore executes? And refer also to nothing (aka doesnt exist) out of the scope?
 ; as Billie would say: potatoe <> potato ?
+; Actually no!, There are... 2 answers 
+;   => there are no variables (that have value), only pointers that refer to stuff
+;   => x inside the scope refers to something, but outside has no value
 
 (define nibbler1
   (lambda (food)
     (let ((x 'donut))
       (set! x food)
       (cons food (cons x '())))))
+
+(define nibbler11
+  (lambda (food)
+    ((lambda (x)
+      (set! x food)
+      (cons food (cons x '()))) 'donut)))
 
 (define nibbler2
   (lambda (food)
@@ -118,6 +127,12 @@
       (set! x food)
       (cons food (cons x '())))))
 
+(define nibbler33
+  ((lambda (x) 
+    (lambda (food)
+      (set! x food)
+      (cons food (cons x '())))) 'whatever))
+
 (define nibbler4
   (lambda (food)
     (let ((x 'donut))
@@ -127,18 +142,23 @@
 (module+ test
   [check-equal? x 'lemons]                              ; from before
   [check-equal? (nibbler1 'trout) '(trout trout)]
-    [check-equal? x 'lemons]                            ; doesn't remember/change (lambda > let > set)
-  (check-equal? (nibbler2 'cheerio) '(cheerio cheerio))
-    [check-equal? x 'cheerio]                           ; remembers/changes (lambda > set)
-  (check-equal? (nibbler3 'lutefisk) '(lutefisk lutefisk))
-    [check-equal? x 'cheerio]                           ; does not remember/change (let > lambda > set)
-  (check-equal? (nibbler4 'lutefisk) '(lutefisk lutefisk))
-    [check-equal? x 'cheerio])                          ; does not remember/change (lambda > let > set)
+  [check-equal? x 'lemons]                              ; does not remember/change (lambda > let > set)
 
-; UHMMMM...
-; QUESTION 2: So let > lambda > set === lambda > let > set because in both ways the 
-; outter-scoped x is not changed (only the private x changes for a bit)
-; so, why the fuss?
+  [check-equal? (nibbler11 'trout) '(trout trout)]
+  [check-equal? x 'lemons]                              ;lambda == let
+  
+  (check-equal? (nibbler2 'cheerio) '(cheerio cheerio))
+  [check-equal? x 'cheerio]                             ; remembers/changes (lambda > set)
+
+  (check-equal? (nibbler3 'lutefisk) '(lutefisk lutefisk))
+  [check-equal? x 'cheerio]                             ; does not remember/change (let > lambda > set)
+
+  (check-equal? (nibbler4 'lutefisk) '(lutefisk lutefisk))
+  [check-equal? x 'cheerio])                            ; does not remember/change (lambda > let > set)
+
+; let > lambda > set === lambda > let > set because:
+;   1.- in both ways the outter-scoped x is not changed (only the private x changes for a bit)
+;   2.- let is a lambda !!
 
 (define food '())
 
