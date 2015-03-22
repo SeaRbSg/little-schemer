@@ -5,6 +5,8 @@
 (require "ch02.rkt")
 (require "ch09.rkt")
 
+(provide find)
+
 (define (sweet-tooth food)
   (cons food
     (cons 'cake '())))
@@ -109,7 +111,7 @@
   (check-equal? Ns '(3 5 3))
   (check-equal? Rs '((((pizza))) (((((pizza))))) (((pizza))))))
 
-(define (find n Ns Rs)
+(define (find1 n Ns Rs)
   (letrec
     ([F (lambda (Ns Rs)
           (cond
@@ -118,14 +120,14 @@
             [else (F (cdr Ns) (cdr Rs))]))])
     (F Ns Rs)))
 
-(test-case "find"
-  (check-equal? (find 3 Ns Rs) '(((pizza))))
-  (check-equal? (find 5 Ns Rs) '(((((pizza))))))
-  (check-equal? (find 7 Ns Rs) '()))
+(test-case "find1"
+  (check-equal? (find1 3 Ns Rs) '(((pizza))))
+  (check-equal? (find1 5 Ns Rs) '(((((pizza))))))
+  (check-equal? (find1 7 Ns Rs) '()))
 
 (define (deepM n)
   (if (member? n Ns)
-    (find n Ns Rs)
+    (find1 n Ns Rs)
     (deepR n)))
 
 (test-case "deepM"
@@ -138,7 +140,7 @@
 
 (define (deepM2 n)
   (if (member? n Ns)
-    (find n Ns Rs)
+    (find1 n Ns Rs)
     (let ([result (deep n)])
       (set! Rs (cons result Rs))
       (set! Ns (cons n Ns))
@@ -161,7 +163,7 @@
 
 (define (deepM3 n)
   (if (member? n Ns)
-    (find n Ns Rs)
+    (find1 n Ns Rs)
     (let ([result (deep2 n)])
       (set! Rs (cons result Rs))
       (set! Ns (cons n Ns))
@@ -177,7 +179,7 @@
         [Ns '()])
     (lambda (n)
       (if (member? n Ns)
-          (find n Ns Rs)
+          (find1 n Ns Rs)
           (let ([result (deep n)])
             (set! Rs (cons result Rs))
             (set! Ns (cons n Ns))
@@ -188,7 +190,7 @@
   (check-equal? (deepM4 16) '((((((((((((((((pizza))))))))))))))))))
 ; Can't test new Rs & Ns because they are inside closure
 
-(define (find2 n Ns Rs)
+(define (find n Ns Rs)
   (letrec
     ([F (lambda (Ns Rs)
           (cond
@@ -197,15 +199,15 @@
             [else (F (cdr Ns) (cdr Rs))]))])
     (F Ns Rs)))
 
-(test-case "find2"
-  (check-equal? (find2 3 '() '()) #f)
-  (check-equal? (find2 3 '(5 3) '((((((pizza))))) (((pizza))))) '(((pizza)))))
+(test-case "find"
+  (check-equal? (find 3 '() '()) #f)
+  (check-equal? (find 3 '(5 3) '((((((pizza))))) (((pizza))))) '(((pizza)))))
 
 (define deepM5
   (let ([Rs '()]
         [Ns '()])
     (lambda (n)
-      (let ([exists (find2 n Ns Rs)])
+      (let ([exists (find n Ns Rs)])
         (if (atom? exists)
           (let ([result (deep n)])
             (set! Rs (cons result Rs))
