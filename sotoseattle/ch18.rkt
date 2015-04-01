@@ -140,7 +140,7 @@
 
 (set! set-kdr
   (lambda (b x)
-    ((b (lambda (s a d) s)) x)))
+    ((b (lambda (s a d) s)) x)))    ; <=== interesting !!
 
 (set! kons
    (lambda (a d)
@@ -205,8 +205,8 @@
 
 (test-case "eklist applied to procs"
   [check-false (same? (kons 'egg '()) (kons 'egg '()))]
-  [check-false (same? dozen bakers-dozen-too)]         ; ERRATA ?
-  [check-false (same? bakers-dozen bakers-dozen-too)]) ; DOUBT
+  [check-false (same? dozen bakers-dozen-too)]
+  [check-false (same? bakers-dozen bakers-dozen-too)])
 
 ;;; page 151 & 152
 
@@ -226,7 +226,7 @@
   [check-equal? (kdr (last-kons long)) '()])
 
 (set-kdr (last-kons long) long)               ; setting the last '() to point to long (circular ref?)
-;(eklist? long long)                          ; crash!
+;(eklist? long long)                          ; crash! is infinitly generating the list
 ;(lenkth long)                                ; crash!
 ;(set-kdr (last-kons long) (kdr (kdr long)))  ; crash! (kdr (kdr long)) ==> 10 eggs
 
@@ -243,8 +243,8 @@
                   [(null? (kdr q)) 1]
                   [else (+ (C (sl p) (qk q)) 
                            2)])))
-           (qk (lambda (x) (kdr (kdr x))))
-           (sl (lambda (x) (kdr x))))
+           (qk (lambda (x) (kdr (kdr x))))    ; qk == quick
+           (sl (lambda (x) (kdr x))))         ; sl == slow  || the same principle as linked list circular
         (cond
           [(null? p) 0]
           [else (add1 (C p (kdr p)))])))))
