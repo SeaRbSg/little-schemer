@@ -89,16 +89,30 @@
            (/ 4 (hop 5))
            ))))
 
-(test-case "simply testing weird addition"
-  [check-equal? (weird_add) 8])
+;(test-case "simply testing weird addition"
+;  [check-equal? (weird_add) 8])
 
 (module+ test
-  (weird_add)               ; we need to run it first to set pepe to hop
-  [check-equal? (pepe 3) 6] ; now we can use pepe as (lambda (x) (+ 3 x)) !!!!
-  [check-equal? (pepe 4) 7]
-  [check-equal? (pepe 0) 3])
+  (define t0 (weird_add))    ; we need to run it first to set pepe to hop
+  [check-equal? t0 8]        ; also we need to store the result in a temp
+  (set! t0 (pepe 3))         ; to make the tests work ??
+  [check-equal? t0 6]        ; now we can use pepe as (lambda (x) (+ 3 x)) !!!!
+  (set! t0 (pepe 4))
+  [check-equal? t0 7]
+  (set! t0 (pepe 0))
+  [check-equal? t0 3])
 
-; now deepB makes sense!
+(module+ test
+  (define t1 (weird_add))
+  [check-equal? (* 5 5) 25]
+  (set! t1 (* (pepe 2) (pepe 200)))  ; <==========  Oh No, Oh No, Oh No...
+  [check-equal? t1 5])               ; <==========  ... OH MY GOD!!! << Shrieeeeek >>
+
+; When we use a continuation it forgets everything around it 
+; XX COMMANDMENT == Article of Faith [Don't like this kind of articles]
+; WHY ??
+
+; Nevertheless, now deepB starts to make sense!
 
 (set! toppings 'anchovies)
 (define deepB
@@ -109,14 +123,73 @@
           'pizza)
         (cons (deepB (sub1 m)) '()))))
 
-(test-case "page 158, 159, 160"
-  [check-equal? toppings 'anchovies]
-  [check-equal? (deepB 3) '(((pizza)))])
-
 (module+ test
-  (deepB 3)
-  [check-equal? (toppings 'pepe) '(((pepe)))]
-  (deepB 6)
-  [check-equal? (toppings 'cake) '((((((pepe))))))])
+  (define t2 (deepB 3))
+  [check-equal? t2 '(((pizza)))]
+  (set! t2 (toppings 'pepe))
+  [check-equal? t2 '(((pepe)))]
+  (set! t2 (deepB 4))
+  [check-equal? t2 '((((pizza))))]
+  (set! t2 (toppings 'cake))
+  [check-equal? t2 '((((cake))))]
+  [check-equal? (cons (toppings 'cake) (toppings 'cake)) '((((cake))))]) ; <=== Amnesiac Continuation !!
 
-; The XX Commandment sounds funny the way the books says it. I rather use the analogy of the reversed sock!
+; lets continue on page 161 with a new deep that uses a collector
+
+(define deep&Co
+  (lambda (m k)                                ; k is a collector (chapter 8),
+    (cond
+      [(zero? m) (k 'pizza)]
+      [else
+       (deep&Co (sub1 m)
+                (lambda (x)                    ; this is the new collector
+                  (k (cons x '()))))])))       ;
+  
+(test-case "161 & 162"
+  (define id (lambda (x) x))                   ; we use the identity function to get the ball rolling
+  [check-equal? (deep&Co 3 id) '(((pizza)))]
+  [check-equal? (deep&Co 0 id) 'pizza])
+
+(define deep&CoB
+  (lambda (m k)
+    (cond
+      [(zero? m)
+       (let ()
+         (set! toppings k)                     ; exactly the same, but now we remember the collector
+         (k 'pizza))]
+      [else 
+       (deep&CoB (sub1 m) (lambda (x) (k (cons x '()))))])))
+
+(test-case "page 163 & 164"
+  [check-equal? (deep&CoB 2 (lambda (x) x)) '((pizza))]
+  [check-equal? (toppings 'garlic) '((garlic))]              ; toppings is now the procedure 2-layers
+  [check-equal? (deep&CoB 4 (lambda (x) x)) '((((pizza))))]
+  [check-equal? (toppings 'garlic) '((((garlic))))]          ; toppings is now the procedure 4-layers
+  [check-equal? (cons (toppings (quote cake)) 
+                      (toppings (quote cake))) '(((((cake)))) (((cake))))])
+
+; the collector, a procedure, is a shadow of the continuation defined before
+; a continuation is to a procedure what a positron is to an electron (??)
+
+; change of course, page 165, remember function defined on chapter 11 & 12
+
+(define two-in-a-row?
+  (letrec
+      ((W (lambda (a lat)
+            (cond
+              [(null? lat) #f]
+              [else
+               (let ((nxt (car lat)))
+                 (or (eq? nxt a) (W nxt (cdr lat))))]))))
+    (lambda (lat)
+      (if (null? lat)
+          #f
+          (W (car lat) (cdr lat))))))
+
+(test-case "165"
+  [check-false (two-in-a-row? '(1 2 3 4 3))]
+  [check-true  (two-in-a-row? '(1 2 3 3 4))])
+
+
+
+
