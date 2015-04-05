@@ -4,6 +4,7 @@
 (require "prelude.rkt")
 (require "ch16.rkt")
 
+(provide deep counter set-counter)
 
 (define counter '())
 ; had to initialize counter to something first

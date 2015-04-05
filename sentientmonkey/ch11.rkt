@@ -4,6 +4,8 @@
 (require "prelude.rkt")
 (require "ch04.rkt")
 
+(provide two-in-a-row? two-in-a-row-b?)
+
 (define (member? a lat)
   (cond
     [(null? lat) #f]
