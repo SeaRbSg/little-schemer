@@ -33,7 +33,7 @@
 (test-case "page 157 a"
   [check-equal? (3-layers 'napolitana) '(((napolitana)))])
 
-; ... and now let's try to come up with a way to reverse this sock
+; ... and now let's try to come up with a way to reverse this sock.
 
 (define missguided_effort
   (lambda (n_layers pizza_type)
@@ -49,18 +49,30 @@
 (test-case "page 157 b"
   [check-equal? (missguided_effort 3 'napolitana) '(((napolitana)))])
 
-; not what we want, let try strating from deep and use set!
+; not what we want, let's rehash it in a different way:
+; if we used deep(49), and somehow, at the end we saved a function that conses 49 times...
+; ... then we could use that saved function on any other argument (napolitana, carrot, etc) and get
+; 49 layered different kind of pizzas!!
+;
+; deep(49) ; run once and save the 49er function into the function layers
+; then we do layers(napolitana) => napolitana with 49 layers
+; then we do layers(carrot)     => carrot with 49 layers
+; deep(13) ; run once and save the 49er function into the function layers
+; then we do layers(napolitana) => napolitana with 13 layers
+; then we do layers(carrot)     => carrot with 13 layers
 
-(define toppings 'anchovies)
+(define toppings 'nothingness) ; like the function above that I called layers
 
 (define deepB_initial
   (lambda (m)
     (if (zero? m) 
         (let/cc jump
-          (set! toppings jump) 
+          (set! toppings jump) ; HA! the reverse function when we reach 0!!
           'pizza)
         (cons (deepB (sub1 m)) '()))))
   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ; this use of let/cc seems freaky at first. Revisit ch13_bis.rkt and the last approach to understand it.
 ; http://www.cs.indiana.edu/~dfried/appcont.pdf
 ; ---------------------------------------------
@@ -86,6 +98,7 @@
   (lambda ()
     (+ 3 (let/cc hop
            (set! pepe hop)
+           ;(print 'hola)    ; it would print because it continues evaluating
            (/ 4 (hop 5))
            ))))
 
@@ -110,11 +123,12 @@
 
 ; When we use a continuation it forgets everything around it 
 ; XX COMMANDMENT == Article of Faith [Don't like this kind of articles]
-; WHY ??
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Nevertheless, now deepB starts to make sense!
 
-(set! toppings 'anchovies)
+(set! toppings 'nothingness)
 (define deepB
   (lambda (m)
     (if (zero? m) 
@@ -124,15 +138,30 @@
         (cons (deepB (sub1 m)) '()))))
 
 (module+ test
-  (define t2 (deepB 3))
+  (define t2 (deepB 3))                 ; we learn how to make 3 layer pizza...
   [check-equal? t2 '(((pizza)))]
-  (set! t2 (toppings 'pepe))
-  [check-equal? t2 '(((pepe)))]
-  (set! t2 (deepB 4))
+  (set! t2 (toppings 'donutburger))     ; ...and now we can bake a 3 layer donutburger
+  [check-equal? t2 '(((donutburger)))]
+  (set! t2 (deepB 4))                   ; we learn how to make 4 layer pizza...
   [check-equal? t2 '((((pizza))))]
-  (set! t2 (toppings 'cake))
+  (set! t2 (toppings 'cake))            ; ...and now we can bake a 4 layer cake
   [check-equal? t2 '((((cake))))]
+  (set! t2 (cons (toppings 'cake) '())) ; if we cons it...
+  [check-equal? t2 '((((cake))))]       ; ...shit !! it doesn't cons it    <=== Amnesiac Continuation !!
   [check-equal? (cons (toppings 'cake) (toppings 'cake)) '((((cake))))]) ; <=== Amnesiac Continuation !!
+
+; WHY WHY WHY WHY Doesn't it remember?
+; the continuation toppings includes all the conses and would be analogous to:
+; (set! toppings
+;   (lambda (specialty)
+;     (cons_m_times specialty)))
+; The explanation is obvious: if let/cc creates a wormhole, that implies a micro black hole
+; at the exit of the black hole, (where we call (toppings whatever) all that other stuff is
+; inside the Schwarzschild radius, by definition all that stuff falls in the black hole
+; and the only stuff to get out is whatever we sent through the wormhole. That is why it ignores 
+; whatever surrounds the call to (toppings and only considers the first one (obvious, wasn't it?)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; lets continue on page 161 with a new deep that uses a collector
 
@@ -168,8 +197,11 @@
   [check-equal? (cons (toppings (quote cake)) 
                       (toppings (quote cake))) '(((((cake)))) (((cake))))])
 
-; the collector, a procedure, is a shadow of the continuation defined before
-; a continuation is to a procedure what a positron is to an electron (??)
+; the collector is a procedure, not a continuation.
+; Now toppings is a procedure, a pale shadow of the continuation defined before.
+; There is no let/cc (no Schwarzschild radius!!), a completely different beast!
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; change of course, page 165, remember function defined on chapter 11 & 12
 
@@ -189,6 +221,138 @@
 (test-case "165"
   [check-false (two-in-a-row? '(1 2 3 4 3))]
   [check-true  (two-in-a-row? '(1 2 3 3 4))])
+
+
+(define leave '())
+(define walk
+  (lambda (l)
+    ;(print 'indeed!)
+    (cond
+      [(null? l) '()]
+      [(atom? (car l)) (leave (car l))] ; [4][5]
+      [else
+       (let ()
+         (walk (car l))
+         (walk (cdr l)))])))
+
+(define start-it
+  (lambda (l)
+    (let/cc here                        ; [1]
+      (set! leave here)                 ; [2]
+      (walk l))))                       ; [3]
+
+; (start-it l)
+;   - creates a wormhole exit (here)     [1]
+;   - references it outside unto leave   [2]
+;   - walks the l, which in turn:        [3]
+;       - finds the first atom
+;       - calls (leave found_atom) == (here found_atom):                   [4]
+;             - sends the found_atom through that entrance of the wormhole [5]
+;   - the found_atom shows up in the wormhole exit [1], and it is over!    [1]
+;       
+; the idea is that there are two ways to define the exit of the wormhole:
+; inside a function: page 167 - def leftmost -> skip but then it is only available inside leftmost
+; outside the function: page 167 - def start-it -> here setting it to leave defined outside, 
+; the continuation is now available outside walk
+
+(module+ test
+  (define t3 (start-it '((potatoes) (chips (chips (with))) fish)))
+  [check-equal? t3 'potatoes]
+  ;;;
+  (set! t3 (start-it '()))
+  [check-equal? t3 '()]
+  ;;;
+  (set! t3 (walk '((lint) (chips (chips (with))) fish)))
+  [check-equal? t3 'lint])
+
+; The last test is important. It works because once leave is defined, walk works!
+; (start-it l) has to be run only once!!
+; leave is defined as something like: (define leave (lambda (x) (walk l))) where l is open
+; so (walk l2) will use l2, not the l defined in the initial (start-it '((potato) (...)))
+; that is the power of continuation, no commitment, a free willing libertarian of a procedure
+
+;;; page 169
+
+(define fill 'hola)
+
+; This is easier to understand at first blush (it is the same, just combined)
+
+(define start-it-catch22
+  (lambda (l)
+    (let/cc here                             ; [a]
+      (letrec
+          ((W (lambda (l)
+                (cond
+                  [(null? l) '()]
+                  [(atom? (car l)) 
+                   (let ()
+                     (let/cc catch_it        ; [b] for fill
+                       (set! fill catch_it)
+                       (here (car l)))       ; exit at [a] with the first car
+                     (W (cdr l)))]           ; catch_it/fill is cont defined as (lambda (x) (W (cdr l)))
+                  [else
+                   (let ()
+                     (W (car l))
+                     (W (cdr l)))]))))
+        (W l)))))
+
+(module+ test
+  (define t22 (start-it-catch22 '((donuts) (cheerios (cheerios (spaguettios))) donuts)))
+  [check-equal? t22 'donuts]
+  (set! t22 fill))
+
+; now that we see the light, let's continue the disembowelment...
+
+(define waddle
+  (lambda (l)
+    (cond
+      [(null? l) '()]
+      [(atom? (car l)) 
+       (let ()
+         (let/cc catch_it
+           (set! fill catch_it)
+           (leave (car l)))
+         (waddle (cdr l)))]
+      [else
+       (let ()
+         (waddle (car l))
+         (waddle (cdr l)))])))
+
+(define start-it2
+  (lambda (l)
+    (let/cc here
+      (set! leave here)
+      (waddle l))))
+
+(module+ test
+  (define t4 (start-it2 '((donuts) (cheerios (cheerios (spaguettios))) donuts)))
+  [check-equal? t4 'donuts]
+  (set! t4 fill)
+  ;;;
+  (set! t4 (start-it '()))
+  [check-equal? t4 '()]
+  ;;;
+  (set! t4 (waddle '((potatong) (caramelos (chips (with))) fish)))
+  [check-equal? t4 'potatong])
+
+; obvious
+
+(define get-next
+  (lambda (x)
+    (let/cc here-again
+      (set! leave here-again)
+      (fill 'gone))))          ; we said before that catch_it/fill is defined as (lambda (x) (W (cdr l)))
+
+(module+ test
+  (define t5 (get-next 'go))
+  [check-equal? t5 'caramelos] ; that is == W of ((caramelos (chips (with))) fish)
+  (set! t5 (fill 'irrelevant)) ; again, we get the car of the cdr
+  [check-equal? t5 'chips]
+  (set! t5 (fill 'f_off))      ; and again, the car of the cdr
+  [check-equal? t5 'with]
+)
+
+
 
 
 
