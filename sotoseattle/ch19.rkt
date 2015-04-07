@@ -11,8 +11,7 @@
         (cons (deep (sub1 m)) '()))))
 
 (test-case "page 155 & 156"
-  [check-equal? (deep 6) '((((((pizza))))))]
-)
+  [check-equal? (deep 6) '((((((pizza))))))])
 
 ;;; page 157
 
@@ -57,7 +56,7 @@
 ; deep(49) ; run once and save the 49er function into the function layers
 ; then we do layers(napolitana) => napolitana with 49 layers
 ; then we do layers(carrot)     => carrot with 49 layers
-; deep(13) ; run once and save the 49er function into the function layers
+; deep(13) ; run once and save the 13er function into the function layers
 ; then we do layers(napolitana) => napolitana with 13 layers
 ; then we do layers(carrot)     => carrot with 13 layers
 
@@ -67,7 +66,7 @@
   (lambda (m)
     (if (zero? m)
         (let/cc jump
-          (set! toppings jump) ; HA! the reverse function when we reach 0!!
+          (set! toppings jump) ; HA! the reverse function when we reach 0 is (cons (deepB (sub1...
           'pizza)
         (cons (deepB (sub1 m)) '()))))
 
@@ -155,11 +154,12 @@
 ; (set! toppings
 ;   (lambda (specialty)
 ;     (cons_m_times specialty)))
-; The explanation is obvious: if let/cc creates a wormhole, that implies a micro black hole
-; at the exit of the black hole, (where we call (toppings whatever) all that other stuff is
-; inside the Schwarzschild radius, by definition all that stuff falls in the black hole
-; and the only stuff to get out is whatever we sent through the wormhole. That is why it ignores
-; whatever surrounds the call to (toppings and only considers the first one (obvious, wasn't it?)
+; The explanation is obvious: if let/cc creates a wormhole, that implies a micro black hole.
+; At the exit of the black hole, where we call (toppings whatever) all that other surrounding stuff is
+; inside the Schwarzschild radius, by definition all that falls in the black hole and disapears,
+; and the only information to escape/remember/evaluate is whatever we sent through the wormhole.
+; That is why it ignores whatever surrounds the call to toppings and only considers the first one.
+; (obvious, wasn't it?)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -172,7 +172,7 @@
       [else
        (deep&Co (sub1 m)
                 (lambda (x)                    ; this is the new collector
-                  (k (cons x '()))))])))       ;
+                  (k (cons x '()))))])))
 
 (test-case "161 & 162"
   (define id (lambda (x) x))                   ; we use the identity function to get the ball rolling
@@ -251,16 +251,14 @@
 
 ; the idea is that there are two ways to define the exit of the wormhole:
 ; inside a function: page 167 - def leftmost -> skip but then it is only available inside leftmost
-; outside the function: page 167 - def start-it -> here setting it to leave defined outside, 
+; outside the function: page 167 - def start-it -> here setting it to leave defined outside,
 ; the continuation is now available outside walk
 
 (module+ test
   (define t3 (start-it '((potatoes) (chips (chips (with))) fish)))
   [check-equal? t3 'potatoes]
-  ;;;
   (set! t3 (start-it '()))
   [check-equal? t3 '()]
-  ;;;
   (set! t3 (walk '((lint) (chips (chips (with))) fish)))
   [check-equal? t3 'lint])
 
@@ -327,10 +325,8 @@
   (define t4 (start-it2 '((donuts) (cheerios (cheerios (spaguettios))) donuts)))
   [check-equal? t4 'donuts]
   (set! t4 fill)
-  ;;;
   (set! t4 (start-it '()))
   [check-equal? t4 '()]
-  ;;;
   (set! t4 (waddle '((potatong) (caramelos (chips (with))) fish)))
   [check-equal? t4 'potatong])
 
