@@ -66,66 +66,14 @@
   (lambda (m)
     (if (zero? m)
         (let/cc jump
-          (set! toppings jump) ; HA! the reverse function when we reach 0 is (cons (deepB (sub1...
+          (set! toppings jump) ; HA! the reverse function when we reach 0 is (cons (deepB (sub1... [1]
           'pizza)
         (cons (deepB (sub1 m)) '()))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; this use of let/cc seems freaky at first. Revisit ch13_bis.rkt and the last approach to understand it.
-; http://www.cs.indiana.edu/~dfried/appcont.pdf
-; ---------------------------------------------
-; The continuation for some computation is whatever comes after it, expressed as a function of the result
-; for that computation. The ideas is that usually we think of instruction to run in a sequential manner,
-; from left to right, outside to inside (parens).
-; let/cc helps us stop in the middle of the program and look in the opposite direction: right to left,
-; from the inside towards the outside, like unfolding a sock, looking from the other side of the worm-hole.
-; the idea is that it is the same code, from a diferent point of view / reference the best way is through example.
-
-(test-case "let/cc as seen from the other side"
-  [check-equal?
-   (+ 3
-     (let/cc hop               ; <= look from here backwards and outwards and define hop!!
-             (/ 4 (hop 5))))
-   8])
-
-; hop is a function!! But it is internal, it cannot be accessed from outside the scope, so the only way to
-; capture it is by defining a name outside and then referencing with set!
-
-(define pepe '())
-(define weird_add
-  (lambda ()
-    (+ 3 (let/cc hop
-           (set! pepe hop)
-           ;(print 'hola)    ; it would print because it continues evaluating
-           (/ 4 (hop 5))
-           ))))
-
-;(test-case "simply testing weird addition"
-;  [check-equal? (weird_add) 8])
-
-(module+ test
-  (define t0 (weird_add))    ; we need to run it first to set pepe to hop
-  [check-equal? t0 8]        ; also we need to store the result in a temp
-  (set! t0 (pepe 3))         ; to make the tests work ??
-  [check-equal? t0 6]        ; now we can use pepe as (lambda (x) (+ 3 x)) !!!!
-  (set! t0 (pepe 4))
-  [check-equal? t0 7]
-  (set! t0 (pepe 0))
-  [check-equal? t0 3])
-
-(module+ test
-  (define t1 (weird_add))
-  [check-equal? (* 5 5) 25]
-  (set! t1 (* (pepe 2) (pepe 200)))  ; <==========  Oh No, Oh No, Oh No...
-  [check-equal? t1 5])               ; <==========  ... OH MY GOD!!! << Shrieeeeek >>
-
-; When we use a continuation it forgets everything around it
-; XX COMMANDMENT == Article of Faith [Don't like this kind of articles]
+; [1] But beware that what you get is not only the reverse socket/function but the whole stack stored up
+;     to that point. That is why it is not a function but a continuation. Buyers Beware!
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Nevertheless, now deepB starts to make sense!
 
 (set! toppings 'nothingness)
 (define deepB
@@ -137,9 +85,9 @@
         (cons (deepB (sub1 m)) '()))))
 
 (module+ test
-  (define t2 (deepB 3))                 ; we learn how to make 3 layer pizza...
+  (define t2 (deepB 3))                 ; we learn how to make 3 layer pizza...           [2]
   [check-equal? t2 '(((pizza)))]
-  (set! t2 (toppings 'donutburger))     ; ...and now we can bake a 3 layer donutburger
+  (set! t2 (toppings 'donutburger))     ; ...and now we can bake a 3 layer donutburger    [3]
   [check-equal? t2 '(((donutburger)))]
   (set! t2 (deepB 4))                   ; we learn how to make 4 layer pizza...
   [check-equal? t2 '((((pizza))))]
@@ -149,17 +97,12 @@
   [check-equal? t2 '((((cake))))]       ; ...shit !! it doesn't cons it    <=== Amnesiac Continuation !!
   [check-equal? (cons (toppings 'cake) (toppings 'cake)) '((((cake))))]) ; <=== Amnesiac Continuation !!
 
-; WHY WHY WHY WHY Doesn't it remember?
-; the continuation toppings includes all the conses and would be analogous to:
-; (set! toppings
-;   (lambda (specialty)
-;     (cons_m_times specialty)))
-; The explanation is obvious: if let/cc creates a wormhole, that implies a micro black hole.
-; At the exit of the black hole, where we call (toppings whatever) all that other surrounding stuff is
-; inside the Schwarzschild radius, by definition all that falls in the black hole and disapears,
-; and the only information to escape/remember/evaluate is whatever we sent through the wormhole.
-; That is why it ignores whatever surrounds the call to toppings and only considers the first one.
-; (obvious, wasn't it?)
+; WHY WHY WHY WHY Doesn't it remember? => Read ch19_zenspider_spider.rkt for a good toy example
+; The continuation toppings stores the stack up to that point. That means that when we call toppings
+; [3], we are going back to the stack that was initiated in [2]. So when we call toppings, the current
+; stack is substituted (so it forgets all that follows as an amnesiac) with the saved one, => the thing
+; shows up in the let/cc jump with a value of 'donutburger, it conses the 3 times and continues from where
+; the deepB was called [2], finishing right there because there is nothing else to do.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -199,7 +142,7 @@
 
 ; the collector is a procedure, not a continuation.
 ; Now toppings is a procedure, a pale shadow of the continuation defined before.
-; There is no let/cc (no Schwarzschild radius!!), a completely different beast!
+; There is no let/cc, it is a completely different beast!
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -264,9 +207,8 @@
 
 ; The last test is important. It works because once leave is defined, walk works!
 ; (start-it l) has to be run only once!!
-; leave is defined as something like: (define leave (lambda (x) (walk l))) where l is open
-; so (walk l2) will use l2, not the l defined in the initial (start-it '((potato) (...)))
-; that is the power of continuation, no commitment, a free willing libertarian of a procedure
+; leave is defined as the stack that was initiated with (start-it '()) and then
+; the stack of (lambda (x) x),
 
 ;;; page 169
 
@@ -329,8 +271,6 @@
   [check-equal? t4 '()]
   (set! t4 (waddle '((potatong) (caramelos (chips (with))) fish)))
   [check-equal? t4 'potatong])
-
-; (sarcasm 'obvious!)
 
 (define get-next
   (lambda (x)
