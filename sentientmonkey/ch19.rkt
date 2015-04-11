@@ -15,20 +15,33 @@
        'pizza)]
     [else (cons (deepB (sub1 m)) '())]))
 
-; let/cc was messing up the test-case & check-equal? :/
-(deepB 6) ; '((((((pizza))))))
-(toppings 'mozzeralla) ; '((((((mozzeralla))))))
-(toppings 'cake) ; '((((((cake))))))
-(toppings '(pizza)) ; '(((((((pizza)))))))
-(cons (toppings 'cake) '()) ; '(((((((cake)))))))
-(cons (cons (cons (toppings 'mozzarella) '()))) ; '(((((((mozzarella)))))))
+; shadowing check-equal? with a macro version to help with let/cc
+; this is similar to zenspider's version
+(define letcc/actual void)
+(define-syntax-rule (letcc/check-equal? actual expected)
+  (begin
+    (set! letcc/actual actual)
+    (check-equal? letcc/actual expected)))
 
-(deepB 4) ; '((((pizza))))
-(cons (cons (cons (toppings 'mozzarella) '()))) ; '((((mozzarella))))
+; My best explanation on why this works:
+; By expanding to a macro, this allows the let/cc's continuation to resume after set!
+; call. But since we've already saved off the original actual result, check-equal no longer
+; refers to actual again, and no longer invokes actual call over again (which would then return
+; a different result).
+
+(letcc/check-equal? (deepB 6) '((((((pizza)))))))
+(letcc/check-equal? (toppings 'mozzeralla) '((((((mozzeralla)))))))
+(letcc/check-equal? (toppings 'cake) '((((((cake)))))))
+(letcc/check-equal? (toppings '(pizza)) '(((((((pizza))))))))
+(letcc/check-equal? (cons (toppings 'cake) '()) '((((((cake)))))))
+(letcc/check-equal? (cons (cons (cons (toppings 'mozzarella) '()))) '((((((mozzarella)))))))
+
+(letcc/check-equal? (deepB 4) '((((pizza)))))
+(letcc/check-equal? (cons (cons (cons (toppings 'mozzarella) '()))) '((((mozzarella)))))
 ; as well as...
-(toppings 'mozzarella) ; '((((mozzarella))))
+(letcc/check-equal? (toppings 'mozzarella) '((((mozzarella)))))
 
-(cons (toppings 'cake) (toppings 'cake)) ; '((((cake))))
+(letcc/check-equal? (cons (toppings 'cake) (toppings 'cake)) '((((cake)))))
 
 (define (deep&coB m k)
   (cond
