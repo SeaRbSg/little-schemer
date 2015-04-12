@@ -6,7 +6,6 @@
 (define (abort x)
   (error x))
 
-
 (define (the-empty-table name)
   (abort
     (cons 'no-answer (cons name '()))))
@@ -95,12 +94,11 @@
     [else (cons (box (car vals))
                 (box-all (cdr vals)))]))
 
-(define (multi-extend)
-  (lambda (names values table)
-    (cond
-      [(null? names) table]
-      [else (extend (car names) (car values)
-                    (multi-extend (cdr names) (cdr values) table))])))
+(define (multi-extend names values table)
+  (cond
+    [(null? names) table]
+    [else (extend (car names) (car values)
+                  (multi-extend (cdr names) (cdr values) table))]))
 
 (define (evlis args table)
   (cond
@@ -258,23 +256,24 @@
     (check-equal? (value 'x) 3)
     (value '(set! x 5))
     (check-equal? (value 'x) 5)
-    (check-equal? (value '(add1 x)) 6)
-;    (check-equal? (value '((lambda (y)
-;                             (set! x 7)
-;                             y)
-;                           0)) 0)
-;    (check-equal? (value 'x) 7)
-;     (value '(define ls
-;               (cons
-;                 (cons
-;                   (cons 1 (quote ()))
-;                   (quote ()))
-;                 (quote ()))))
-;     (check-equal? (value '(car (car (car ls)))) 1)
+    (check-equal? (value '((lambda (x) x) 3)) 3)
+    (check-equal? (value '((lambda (y)
+                             (set! x 7)
+                             y)
+                           0)) 0)
+    (check-equal? (value 'x) 7)
+    (check-equal? (value '(zero? 0)) #t)
+    (check-equal? (value '(add1 2)) 3)
+;      (value '(define ls
+;                (cons
+;                  (cons
+;                    (cons 1 (quote ()))
+;                    (quote ()))
+;                  (quote ()))))
     (check-equal? (value '(cond (else 0))) 0)
-;     (check-equal? (value '(cond
-;                             ((null? (cons 0 (quote ()))) 0)
-;                             (else 1))) 1)
+;      (check-equal? (value '(cond
+;                              ((null? (cons 0 (quote ()))) 0)
+;                              (else 1))) 1)
 )
 
 
