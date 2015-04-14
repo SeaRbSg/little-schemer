@@ -2,9 +2,9 @@
 
 (require rackunit)
 (require "prelude.rkt")
+(require racket/trace)
 
-(define (abort x)
-  (error x))
+(define abort void)
 
 (define (the-empty-table name)
   (abort
@@ -109,9 +109,6 @@
                (evlis (cdr args) table)))
        (meaning (car args) table))]))
 
-(define (:car args-in-a-list)
-  (car (car args-in-a-list)))
-
 (define (a-prim p)
   (lambda (args-in-a-list)
     (p (car args-in-a-list))))
@@ -207,7 +204,7 @@
   (let ([:cons    (b-prim cons)]
         [:car     (a-prim car)]
         [:cdr     (a-prim cdr)]
-        [:null?   (b-prim null?)]
+        [:null?   (a-prim null?)]
         [:eq?     (b-prim eq?)]
         [:atom?   (a-prim atom?)]
         [:number? (a-prim number?)]
@@ -218,16 +215,16 @@
     [(number? e)        e]
     [(eq? e #t)         #t]
     [(eq? e #f)         #f]
-    [(eq? e '(cons))    :cons]
-    [(eq? e '(car))     :car]
-    [(eq? e '(cdr))     :cdr]
-    [(eq? e '(eq?))     :eq?]
-    [(eq? e '(atom?))   :atom?]
-    [(eq? e '(null?))   :null?]
-    [(eq? e '(zero?))   :zero?]
-    [(eq? e '(add1?))   :add1]
-    [(eq? e '(sub1?))   :sub1]
-    [(eq? e '(number?)) :number?])))
+    [(eq? e 'cons)    :cons]
+    [(eq? e 'car)     :car]
+    [(eq? e 'cdr)     :cdr]
+    [(eq? e 'eq?)     :eq?]
+    [(eq? e 'atom?)   :atom?]
+    [(eq? e 'null?)   :null?]
+    [(eq? e 'zero?)   :zero?]
+    [(eq? e 'add1)    :add1]
+    [(eq? e 'sub1)    :sub1]
+    [(eq? e 'number?) :number?])))
 
 (define (*cond e table)
   (evcon (cond-lines-of e) table))
@@ -247,33 +244,61 @@
         [(define? e) (*define e)]
         [else (the-meaning e)])))
 
-
-(test-case "value"
-    (check-equal? (value 3) 3)
-    (check-equal? (value #t) #t)
-    (check-equal? (value #f) #f)
+(test-case "define and set"
     (value '(define x 3))
     (check-equal? (value 'x) 3)
     (value '(set! x 5))
-    (check-equal? (value 'x) 5)
+    (check-equal? (value 'x) 5))
+
+(test-case "lambda"
     (check-equal? (value '((lambda (x) x) 3)) 3)
     (check-equal? (value '((lambda (y)
                              (set! x 7)
                              y)
                            0)) 0)
-    (check-equal? (value 'x) 7)
+    (check-equal? (value 'x) 7))
+
+(test-case "consts"
+    (check-equal? (value 3) 3)
+    (check-true (value #t))
+    (check-false (value #f))
     (check-equal? (value '(zero? 0)) #t)
     (check-equal? (value '(add1 2)) 3)
-;      (value '(define ls
-;                (cons
-;                  (cons
-;                    (cons 1 (quote ()))
-;                    (quote ()))
-;                  (quote ()))))
-    (check-equal? (value '(cond (else 0))) 0)
-;      (check-equal? (value '(cond
-;                              ((null? (cons 0 (quote ()))) 0)
-;                              (else 1))) 1)
-)
+    (check-equal? (value '(sub1 2)) 1)
+    (check-equal? (value '(car (quote (1 2)))) 1)
+    (check-equal? (value '(cdr (quote (1 2)))) '(2))
+    (check-true (value '(null? (quote ()))))
+    (check-true (value '(atom? (quote 1))))
+    (check-true (value '(number? (quote 1))))
+    (check-true (value '(eq? (quote 1) (quote 1))))
+    (check-equal? (value '(cons (quote 1) (quote ()))) '(1)))
 
+(test-case "cond"
+    (check-equal? (value '(cond (else 0))) 0)
+    (check-equal? (value '(cond
+                            (#t 0)
+                            (else 1))) 0)
+    (check-equal? (value '(cond
+                            ((zero? 0) 0)
+                            (else 1))) 0)
+    (check-equal? (value '(cond
+                            ((zero? 1) 0)
+                            (else 1))) 1))
+
+(test-case "set lookup"
+    (value '(set! *x x))
+    (check-equal? (value '*x) 5)
+    (value '(set! **x))
+    (check-equal? (value '**x) 0))
+
+(test-case "letcc"
+   (check-equal? (value '(value 1)) '(no-answer value))
+   (value '(define value
+             (lambda (e)
+               (letcc the-end
+                  (set! abort the-end)
+                  (cond
+                    ((define? e) (*define e))
+                    (else (the-meaning e)))))))
+    (check-equal? (value '(value 1)) '(no-answer define?)))
 
