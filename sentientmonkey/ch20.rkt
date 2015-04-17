@@ -2,24 +2,32 @@
 
 (require rackunit)
 (require "prelude.rkt")
-(require racket/trace)
 
 (define abort void)
+
+(define enable-trace #f)
+
+(define (trace name . vals)
+  (when enable-trace (printf "~s~n" (cons name vals))))
 
 (define (the-empty-table name)
   (abort
     (cons 'no-answer (cons name '()))))
 
 (define (lookup table name)
+  (trace 'lookup table name)
   (table name))
 
 (define (extend name1 value table)
+  (trace 'extend name1 value table)
   (lambda (name2)
+    (trace 'extend-lamba name2)
     (cond
       [(eq? name2 name1) value]
       [else (table name2)])))
 
 (define (define? e)
+  (trace 'define? e)
   (cond
     [(atom? e) #f]
     [(atom? (car e)) (eq? (car e) 'define)]
@@ -27,23 +35,28 @@
 
 ; box aka bons aka Y!
 (define (box it)
+  (trace 'box it)
   (lambda (sel)
     (sel it (lambda (new)
               (set! it new)))))
 
 (define (setbox box new)
+  (trace 'setbox box new)
   (box (lambda (it set) (set new))))
 
 (define (unbox box)
+  (trace 'unbox box)
   (box (lambda (it set) it)))
 
 (define (lookup-in-global-table name)
   (lookup global-table name))
 
 (define (meaning e table)
+  (trace 'meaning e table)
   ((expression-to-action e) e table))
 
 (define (the-meaning e)
+  (trace 'the-meaning e)
   (meaning e lookup-in-global-table))
 
 (define (atom-to-action e)
@@ -184,6 +197,7 @@
   (unbox (lookup table e)))
 
 (define (*set e table)
+  (trace '*set e table)
   (setbox
     (lookup table (name-of e))
     (meaning (right-side-of e) table)))
@@ -230,6 +244,7 @@
   (evcon (cond-lines-of e) table))
 
 (define (*letcc e table)
+  (trace '*letcc e table)
   (let/cc skip
      (beglis (ccbody-of e)
              (extend
@@ -238,6 +253,7 @@
                table))))
 
 (define (value e)
+  (trace 'value e)
   (let/cc the-end
       (set! abort the-end)
       (cond
@@ -286,13 +302,12 @@
                             (else 1))) 1))
 
 (test-case "set lookup"
-    (value '(set! *x x))
-    (check-equal? (value '*x) 5)
-    (value '(set! **x))
-    (check-equal? (value '**x) 0))
+    (value '(define a #f))
+    (value '(set! a x))
+    (check-equal? (value 'a) 7))
 
 (test-case "letcc"
-   (check-equal? (value '(value 1)) '(no-answer value))
+   (value '(define abort #f))
    (value '(define value
              (lambda (e)
                (letcc the-end
