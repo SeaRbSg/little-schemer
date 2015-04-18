@@ -49,6 +49,7 @@
   (box (lambda (it set) it)))
 
 (define (lookup-in-global-table name)
+  (trace 'lookup-in-global-table name)
   (lookup global-table name))
 
 (define (meaning e table)
@@ -60,6 +61,7 @@
   (meaning e lookup-in-global-table))
 
 (define (atom-to-action e)
+  (trace 'atom-to-action e)
   (cond
     [(number? e)        *const]
     [(eq? e #t)         *const]
@@ -77,6 +79,7 @@
     [else *identifier]))
 
 (define (list-to-action e)
+  (trace 'list-to-action e)
   (cond
     [(atom? (car e))
             (cond
@@ -89,12 +92,14 @@
      [else *application]))
 
 (define (expression-to-action e)
+  (trace 'expression-to-action e)
   (cond
     [(atom? e) (atom-to-action e)]
     [else (list-to-action e)]))
 
 ; TODO: lookup John Reynolds
 (define (beglis es table)
+  (trace 'beglis es table)
   (cond
     [(null? (cdr es)) (meaning (car es) table)]
     [else ((lambda (val)
@@ -102,18 +107,21 @@
            (meaning (car es) table))]))
 
 (define (box-all vals)
+  (trace 'box-all vals)
   (cond
     [(null? vals) '()]
     [else (cons (box (car vals))
                 (box-all (cdr vals)))]))
 
 (define (multi-extend names values table)
+  (trace 'multi-exend names values table)
   (cond
     [(null? names) table]
     [else (extend (car names) (car values)
                   (multi-extend (cdr names) (cdr values) table))]))
 
 (define (evlis args table)
+  (trace 'evlis args table)
   (cond
     [(null? args) '()]
     [else
@@ -182,6 +190,7 @@
     [else (evcon (cdr lines) table)]))
 
 (define (*define e)
+  (trace '*define e)
   (set! global-table
     (extend
       (name-of e)
@@ -191,9 +200,11 @@
       global-table)))
 
 (define (*quote e table)
+  (trace '*quote e table)
   (text-of e))
 
 (define (*identifier e table)
+  (trace '*identifier e table)
   (unbox (lookup table e)))
 
 (define (*set e table)
@@ -203,6 +214,7 @@
     (meaning (right-side-of e) table)))
 
 (define (*lambda e table)
+  (trace '*lambda e table)
   (lambda (args)
     (beglis (body-of e)
             (multi-extend
@@ -211,10 +223,12 @@
               table))))
 
 (define (*application e table)
+  (trace '*application e table)
   ((meaning (function-of e) table)
    (evlis (arguments-of e) table)))
 
 (define (*const e table)
+  (trace '*const e table)
   (let ([:cons    (b-prim cons)]
         [:car     (a-prim car)]
         [:cdr     (a-prim cdr)]
@@ -241,6 +255,7 @@
     [(eq? e 'number?) :number?])))
 
 (define (*cond e table)
+  (trace '*cond e table)
   (evcon (cond-lines-of e) table))
 
 (define (*letcc e table)
@@ -259,6 +274,10 @@
       (cond
         [(define? e) (*define e)]
         [else (the-meaning e)])))
+
+; Not in book! required to make 'no-answer work properly
+(set! global-table (lambda (name)
+                     (the-empty-table name)))
 
 (test-case "define and set"
     (value '(define x 3))
@@ -301,10 +320,27 @@
                             ((zero? 1) 0)
                             (else 1))) 1))
 
+(test-case "evens and odds"
+    (value '(define odd?
+              (lambda (n)
+                (cond
+                  ((zero? n) #f)
+                  (else (even? (sub1 n)))))))
+    (value '(define even?
+              (lambda (n)
+                (cond
+                  ((zero? n) #t)
+                  (else (odd? (sub1 n)))))))
+    (check-true (value '(odd? 1)))
+    (check-true (value '(even? 2))))
+
 (test-case "set lookup"
     (value '(define a #f))
     (value '(set! a x))
     (check-equal? (value 'a) 7))
+
+(test-case "no-answer"
+    (check-equal? (value 'nope) '(no-answer nope)))
 
 (test-case "letcc"
    (value '(define abort #f))
