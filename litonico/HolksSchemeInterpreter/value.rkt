@@ -3,7 +3,7 @@
 ;; We're using "association list"s to represent the environment.
 ;; An association list is a list of cons-pairs, like
 ;; '((key_a . val_a) (key_b . val_b))
-;; and works just like an ordered hash.
+;; and works like an ordered hash.
 
 ;; assq (builtin) finds KEY in ALIST using eq?, and returns (KEY . VALUE).
 
@@ -28,4 +28,7 @@
          [(lambda (,x) ,expr) ; if env is a lambda expression
              (lambda (v) (value-of expr (cons (cons x v) env)))] ; add x to env
          [(,[e1] ,[e2]) ; if x is a two-part expr '(expr1 expr2)
-             (e1 e2)]))
+                        ; (the [ ] means to recur on the bracketed
+                        ; part of the expr, until...
+             (e1 e2)])) ; no more recursion is possible, so apply!
+                        ; Note: this seems like magic, what's happening here?!
