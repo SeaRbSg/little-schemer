@@ -3,20 +3,77 @@
 (require miniKanren)
 
 (define else (lambda x #t)) ;; This feels very very dirty
-
-;; (define-syntax unit
-;;   (syntax-rules ()
-;;     ((_ a) a)))
-
-;; (define-syntax mzero
-;;   (syntax-rules ()
-;;     ((_) #f)))
-
-;; (define s# (lambda (s) (unit s)))
-;; (define u# (lambda (s) (mzero)))
 (define s# (== #f #f)) ;; succeed
 (define u# (== #f #t)) ;; fail
 
+[check-equal? (run* (q)
+                   u#)
+              '()]
+
+[check-equal? (run* (q)
+                    (== #t q))
+              '(#t)]
+
+[check-equal? (run* (q)
+                    u#
+                    (== #t q))
+              '()]
+
+[check-equal? (run* (q)
+                    s#
+                    (== #t q))
+              '(#t)]
+
+[check-equal? (run* (r)
+                    s#
+                    (== 'corn r))
+              '(corn)]
+
+[check-equal? (run* (r)
+                    u#
+                    (== 'corn r))
+              '()]
+
+[check-equal? (run* (q)
+                    s#
+                    (== #f q))
+              '(#f)]
+
+[check-equal? (run* (x)
+                    (let ((x #t))
+                      (== #f x)))
+              '()]
+
+[check-equal? (run* (q)
+                    (let ((x #f))
+                      (== #f x)))
+              '(_.0)]
+
+[check-equal? (run* (x)
+                    (let ((x #f))
+                      (== #t x)))
+              '()]
+
+[check-equal? (run* (q)
+                    (fresh (x)
+                           (== #t x)
+                           (== #t q)))
+              '(#t)]
+
+[check-equal? (run* (q)
+                    (fresh (x)
+                           (== x #t)
+                           (== #t q)))
+              '(#t)]
+
+[check-equal? (run* (q)
+                    (fresh (x)
+                           (== x #t)
+                           (== q #t)))
+              '(#t)]
+
+[check-equal? (run* (x) s#)
+              '(_.0)]
 
 ;; First example on page 8. WTF?!?!
 [check-equal? (run* (x)
