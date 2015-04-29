@@ -2,8 +2,21 @@
 (require rackunit)
 (require miniKanren)
 
+(define else (lambda x #t)) ;; This feels very very dirty
+
+;; (define-syntax unit
+;;   (syntax-rules ()
+;;     ((_ a) a)))
+
+;; (define-syntax mzero
+;;   (syntax-rules ()
+;;     ((_) #f)))
+
+;; (define s# (lambda (s) (unit s)))
+;; (define u# (lambda (s) (mzero)))
 (define s# (== #f #f)) ;; succeed
 (define u# (== #f #t)) ;; fail
+
 
 ;; First example on page 8. WTF?!?!
 [check-equal? (run* (x)
@@ -11,8 +24,6 @@
                       (fresh (x)
                              (== #t x))))
               '(_.0)]
-
-;; Also how do you test against fresh variables?
 
 [check-equal? (run* (r)
                    (fresh (x y)
@@ -83,57 +94,63 @@
                (else #f))]
 
 
-;; I can't make (else u#) work. At all. 
-
-(run* (x)
-      (conde
-       ((== 'olive x) s#)
-       ((== 'oil x) s#)))
-;; '(olive oil)
-
-
-(run 1 (x)
-     (conde
-      ((== 'olive x) s#)
-      ((== 'oil x) s#)))
-;; '(olive)
+[check-equal? (run* (x)
+                    (conde
+                     ((== 'olive x) s#)
+                     ((== 'oil x) s#)
+                     (else u#)))
+              '(olive oil)]
 
 
-(run* (x)
-      (conde
-       ((== 'virgin x) u#)
-       ((== 'olive x) s#)
-       (s# s#)
-       ((== 'oil x) s#)))
-;; '(olive _.0 oil)
+[check-equal? (run 1 (x)
+                   (conde
+                    ((== 'olive x) s#)
+                    ((== 'oil x) s#)
+                    (else u#)))
+              '(olive)]
 
+[check-equal? (run* (x)
+                    (conde
+                     ((== 'virgin x) u#)
+                     ((== 'olive x) s#)
+                     (s# s#)
+                     ((== 'oil x) s#)
+                     (else u#)))
+              '(olive _.0 oil)]
 
-(run 2 (x)
-     (conde
-      ((== 'extra x) s#)
-      ((== 'virgin x) u#)
-      ((== 'olive x) s#)
-      ((== 'oil x) s#)))
-;; '(extra olive)
+[check-equal? (run 2 (x)
+                   (conde
+                    ((== 'extra x) s#)
+                    ((== 'virgin x) u#)
+                    ((== 'olive x) s#)
+                    ((== 'oil x) s#)
+                    (else u#)))
+              '(extra olive)]
 
+[check-equal? (run* (r)
+                    (fresh (x y)
+                           (== 'split x)
+                           (== 'pea y)
+                           (== (cons x (cons y '())) r)))
+              '((split pea))]
 
-(run* (r)
-      (fresh (x y)
-             (conde
-              ((== 'split x) (== 'pea y))
-              ((== 'navy x) (== 'bean y)))
-             (== (cons x (cons y '())) r)))
-;; '((split pea) (navy bean))
+[check-equal? (run* (r)
+                    (fresh (x y)
+                           (conde
+                            ((== 'split x) (== 'pea y))
+                            ((== 'navy x) (== 'bean y))
+                            (else u#))
+                           (== (cons x (cons y '())) r)))
+              '((split pea) (navy bean))]
 
-
-(run* (r)
-      (fresh (x y)
-             (conde
-              ((== 'split x) (== 'pea y))
-              ((== 'navy x) (== 'bean y)))
-             (== (cons x (cons y (cons 'soup '()))) r)))
-;; '((split pea soup) (navy bean soup))
-
+[check-equal? (run* (r)
+                    (fresh (x y)
+                           (conde
+                            ((== 'split x) (== 'pea y))
+                            ((== 'navy x) (== 'bean y))
+                            (else u#))
+                           (== (cons x (cons y (cons 'soup '()))) r)))
+              '((split pea soup) (navy bean soup))]
 
 (define teacupo
   (lambda (x)
@@ -148,39 +165,68 @@
 
 ;; Review from here down
 
-(run* (r)
-      (fresh (x y)
-             (conde
-              ((teacupo x) (== #t y) s#)
-              ((== #f x) (== #t y)))
-             (== (cons x (cons y '())) r)))
+[check-equal? (run* (r)
+                    (fresh (x y)
+                           (conde
+                            ((teacupo x) (== #t y) s#)
+                            ((== #f x) (== #t y))
+                            (else u#))
+                           (== (cons x (cons y '())) r)))
+              '((#f #t) (tea #t) (cup #t))]
+;; teacupo has two solutions tea & cup 
 
-(run* (r)
-      (fresh (x y z)
-             (conde
-              ((== y x) (fresh (x) (== z x)))
-              ((fresh (x) (== y x)) (== z x)))
-             (== (cons y (cons z '())) r)))
 
-(run* (r)
-      (fresh (x y z)
-             (conde 
-              ((== y x) (fresh (x) (== z x)))
-              ((fresh (x) (== y x)) (== z x)))
-             (== #f x)
-             (== (cons y (cons z '())) r)))
+;; HALP!! I'm fuzzy on how this works
+[check-equal? (run* (r)
+                    (fresh (x y z)
+                           (conde
+                            ((== y x) (fresh (x) (== z x)))
+                            ((fresh (x) (== y x)) (== z x))
+                            (else u#))
+                           (== (cons y (cons z '())) r)))
+              '((_.0 _.1) (_.0 _.1))]
 
-(run* (q)
-      (let ((a (== #t q))
-            (b (== #f q)))
-        b))
+[check-equal? (run* (r)
+                    (fresh (x y z)
+                           (conde 
+                            ((== y x) (fresh (x) (== z x)))
+                            ((fresh (x) (== y x)) (== z x))
+                            (else u#))
+                           (== #f x)
+                           (== (cons y (cons z '())) r)))
+              '((#f _.0) (_.0 #f))]
+;; Narrative walk through:
+;; First conde line:
+;;   Unify y and x they're both "some value" y == x == _.0
+;;   Create a new x, x' which is now "some value" _.1
+;;   Unify x' with z, so x' == z == _.1
+;; (== #f x) line
+;;   y and x which were _.0 are now #f
+;; First answer is (#f _.0) because numbering of "some values" don't matter
+;; 
+;; Second conde line:
+;;   Create a new x, x' which is now "some value" _.0
+;;   Unify x' with y, so x' == y == _.0
+;;   Unify x and z. x == z == _.1
+;; (== #f x) line
+;;   x == z == #f 
+;; Second answer is (_.0 #f)
+;; Overall answer is ((#f _.0) (_.0 #f)) in some order
 
-(run* (q)
-      (let ((a (== #t q))
-            (b (fresh (x)
-                      (== x q)
-                      (== #f x)))
-            (c (conde
-                ((== #t q) s#)
-                ((#t) (== #f q)))))
-        b))
+[check-equal? (run* (q)
+                    (let ((a (== #t q))
+                          (b (== #f q)))
+                      b))
+              '(#f)]
+
+[check-equal? (run* (q)
+                    (let ((a (== #t q))
+                          (b (fresh (x)
+                                    (== x q)
+                                    (== #f x)))
+                          (c (conde
+                              ((== #t q) s#)
+                              ((#t) (== #f q))
+                              (else u#))))
+                      b))
+              '(#f)]
