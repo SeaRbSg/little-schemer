@@ -162,8 +162,12 @@
  '(olive _.0 oil)]
 
 ; x is then (olive _0 oil)
-; conde works as a bunch of OR conditions, only pick the ones that succeed
+; conde works as a bunch of OR conditions in parallel, 
+; each condition is a list of AND goals (questions) <== not just [question answer] but [q && q && q ...]
+; it only picks the conditions that succeed (keeping track of what happened inside), and disregards failed conditions
+; each condition marks a potentiality, a possible path ?
 ; NOW, if all of them fail, and that means ALL => unsucceed and x is ()
+; that is why [else #u] == [#s #u] == [#u] == nothing/ignore
 
 [check-equal?
  (run* (x)
