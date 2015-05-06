@@ -4,10 +4,15 @@
 
 (require "lib/shared.rkt")
 
+(module+ test
+  (require rackunit))
+
 ;;; Miscellany
 
+(define debug? #f)
+
 (define (debug name . vals)
-  (when #f
+  (when debug?
     (printf "~s~n" (cons name vals))))
 
 (define abort #f)                          ; for call/cc
@@ -234,8 +239,6 @@
 ;;; Tests:
 
 (module+ test
-  (require rackunit)
-
   (check-equal? (value 3)
                 3)
   (check-equal? (value '(cond [else 0]))
