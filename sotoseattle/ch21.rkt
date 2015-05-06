@@ -146,7 +146,7 @@
         [(== 'olive x) s#]  ; x was fresh, associated to olive succeeds => success!! (store)
         [(== 'oil x) s#]    ; in the new cond x is REFRESHED, associated with oil => success!! (store)
         [u#]))              ; no more conds (this is the else) => x was associated with olive and oil
-                            ; when x returns it brings back both assocs in a list (olive oil)
+ ; when x returns it brings back both assocs in a list (olive oil)
  '(olive oil)]
 
 ; (run1 (x)...) is the same as run*, but get just the first element of x
@@ -251,7 +251,7 @@
                [(fresh (x) (== y x)) (== z x)])
               (== (cons y (cons z '())) r)))
  '((_.0 _.1) (_.0 _.1))]
-           
+
 ; The same as
 
 [check-equal?
@@ -303,4 +303,4 @@
          b))
  '(pepe)]
 
-; maybe it is more like a tree, you walk down a path so the other paths dont count, ummmmm I wonder...
+; check ch21_recap.rkt for a deeper discussion from the weekly meeting that relates to this.
