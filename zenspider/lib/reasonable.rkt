@@ -284,3 +284,18 @@
                   (g2 s)
                   ((s) (g1 s))
                   ((s f) (g1 s))))))))
+
+(module+ test
+  (require rackunit)
+
+  (provide (all-defined-out))
+
+  (define-syntax check-run*
+    (syntax-rules (=>)
+      [(_ (vars ...) conds ... => exp) (check-equal? (run* (vars ...) conds ...)
+                                                     exp)]))
+
+  (define-syntax check-run
+    (syntax-rules (=>)
+      [(_ n (vars ...) conds ... => exp) (check-equal? (run n (vars ...) conds ...)
+                                                       exp)])))
