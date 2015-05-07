@@ -1,10 +1,7 @@
 #lang racket
 (require rackunit)
 (require miniKanren)
-
-(define else (lambda x #t)) ;; This feels very very dirty
-(define s# (== #f #f)) ;; succeed
-(define u# (== #f #t)) ;; fail
+(require "reasoned.rkt")
 
 [check-equal? (run* (q)
                    u#)
