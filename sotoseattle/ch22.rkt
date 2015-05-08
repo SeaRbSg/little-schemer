@@ -183,20 +183,32 @@
  '()]
 
 [check-equal?
- (run* (x) (pairo x)) ; OMG! succeeds because of how pairo executes!! by introducing 2 fresh vars
- '((_.0 . _.1))]      ; the question is does this succeed? (conso x y x) => (conso _.0 _.1 _.0)
-                      ; which is the same as (== (cons l1 l2) r) => (== (cons _.0 _.1) _.0) => (== (_.0 . _.1) _.0)
-                      ; can we bind _.0 with (_.0 . _.1) ??????
+ (run* (z) (pairo z)) ; OMG! succeeds because of how pairo executes!! by introducing 2 fresh vars
+ '((_.0 . _.1))]
+
+; (pairo z)
+; does (fresh (x y) (conso x y z)) => conso of 3 fresh vars. And conso x y z does
+; (conso x y z) => (== (cons x y) z) => (== (x . y) z)
+; rearviewing we have (pairo z) ==> (== (x . y) z) ==> z IS bound to (x . y) where all are fresh variables
+; so (pairo z) not only succeeds but z is bound to two fresh vars!!
 
 [check-equal?
- (run* (r)
-       (pairo (cons r 'pear)))
+ (run* (r) (pairo (cons r 'pear)))
  '(_.0)]
 
-; I am goint to need 5 minutes to sort this one out
+; (cons r 'pear) => (r . 'pear)
+; (pairo (cons r 'pear)) => (pairo (r . 'pear))
+; if z == (r . pear), we know that z is re-bound to 2 fresh vars (x y) (_.0 _.1)
+; so (r . pear) == (_.0 _.1) => r == _.0
 
-; and then to change all definitions of caro cdro pairo using conso
+; And to finish it off here are the defs of caro and cdro using consos
 
+(define caro_mio
+  (lambda (list r)
+    (fresh (x)
+           (conso r x list))))
 
-
-
+(define CDRO
+  (lambda (list r)
+    (fresh (x)
+           (conso x r list))))
