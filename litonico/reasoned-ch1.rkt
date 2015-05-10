@@ -244,3 +244,18 @@
              [(== #t q) %s]
              [(== #f q)]))]
     b))
+
+(run* (q)
+  (let [(a (== #t q))
+        (b (== #f q))]
+    a
+    b))
+
+(run* (q)
+  (let []
+    (== #t q)
+    (== #f q))) ;; what is q? -> '(#f)
+
+(run* (q)
+  (let []
+    (== #t #f))) ; what is q? -> '()
