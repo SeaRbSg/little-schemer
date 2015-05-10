@@ -2,7 +2,7 @@
 (require "lib/shared.rkt")
 (require rackunit)
 (require racket/trace)
-(require minikanren)
+(require "../lib/mk.rkt")
 
 (define s# (== #f #f))
 (define u# (== #f #t))

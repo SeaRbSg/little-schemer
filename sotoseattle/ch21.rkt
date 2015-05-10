@@ -2,7 +2,7 @@
 (require "lib/shared.rkt")
 (require rackunit)
 (require racket/trace)
-(require minikanren)
+(require "../lib/mk.rkt")
 
 (define s# (== #f #f))
 (define u# (== #f #t))
@@ -237,7 +237,7 @@
                ; [u#] ; from now on I delete all these ELSEs
                )
               (== (cons x (cons y '())) r)))
- '((#f #t) (tea #t) (cup #t))]
+ '((tea #t) (cup #t) (#f #t))]
 
 ; QUESTION: What is (teacupo 'pepe)? A procedure, a function that plays with goals ??
 
