@@ -1,9 +1,9 @@
 #lang racket
 (require miniKanren)
 
-(provide else s# u# caro cdro conso nullo eqo pairo)
+(provide else s# u# caro cdro conso nullo eqo pairo listo)
 
-(define else (lambda x #t)) ;; This feels very very dirty
+(define else (lambda x #f)) ;; This feels very very dirty
 (define s# (== #f #f)) ;; succeed
 (define u# (== #f #t)) ;; fail
 
@@ -45,3 +45,14 @@
   (lambda (p)
     (fresh (a d)
            (conso a d p))))
+
+
+(define listo
+  (lambda (l)
+    (conde
+     ((nullo l) s#)
+     ((pairo l)
+      (fresh (d)
+             (cdro l d)
+             (listo d)))
+     (else u#))))
