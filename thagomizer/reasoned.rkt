@@ -1,9 +1,8 @@
 #lang racket
-(require miniKanren)
+(require "../lib/mk.rkt")
 
-(provide else s# u# caro cdro conso nullo eqo pairo listo)
+(provide s# u# caro cdro conso nullo eqo pairo listo)
 
-(define else (lambda x #f)) ;; This feels very very dirty
 (define s# (== #f #f)) ;; succeed
 (define u# (== #f #t)) ;; fail
 

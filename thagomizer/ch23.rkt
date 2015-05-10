@@ -1,6 +1,6 @@
 #lang racket
 (require rackunit)
-(require miniKanren)
+(require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
 [check-true  (list? '((a) (a b) c))]
@@ -70,7 +70,7 @@
                    (lolo `((a b) (c d) . ,x)))
               '(()
                 (())
-                ((_.0)))]
+                (() ()))]
 
 
 (define twin 
@@ -228,5 +228,7 @@
              (cdro l d)
              (membero x d))])))
 
-(run* (q)
-      (membero 'olive '(olive)))
+[check-equal? (run* (q)
+                     (membero 'olive '(virgin olive oil))
+                     (== #t q))
+              '(#t)]

@@ -1,6 +1,6 @@
 #lang racket
 (require rackunit)
-(require miniKanren)
+(require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
 [check-equal? (let ((x (lambda (a) a))

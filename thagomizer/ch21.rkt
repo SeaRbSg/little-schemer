@@ -1,6 +1,6 @@
 #lang racket
 (require rackunit)
-(require miniKanren)
+(require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
 [check-equal? (run* (q)
@@ -226,7 +226,7 @@
                             ((== #f x) (== #t y))
                             (else u#))
                            (== (cons x (cons y '())) r)))
-              '((#f #t) (tea #t) (cup #t))]
+              '((tea #t)  (cup #t) (#f #t))]
 ;; teacupo has two solutions tea & cup 
 
 
