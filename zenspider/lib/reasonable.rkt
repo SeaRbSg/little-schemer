@@ -294,6 +294,10 @@
     (syntax-rules (=>)
       [(_ (vars ...) conds ... => exp) (check-equal? (run* (vars ...) conds ...)
                                                      exp)]))
+  (define-syntax check-run1
+    (syntax-rules (=>)
+      [(_ (vars ...) conds ... => exp) (check-run 1 (vars ...) conds ...
+                                                  => exp)]))
 
   (define-syntax check-run
     (syntax-rules (=>)

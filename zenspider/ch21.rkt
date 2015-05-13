@@ -163,11 +163,11 @@
   ;; cond-e line has failed, refreshing all variables that got an
   ;; association from that line.
 
-  (check-run 1 (x)                      ; 49
-             (cond-e [(≈ 'olive x) %s]
-                     [(≈ 'oil x)   %s]
-                     [else %u])
-             => '(olive))
+  (check-run1 (x)                       ; 49
+              (cond-e [(≈ 'olive x) %s]
+                      [(≈ 'oil x)   %s]
+                      [else %u])
+              => '(olive))
 
   (check-run* (x)                       ; 50
               (cond-e [(≈ 'virgin x) %u]
