@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require rackunit)
-(require minikanren)
+(require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
 (check-run* (q)
@@ -231,7 +231,7 @@
                      ((== #f x) (== #t y))
                      (else u#))
                    (== (cons x (cons y '())) r))
-            => '((#f #t) (tea #t) (cup #t))) ; not sure why ordering is different than in book
+            => '((tea #t) (cup #t) (#f #t))) ; fixed ordering with mk.rkt
 
 (check-run* (r)
             (fresh (x y z)

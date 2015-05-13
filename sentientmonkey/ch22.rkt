@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require rackunit)
-(require minikanren)
+(require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
 ;; 1
