@@ -52,14 +52,13 @@
 (define lolo
   (lambda (l)
     (conde
-     ((nullo l) s#)
+     ((nullo l))
      ((fresh (a)
              (caro l a)
              (listo a))
       (fresh (b)
              (cdro l b)
-             (lolo b)))
-     (else u#))))
+             (lolo b))))))
 
 [check-equal?
  (run 1 (l) (lolo l))
@@ -140,11 +139,162 @@
 (define loto
   (lambda (l)
     (conde
-     ((nullo l) s#)
+     ((nullo l))
      ((fresh (a)
              (caro l a)
              (twinso a))
       (fresh (b)
              (cdro l b)
-             (loto b)))
-     (else u#))))
+             (loto b))))))
+
+[check-equal?
+ (run 1 (q) (loto q))
+ '(())]                ; obvious, the nullo succeeds for empty list
+
+[check-equal?
+ (run 2 (q) (loto q))
+ '(() ((_.0 _.0)))]
+
+; caro of q => (_.0 . _.1) && twinso means sol is (_.0 _.0) << now proper >>
+; (run* (q) (fresh (x) (caro q x) (twinso q)))
+; so so far, l has a first element with (_.0 _.0), we do not know the second ((_.0 _.0) . ??)
+
+; cdro of q => (_.0 . _.1) and loto of that means that the first conde it finds is the nullo
+; but the (nullo (_.0 . _.1)) fails with '() => pulls out into ((_.0 _.0) . ??):
+; ((_.0 _.0) . ()) ==> ((_.0 _.0)) <====== OUR SECOND SOLUTION
+; 
+; since it was a conde (OR conds), lets go back to the car/twinso && cdr/loto of (_.0 . _.1)
+; the caro/twinso is clear again ==> (fresh_i . fresh_j) == twinsoed into (fresh_i fresh_i)
+; the cdro works similarly, and the recurring lotto will fail again in the nullo with '(), so
+; ((_.0 _.0) . ??) ==> ((_.0 _.0) . ((fresh_i fresh_i)  '())) =>
+; ((_.0 _.0) . ((fresh_i fresh_i))) ==> ((_.0 _.0) (fresh_i fresh_i)) ==>
+; ((_.0 _.0) (_.1 _.1)) ==> OUR THIRD SOLUTION, and on and on
+
+[check-equal?
+ (run 1 (z)
+      (loto `((g g) . ,z)))
+ '(())]
+
+[check-equal?
+ (run 3 (out)
+      (fresh (w x y z)
+             (== `((g g) (e ,w) (,x ,y) . ,z) out)
+             (loto out)))
+ '(((g g) (e e) (_.0 _.0)) 
+   ((g g) (e e) (_.0 _.0) (_.1 _.1)) 
+   ((g g) (e e) (_.0 _.0) (_.1 _.1) (_.2 _.2)))]
+
+(define listofo
+  (lambda (predo l)
+    (conde
+     ((nullo l))
+     ((fresh (a)
+             (caro l a)
+             (predo a))
+      (fresh (d)
+             (cdro l d)
+             (listofo predo d))))))
+
+[check-equal?
+ (run 3 (out)
+      (fresh (w x y z)
+             (== `((g g) (e ,w) (,x ,y) . ,z) out)
+             (listofo twinso out)))
+ '(((g g) (e e) (_.0 _.0)) 
+   ((g g) (e e) (_.0 _.0) (_.1 _.1)) 
+   ((g g) (e e) (_.0 _.0) (_.1 _.1) (_.2 _.2)))]
+
+; we are just passing the twinso as argument predo
+
+(define lototo
+  (lambda (l)
+    (listofo twinso l)))
+
+; ------------------------------------------------------------
+
+(define eq-car?
+  (lambda (l x)
+    (eq? (car l) x)))
+
+(define member?
+  (lambda (x l)
+    (cond
+      [(null? l) #f]
+      [(eq-car? l x) #t]
+      [else (member? x (cdr l))])))
+
+[check-true (member? 'olive '(virgin olive oil))]
+
+(define eq-caro
+  (lambda (l x)
+    (caro l x)))
+
+(define membero
+  (lambda (x l)
+    (conde
+     ;((nullo? l) u#)           ; unnecessary like the else statements because it fails
+     ((eq-caro l x))
+     ((fresh (b)                ; else is unnecessary because inside a specific conde all goals are &&
+             (cdro l b)
+             (membero x b))))))
+
+[check-equal?
+ (run* (q)
+       (membero 'olive '(virgin olive oil))
+       (== #t q))
+ '(#t)]
+
+[check-equal? (run* (y) (membero y '())) '()] ; because (caro/cdro '() x) both fail
+                                              ; (run* (x) (caro '() x) (== x #t))
+
+[check-equal? (run 1 (y) (membero y '(hummus with pita))) '(hummus)]
+[check-equal? (run* (y) (membero y '(a b c))) '(a b c)]
+
+; membero gives back a list of solutions where every solution satisfies that it is a member of the given list
+; the caro conde finds solutions of x
+; the cdro conde, being a different conde (OR), refreshes and as it recurrs finds NEW solutions of x
+;   that are added to the list of solution ==> becoming in order, the initial l
+
+(define identity
+  (lambda (l)
+    (run* (q)
+          (membero q l))))
+
+[check-equal? 
+ (run* (x)
+       (membero 'e `(pasta ,x fagioli)))
+ '(e)]
+
+; interestingly enough a solution for x is 'e because it will succeed only at the eq-caro '(,x) 'e
+; and caro is about unifying, about checking if x and 'e can be unified,
+; independently of the order (== x 'e) === (== 'e x)
+
+; for the following thread slowly...
+
+[check-equal?
+ (run 1 (x) (membero 'e `(e)))    ; ok, logical. membero succeeds but x is unknown
+ '(_.0)]
+
+[check-equal?
+ (run 1 (x) (membero 'e `(,x)))   ; ok, logical too, now x has a solution
+ '(e)]
+
+[check-equal?
+ (run* (x) (membero 'e `(e ,x)))  ; now it makes sense
+ '(_.0 e)]
+
+[check-equal?
+ (run* (x) (membero 'e `(pasta ,x e fartura)))  ; got it
+ '(e _.0)]
+
+[check-equal?
+ (run* (r)
+       (fresh (x y)
+              (membero 'e `(pasta ,x fagioli ,y))
+              (== `(,x ,y) r)))
+ '((e _.0) (_.0 e))]
+
+; the important thing is that as we change condes, as we have the caro succeed, the x is refreshed!
+
+(run 4 (l)
+     (membero 'tofu l))
