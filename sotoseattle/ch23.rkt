@@ -82,30 +82,69 @@
 ; for the same reasons as before in the long explanation. x nullo succeeds and is the first conde
 
 [check-equal?
- (run 5 (q)
-      (fresh (x)
-             (lolo `((a) . ,x))
-             (== #t q)))
- '(#t #t #t #t #t)]
+ (run 3 (q)
+      (lolo `((a) . ,q)))
+ '(() (()) (() ()))]
 
-; Why the above infinites if every solution is #t ????
-
-; keep in mind that:
-[check-equal? (run* (x) (fresh (k) (caro k x))) '(_.0)]
-[check-equal? (run* (x) (fresh (k) (cdro k x))) '(_.0)]
+; keep in mind:
+; (run* (x) (fresh (k) (caro (cons '(a) x) k)))
+; (run* (x) (fresh (k) (caro x k)))
+; (run* (x) (fresh (k) (cdro x k)))
 
 ; let's walk the lolo code again:
 ; l is (('a) . x)
 ;   [nullo ?] nope
-;   [caro] extract a as '(a), is '(a) a listo? YES, but go to next
+;   [caro] extract a as '(a), is it a listo? YES, but go to next
 ;   [cdro] extract b as x, is x a lolo?, let's see:
-;     l is x
-;       [nullo ?] YES, x is '() => that overall lolo succeeds => q is #t
-;       [caro] a is a freshy _.0, wich is a listo (all possible listos), let's see the second condition
-;       [cdro] b is a freshy , is it a lolo?
-;         l is '(_.0)
-;           [nullo ?] Yes, (nullo of freshy) succeeds for freshy being '() => AGAIN SOLUTION #t
-;           [caro] ... repeats as before because is just another freshy ...
-; so ad infinitum we find hits solutions that succeed (as they hit the nullos)...
-; ... which means an infinite stream of #t
+;     l is x, we get in conde (OR conditions)
+;       Conde 1: [nullo] YES, x is '() => that overall lolo succeeds => first solution of q is '()
+;       Conde 2: [caro] a is a freshy _.0, wich is a listo (all possible listos), &&
+;                [cdro] b is a freshy , is it a lolo?
+;                l is '(_.0), we get in conde (OR conditions)
+;                  Conde 1: [nullo] Yes, (nullo of freshy) succeeds for freshy being '() => 2nd solution is '(())
+;                     Of all the possible listos of before, this one collapses the solutions domain 
+;                     to make both goals succeed
+;                  Conde 2: [caro] yes
+;                           [cdro] b is a freshy again ==> (run* (x) (fresh (k) (cdro x k))) => (_.0 . _.1)
+;                           l is '(_.0), we get in conde (OR conditions)
+;                             Conde 1: [nullo] Yes, pull out, again of all possible listos => '(() ())
+; so ad infinitum we find hits that succeed and add '() to the list of solutions
 
+(define twinso_0
+  (lambda (s)
+    (fresh (x y)
+           (conso x y s)
+           (conso x '() y))))
+
+[check-equal?
+ (run* (q)
+       (twinso_0 '(tofu tofu))
+       (== #t q))
+ '(#t)]
+
+[check-equal?
+ (run* (z)
+       (twinso_0 `(,z tofu)))
+ '(tofu)]
+
+(define twinso
+  (lambda (s)
+    (fresh (x y)
+           (== `(,x ,x) s)))) ; <==== coool
+
+[check-equal?
+ (run* (z)
+       (twinso `(,z tofu)))
+ '(tofu)]
+
+(define loto
+  (lambda (l)
+    (conde
+     ((nullo l) s#)
+     ((fresh (a)
+             (caro l a)
+             (twinso a))
+      (fresh (b)
+             (cdro l b)
+             (loto b)))
+     (else u#))))
