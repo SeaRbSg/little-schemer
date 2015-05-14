@@ -98,31 +98,32 @@
 [check-equal? (rember 'peas '(a b peas d peas e))
               '(a b d peas e)]
 
-(define rembero
-  (lambda (x l out)
-    (conde
-     [(nullo l) (== '() out)]
-     [(eq-caro l x) (cdro l out)]
-     [else
-      (fresh (res)
-             (fresh (d)
-                    (cdro l d)
-                    (rembero x d res))
-             (fresh (a)
-                    (caro l a)
-                    (cons a res out)))])))
-
 ;; (define rembero
 ;;   (lambda (x l out)
 ;;     (conde
 ;;      [(nullo l) (== '() out)]
 ;;      [(eq-caro l x) (cdro l out)]
 ;;      [else
-;;       (fresh (res d a)
-;;              (cons a d l)
-;;              (rembero x d res)
-;;              (cons a res out))])))
+;;       (fresh (res)
+;;              (fresh (d)
+;;                     (cdro l d)
+;;                     (rembero x d res))
+;;              (fresh (a)
+;;                     (caro l a)
+;;                     (conso a res out)))])))
 
-(run 1 (out)
-     (fresh (y)
-            (rembero 'peas `(a b ,y d peas e) out)))
+(define rembero
+  (lambda (x l out)
+    (conde
+     [(nullo l) (== '() out)]
+     [(eq-caro l x) (cdro l out)]
+     [else
+      (fresh (res d a)
+             (conso a d l)
+             (rembero x d res)
+             (conso a res out))])))
+
+[check-equal? (run 1 (out)
+                   (fresh (y)
+                          (rembero 'peas `(a b ,y d peas e) out)))
+              '((a b d peas e))]
