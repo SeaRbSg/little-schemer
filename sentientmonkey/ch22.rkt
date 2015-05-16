@@ -4,6 +4,8 @@
 (require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
+(provide nullo pairo conso caro cdro)
+
 ;; 1
 (define c 42)
 
