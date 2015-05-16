@@ -127,3 +127,50 @@
                    (fresh (y)
                           (rembero 'peas `(a b ,y d peas e) out)))
               '((a b d peas e))]
+
+[check-equal? (run* (out)
+                    (fresh (y z)
+                           (rembero y `(a b ,y d ,z e) out)))
+              '((b a d _.0 e)
+                (a b d _.0 e)
+                (a b d _.0 e)
+                (a b d _.0 e)
+                (a b _.0 d e)
+                (a b e d _.0)
+                (a b _.0 d _.1 e))]
+
+
+[check-equal? (run* (r)
+                     (fresh (y z)
+                            (rembero y `(,y d ,z e) `(,y d e))
+                            (== `(,y ,z) r)))
+              '((d d) (d d) (_.0 _.0) (e e))]
+
+[check-equal? (run 8 (w)
+                   (fresh (y z out)
+                          (rembero y `(a b ,y d ,z . ,w) out)))
+              '(_.0 _.0 _.0 _.0 _.0 () (_.0 . _.1) (_.0))]
+
+(define surpriseo
+  (lambda (s)
+    (rembero s '(a b c) '(a b c))))
+;; supriseo s should succeed for all s
+
+[check-equal? (run* (r)
+                   (== 'd r)
+                   (surpriseo r))
+              '(d)]
+
+[check-equal? (run* (r)
+                    (surpriseo r))
+              '(_.0)]
+
+[check-equal? (run* (r)
+                    (surpriseo r)
+                    (== r 'a))
+              '(a)] ;; yay contradictions
+
+[check-equal? (run* (r)
+                    (== 'b r)
+                    (surpriseo r))
+              '(b)]
