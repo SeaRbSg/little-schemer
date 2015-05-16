@@ -387,9 +387,42 @@
 ; the second as the first tofu in last recirsion with '(tofu)
 ; and the third as the first conde and last tofu of '(tofu)
 ; therefore three #t
+; DOUBT !!!! Why 3 #t, shouldn't porrompompero be independent of (== #t q)?
+; ------------------------------------------------------------------------------
+; to understand why let's get back to basics. Remember from ch21:
 
-; QUESTION 82 and 84. I dont get it. It should be '(#t) in both cases.
-; whatever happens in porrompompero stays in porrompompero!! q is unrelated to tofu
+[check-equal?
+ (run* (x)
+       (conde
+        [(== 'virgin x) u#] ; throw away
+        [(== 'olive  x) u#] ; throw away
+        [s# s#]             ; x refreshed, s# succeeds => answer success => store (but without association)
+        [u# s#]             ; fails, throw away
+        [(== 'oil x)    u#] ; throw away
+        [u#]))
+ '(_.0)]
+
+; the key is that at the start of ecery conde-cond we refresh the variable of run*
+; that is why the solution is '(_.0) <== only one goad succeeds, but x is left ununified
+
+[check-equal?
+ (run* (q)
+       (conde 
+        (s#) (u#) (s#)))
+ '(_.0 _.0)]
+
+; Now that makes sense. And the following too!
+
+[check-equal?
+ (run* (q)
+       (conde 
+        (s#) (u#) (s#))
+       (== 'whatever q))
+ '(whatever whatever)]
+
+; The conde picks up 2 solutions (yet as freshies)
+; the last unification goal unifies them to whatever
+; ------------------------------------------------------------------------------
 
 ; # 86
 (define pinturero ; more pmembero
