@@ -122,16 +122,16 @@
 ;; 21
 (check-run* (q)
             (fresh (x y)
-                   (lolo `((a b) (,x c) (d ,y)))
-                   (== #t q))
+              (lolo `((a b) (,x c) (d ,y)))
+              (== #t q))
             => '(#t))
 
 ;; 22
 (check-run 1 (q)
-            (fresh (x y)
-                   (lolo `((a b) . ,x))
-                   (== #t q))
-            => '(#t))
+           (fresh (x y)
+             (lolo `((a b) . ,x))
+             (== #t q))
+           => '(#t))
 
 ;; 23
 (check-run 1 (x)
@@ -398,5 +398,190 @@
 
 ;; 73
 (check-run 1 (l)
-           (membero `tofu l)
+           (membero 'tofu l)
            => '((tofu . _.0)))
+
+;; 74
+(check-equal? (car '(tofu . _.0))
+              'tofu)
+
+;; 75
+;; never finishes...
+;; (run* (l)
+;;  (membero 'tofu l))
+
+;; 76
+(check-run 5 (l)
+           (membero 'tofu l)
+           => '((tofu . _.0)
+                (_.0 tofu . _.1)
+                (_.0 _.1 tofu . _.2)
+                (_.0 _.1 _.2 tofu . _.3)
+                (_.0 _.1 _.2 _.3 tofu . _.4)))
+;; too much tofu...
+
+;; 77
+;; tofu must be a member in l, but because l is fresh, it could be any size of a list. Recursing into membero
+;; with cdro provides us that infinite list length.
+
+;; 80
+(define (pmembero x l)
+  (conde
+    [(nullo l) u#]
+    [(eq-caro l x) (cdro l '())]
+    [else
+      (fresh (d)
+        (cdro l d)
+        (pmembero x d))]))
+
+(check-run 5 (l)
+           (pmembero 'tofu l)
+           => '((tofu)
+                (_.0 tofu)
+                (_.0 _.1 tofu)
+                (_.0 _.1 _.2 tofu)
+                (_.0 _.1 _.2 _.3 tofu)))
+
+;; 81
+(check-run* (q)
+            (pmembero 'tofu '(a b tofu d tofu))
+            (== #t q)
+            => '(#t))
+
+;; 82
+;; we only seem to be considering the case when tofu is last.
+
+;; 83
+(define (pmembero2 x l)
+  (conde
+    [(nullo l) u#]
+    [(eq-caro l x) (cdro l '())]
+    [(eq-caro l x) s#]
+    [else
+      (fresh (d)
+        (cdro l d)
+        (pmembero2 x d))]))
+
+;; 84
+(check-run* (q)
+            (pmembero2 'tofu '(a b tofu d tofu))
+            (== #t q)
+            => '(#t #t #t))
+
+;; 85
+;; now we consider all permutations of where tofu can be: beginning, middle, end, etc
+(check-run 4 (l)
+           (pmembero2 'tofu l)
+           => '((tofu)
+                (tofu . _.0)
+                (_.0 tofu)
+                (_.0 tofu . _.1)))
+
+;; 86
+;; we addtionally test to make sure that cdro l is not blank
+(define (pmembero3 x l)
+  (conde
+    ;; [(nullo l) u#] ;; 87 not needed
+    [(eq-caro l x) (cdro l '())]
+    [(eq-caro l x)
+     (fresh (a d)
+       (cdro l `(,a . ,d)))]
+    [else
+      (fresh (d)
+        (cdro l d)
+        (pmembero3 x d))]))
+
+;; 88
+(check-run* (q)
+            (pmembero3 'tofu '(a b tofu d tofu))
+            (== #t q)
+            => '(#t #t))
+
+
+;; 89
+(check-run 12 (l)
+           (pmembero3 'tofu l)
+           => '((tofu)
+                (tofu _.0 . _.1)
+                (_.0 tofu)
+                (_.0 tofu _.1 . _.2)
+                (_.0 _.1 tofu)
+                (_.0 _.1 tofu _.2 . _.3)
+                (_.0 _.1 _.2 tofu)
+                (_.0 _.1 _.2 tofu _.3 . _.4)
+                (_.0 _.1 _.2 _.3 tofu)
+                (_.0 _.1 _.2 _.3 tofu _.4 . _.5)
+                (_.0 _.1 _.2 _.3 _.4 tofu)
+                (_.0 _.1 _.2 _.3 _.4 tofu _.5 . _.6)))
+
+;; 90
+;; those lists are odd.
+
+;; 91
+(check-equal? (cdr '(tofu)) '())
+
+;; 92
+(check-equal? (cdr '(tofu _.0 . _.1)) '(_.0 . _.1))
+
+;; 93
+(define (pmembero4 x l)
+  (conde
+    [(eq-caro l x)
+     (fresh (a d)
+       (cdro l `(,a . ,d)))]
+    [(eq-caro l x) (cdro l '())]
+    [else
+      (fresh (d)
+        (cdro l d)
+        (pmembero4 x d))]))
+
+;; 94
+(check-run 12 (l)
+           (pmembero4 'tofu l)
+           => '((tofu _.0 . _.1)
+                (tofu)
+                (_.0 tofu _.1 . _.2)
+                (_.0 tofu)
+                (_.0 _.1 tofu _.2 . _.3)
+                (_.0 _.1 tofu)
+                (_.0 _.1 _.2 tofu _.3 . _.4)
+                (_.0 _.1 _.2 tofu)
+                (_.0 _.1 _.2 _.3 tofu _.4 . _.5)
+                (_.0 _.1 _.2 _.3 tofu)
+                (_.0 _.1 _.2 _.3 _.4 tofu _.5 . _.6)
+                (_.0 _.1 _.2 _.3 _.4 tofu)))
+
+;; 95
+(define (first-value l)
+  (run 1 (y)
+    (membero y l)))
+
+;; 96
+(check-equal? (first-value '(pasta e fagioli)) '(pasta))
+
+;; 98
+(define (memberrevo x l)
+  (conde
+    [(nullo l) u#]
+    [(s# ;; else didn't work here...
+       (fresh (d)
+         (cdro l d)
+         (memberrevo x d)))]
+    [else (eq-caro l x)]))
+
+;; seems like we're recursing in the conde :|
+
+;; 100
+(check-run* (x)
+            (memberrevo x '(pasta e fagioli))
+            => '(fagioli e pasta))
+
+;; 101
+(define (reverse-list l)
+  (run* (x)
+    (memberrevo x l)))
+
+;; peanut butter & marmalade? :/
+;; I prefer...
+(check-equal? (reverse-list '(honey and bananna butter peanut))
+              '(peanut butter bananna and honey))
