@@ -3,6 +3,8 @@
 (require "lib/reasonable.rkt")
 (require "ch22.rkt")
 
+(provide eq-car°)
+
 (define (list° l)                       ; 5
   (cond-e [(null° l) %s]
           [(pair° l) (fresh (d)
