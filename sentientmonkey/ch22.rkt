@@ -18,15 +18,15 @@
 ;; 2
 (check-run* (r)
             (fresh (y x)
-                   (== (list x y) r))
+              (== (list x y) r))
             => '((_.0 _.1)))
 
 ;; 3
 (check-run* (r)
             (fresh (v w)
-                   (== (let ([x v]
-                             [y w])
-                         (list x y)) r))
+              (== (let ([x v]
+                        [y w])
+                    (list x y)) r))
             => '((_.0 _.1)))
 
 ;; 4
@@ -38,7 +38,7 @@
 ;; 9
 (define (caro p a)
   (fresh (d)
-         (== (cons a d) p)))
+    (== (cons a d) p)))
 
 ;; 6
 (check-run* (r)
@@ -54,8 +54,8 @@
 ;; 8
 (check-run* (r)
             (fresh (x y)
-                   (caro (list r y) x)
-                   (== 'pear x))
+              (caro (list r y) x)
+              (== 'pear x))
             => '(pear))
 
 ;; 10
@@ -67,9 +67,9 @@
 ;; 11
 (check-run* (r)
             (fresh (x y)
-                   (caro '(grape raisin pear) x)
-                   (caro '((a) (b) (c)) y)
-                   (== (cons x y) r))
+              (caro '(grape raisin pear) x)
+              (caro '((a) (b) (c)) y)
+              (== (cons x y) r))
             => '((grape a)))
 
 ;; 13
@@ -81,13 +81,13 @@
 ;; 16
 (define (cdro p d)
   (fresh (a)
-         (== (cons a d) p)))
+    (== (cons a d) p)))
 
 ;; 15
 (check-run* (r)
             (fresh (v)
-                   (cdro '(a c o r n) v)
-                   (caro v r))
+              (cdro '(a c o r n) v)
+              (caro v r))
             => '(c))
 
 ;; 17
@@ -99,9 +99,9 @@
 ;; 18
 (check-run* (r)
             (fresh (x y)
-                   (cdro '(grape raisin pear) x)
-                   (caro '((a) (b) (c)) y)
-                   (== (cons x y) r))
+              (cdro '(grape raisin pear) x)
+              (caro '((a) (b) (c)) y)
+              (== (cons x y) r))
             => '(((raisin pear) a)))
 
 ;; 19
@@ -118,9 +118,9 @@
 ;; 21
 (check-run* (l)
             (fresh (x)
-                   (cdro l '(c o r n))
-                   (caro l x)
-                   (== 'a x))
+              (cdro l '(c o r n))
+              (caro l x)
+              (== 'a x))
             => '((a c o r n)))
 
 ;; 28
@@ -140,8 +140,8 @@
 ;; 24
 (check-run* (r)
             (fresh (x y z)
-                   (== `(e a d ,x) r)
-                   (conso y `(a ,z c) r))
+              (== `(e a d ,x) r)
+              (conso y `(a ,z c) r))
             => '((e a d c)))
 
 ;; 25
@@ -152,27 +152,27 @@
 ;; 26
 (check-run* (l)
             (fresh (x)
-                   (== `(d a ,x c) l)
-                   (conso x `(a ,x c) l))
+              (== `(d a ,x c) l)
+              (conso x `(a ,x c) l))
             => '((d a d c)))
 
 ;; 27
 (check-run* (l)
-             (fresh (x)
-                    (conso x `(a ,x c) l)
-                    (== `(d a ,x c) l))
-             => '((d a d c)))
+            (fresh (x)
+              (conso x `(a ,x c) l)
+              (== `(d a ,x c) l))
+            => '((d a d c)))
 
 ;; 29
 (check-run* (l)
             (fresh (d x y w s)
-                   (conso w '(a n s) s)
-                   (cdro l s)
-                   (caro l x)
-                   (== 'b x)
-                   (cdro l d)
-                   (caro d y)
-                   (== 'e y))
+              (conso w '(a n s) s)
+              (cdro l s)
+              (caro l x)
+              (== 'b x)
+              (cdro l d)
+              (caro d y)
+              (== 'e y))
             => '((b e a n s)))
 
 ;; 30
@@ -251,7 +251,7 @@
 ;; 52
 (check-run* (r)
             (fresh (x y)
-                   (== (cons x (cons y 'salad)) r))
+              (== (cons x (cons y 'salad)) r))
             => '((_.0 _.1 . salad)))
 
 ;; 53
@@ -295,7 +295,7 @@
 
 (define (caro* p a)
   (fresh (d)
-         (conso a d p)))
+    (conso a d p)))
 
 (check-run* (r)
             (caro* '(a c o r n) r)
@@ -303,12 +303,12 @@
 
 (define (cdro* p d)
   (fresh (a)
-         (conso a d p)))
+    (conso a d p)))
 
 (check-run* (r)
             (fresh (v)
-                   (cdro* '(a c o r n) v)
-                   (caro* v r))
+              (cdro* '(a c o r n) v)
+              (caro* v r))
             => '(c))
 
 ;; pario already defined in terms of conso
