@@ -402,26 +402,46 @@
         [u#]))
  '(_.0)]
 
-; the key is that at the start of ecery conde-cond we refresh the variable of run*
-; that is why the solution is '(_.0) <== only one goad succeeds, but x is left ununified
+[check-equal?
+ (run* (q)
+       (conde    ; conde_1
+        (s#)     ; scope_of_goals_a
+        (s#)     ; scope_of_goals_b 
+        (u#)     ; scope_of_goals_bad
+        (s#))    ; scope_of_goals_c
+       (conde    ; conde_2
+        (s#)     ; scope_of_goals_d
+        (s#)))   ; scope_of_goals_e
+ '(_.0 _.0 _.0 _.0 _.0 _.0)]
+
+; For run* we look at:
+; at the top-level inside the run* we have goals separated by ANDs: conde_1 && conde_2
+; inside a conde there are ORs => scope_of_goals_i || scope_of_goals_j
+; inside a scope_of_goals_i we have ANDS again (g1 && g2 && ...), but we don't care now for that depth of detail
+; So the combinations (segment 82-84) make sense because 
+; (a || b || c) && ( d || e)  => [a && d] || [a && e] || [b && d] || [b && e] || [c && e] || [c && e]. 
+; It makes sense from a purely logical sense: a set of subsets of goals.
+; 
+; A combination of scopes_of_goals is what intuitively sounds like:
+; [a && d] ==> like a union of scopes => a list of all the included goals => scope_of_goals_a U scope_of_goals_d => goals_of_a && goals_f_d
+; 
+; That explanation makes coherent the  following:
 
 [check-equal?
  (run* (q)
-       (conde 
-        (s#) (u#) (s#)))
- '(_.0 _.0)]
+       (conde
+        (s#)      ; scope_1 (a list of goals)
+        (s#)      ; scope_2 (a list of goals)
+        (u#))     ; forget about this one
+       (== 1 q))  ; unification_goal
+ '(1 1)]
 
-; Now that makes sense. And the following too!
-
-[check-equal?
- (run* (q)
-       (conde 
-        (s#) (u#) (s#))
-       (== 'whatever q))
- '(whatever whatever)]
-
-; The conde picks up 2 solutions (yet as freshies)
-; the last unification goal unifies them to whatever
+; where the solutions of q is '(1 1), because we have 2 scopes, 
+; like 2 scenarios (with each having its own subset of goals):
+;   scope_1 U unification_goal => (s# && unification_goal)
+;   scope_2 U unification_goal => (s# && unification_goal)
+; 
+; And each scenario, scope, subset finds an independent solution for q (although in this case both coincide).
 ; ------------------------------------------------------------------------------
 
 ; # 86
