@@ -4,6 +4,13 @@
 (require "ch22.rkt")
 (require "ch23.rkt")
 
+;;; The Second Commandment
+;;
+;; To transform a function whose value is not a boolean into a
+;; function whose value is a goal, add an extra argument to hald its
+;; value, replace cond with cond-e, and unnest each question and
+;; answer.
+
 (define (mem° x l out)                  ; 7
   (cond-e [(eq-car° l x) (≈ l out)]
           [else (fresh (d)
@@ -18,7 +25,7 @@
                   (cons° a res out)     ; build (cons a res) => out
                   (rember° x d res))])) ; always recurse last
 
-(define (surprise° s)                 ; 68
+(define (surprise° s)                   ; 68
   (rember° s '(a b c) '(a b c)))
 
 (module+ test
