@@ -34,7 +34,7 @@
 ; he x that makes the listo succeed can be any possible list (including the empty one).
 
 ; SECOND APPROACH: walk the code
-; Keep in mind that: (run* (q) (pairo q)) '(_.0 . _.1) is a solution for q, and that 
+; Keep in mind that: (run* (q) (pairo q)) '(_.0 . _.1) is a solution for q, and that
 ; (run* (x) (nullo x)) '() is a sol for x
 
 ; We start with l being ('a . x)
@@ -117,7 +117,7 @@
 ;                [cdro] b is a freshy , is it a lolailo?
 ;                l is '(_.0), we get in conde (OR conditions)
 ;                  Conde 1: [nullo] Yes, (nullo of freshy) succeeds for freshy being '() => 2nd solution is '(())
-;                     Of all the possible listos of before, this one collapses the solutions domain 
+;                     Of all the possible listos of before, this one collapses the solutions domain
 ;                     to make both goals succeed
 ;                  Conde 2: [caro] yes
 ;                           [cdro] b is a freshy again ==> (run* (x) (fresh (k) (cdro x k))) => (_.0 . _.1)
@@ -180,7 +180,7 @@
 ; cdro of q => (_.0 . _.1) and loto of that means that the first conde it finds is the nullo
 ; but the (nullo (_.0 . _.1)) fails with '() => pulls out into ((_.0 _.0) . ??):
 ; ((_.0 _.0) . ()) ==> ((_.0 _.0)) <====== OUR SECOND SOLUTION
-; 
+;
 ; since it was a conde (OR conds), lets go back to the car/twinso && cdr/loto of (_.0 . _.1)
 ; the caro/twinso is clear again ==> (fresh_i . fresh_j) == twinsoed into (fresh_i fresh_i)
 ; the cdro works similarly, and the recurring lotto will fail again in the nullo with '(), so
@@ -200,8 +200,8 @@
       (fresh (w x y z)
              (== `((g g) (e ,w) (,x ,y) . ,z) out)
              (loto out)))
- '(((g g) (e e) (_.0 _.0)) 
-   ((g g) (e e) (_.0 _.0) (_.1 _.1)) 
+ '(((g g) (e e) (_.0 _.0))
+   ((g g) (e e) (_.0 _.0) (_.1 _.1))
    ((g g) (e e) (_.0 _.0) (_.1 _.1) (_.2 _.2)))]
 
 ; # 48
@@ -222,8 +222,8 @@
       (fresh (w x y z)
              (== `((g g) (e ,w) (,x ,y) . ,z) out)
              (listofo twinso out)))
- '(((g g) (e e) (_.0 _.0)) 
-   ((g g) (e e) (_.0 _.0) (_.1 _.1)) 
+ '(((g g) (e e) (_.0 _.0))
+   ((g g) (e e) (_.0 _.0) (_.1 _.1))
    ((g g) (e e) (_.0 _.0) (_.1 _.1) (_.2 _.2)))]
 
 ; we are just passing the twinso as argument predo
@@ -256,7 +256,7 @@
     (conde
      ;((nullo? l) u#)           ; unnecessary like the else statements because it fails
      ((eq-caro l x))
-     ((fresh (b)                ; else is unnecessary because inside a specific conde all goals are &&
+     ((fresh (b)
              (cdro l b)
              (membrillo x b))))))
 
@@ -266,8 +266,14 @@
        (== #t q))
  '(#t)]
 
+[check-equal?
+ (run* (q)
+       (membrillo 'olive '(virgin olive olive oil))
+       (== #t q))
+ '(#t #t)]
+
 [check-equal? (run* (y) (membrillo y '())) '()] ; because (caro/cdro '() x) both fail
-                                              ; (run* (x) (caro '() x) (== x #t))
+                                                ; (run* (x) (caro '() x) (== x #t))
 
 ; # 58 to 64
 [check-equal? (run 1 (y) (membrillo y '(hummus with pita))) '(hummus)]
@@ -285,7 +291,7 @@
           (membrillo q l))))
 
 ; # 66 to 68
-[check-equal? 
+[check-equal?
  (run* (x)
        (membrillo 'e `(pasta ,x fagioli)))
  '(e)]
@@ -370,7 +376,7 @@
 (define porrompompero ; yet another pmembero (aka membrillo)
   (lambda (x l)
     (conde
-     ((eq-caro l x) (cdro l '()))   ; as before, to pick the last 
+     ((eq-caro l x) (cdro l '()))   ; as before, to pick the last
      ((eq-caro l x))                ; picks the first of l (in recursion too)
      ((fresh (d)
              (cdro l d)
@@ -406,7 +412,7 @@
  (run* (q)
        (conde    ; conde_1
         (s#)     ; scope_of_goals_a
-        (s#)     ; scope_of_goals_b 
+        (s#)     ; scope_of_goals_b
         (u#)     ; scope_of_goals_bad
         (s#))    ; scope_of_goals_c
        (conde    ; conde_2
@@ -418,13 +424,13 @@
 ; at the top-level inside the run* we have goals separated by ANDs: conde_1 && conde_2
 ; inside a conde there are ORs => scope_of_goals_i || scope_of_goals_j
 ; inside a scope_of_goals_i we have ANDS again (g1 && g2 && ...), but we don't care now for that depth of detail
-; So the combinations (segment 82-84) make sense because 
-; (a || b || c) && ( d || e)  => [a && d] || [a && e] || [b && d] || [b && e] || [c && e] || [c && e]. 
+; So the combinations (segment 82-84) make sense because
+; (a || b || c) && ( d || e)  => [a && d] || [a && e] || [b && d] || [b && e] || [c && e] || [c && e].
 ; It makes sense from a purely logical sense: a set of subsets of goals.
-; 
+;
 ; A combination of scopes_of_goals is what intuitively sounds like:
 ; [a && d] ==> like a union of scopes => a list of all the included goals => scope_of_goals_a U scope_of_goals_d => goals_of_a && goals_f_d
-; 
+;
 ; That explanation makes coherent the  following:
 
 [check-equal?
@@ -436,11 +442,11 @@
        (== 1 q))  ; unification_goal
  '(1 1)]
 
-; where the solutions of q is '(1 1), because we have 2 scopes, 
+; where the solutions of q is '(1 1), because we have 2 scopes,
 ; like 2 scenarios (with each having its own subset of goals):
 ;   scope_1 U unification_goal => (s# && unification_goal)
 ;   scope_2 U unification_goal => (s# && unification_goal)
-; 
+;
 ; And each scenario, scope, subset finds an independent solution for q (although in this case both coincide).
 ; ------------------------------------------------------------------------------
 
@@ -518,7 +524,7 @@
 [check-equal? (first-value '(pasta e fagioli)) '(pasta)]
 
 ; # 98 & 99
-(define memberroblleaahh ; onomatopoeia for barf after way too much pagioli
+(define memberroblleaahh ; onomatopoeia for barf after way too much f###ing fagioli
   (lambda (x l)
     (conde
      ((fresh (d)
@@ -526,7 +532,7 @@
              (memberroblleaahh x d)))
      ((eq-caro l x)))))
 
-; (define membrillo
+; (define membrillo ; for comparison purposes
 ;   (lambda (x l)
 ;     (conde
 ;      ((eq-caro l x))
