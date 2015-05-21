@@ -585,3 +585,52 @@
 ;; I prefer...
 (check-equal? (reverse-list '(honey and bananna butter peanut))
               '(peanut butter bananna and honey))
+
+;; examples from discussion
+(check-run* (s)
+            (fresh (a b c)
+              (conde
+                [(== a 'bacon) s#]
+                [(== b 'lettuce) s#]
+                [(== c 'tomato) s#]
+                [else u#])
+              (== `(,a ,b ,c) s))
+            => '((bacon _.0 _.1)
+                 (_.0 lettuce _.1)
+                 (_.0 _.1 tomato)))
+
+(check-run* (a)
+            (conde
+              [(== a 'bacon) s#]
+              [(== a 'lettuce) s#]
+              [(== a 'tomato) s#]
+              [else u#])
+            => '(bacon lettuce tomato))
+
+(check-run* (s)
+            (fresh (a b c)
+              (== a 'bacon)
+              (== b 'lettuce)
+              (== c 'tomato)
+              (== `(,a ,b ,c) s))
+            => '((bacon lettuce tomato)))
+
+(check-run* (s)
+            (fresh (a b)
+              (conde
+                [(== a 'bacon) s#]
+                [(== a 'lettuce) s#]
+                [(== a 'tomato) s#]
+                [else u#])
+              (conde
+                [(== b 'pumpernickel) s#]
+                [(== b 'avocado) s#]
+                [else u#])
+              (== `(,a ,b) s))
+            => '((bacon pumpernickel)
+                 (bacon avocado)
+                 (lettuce pumpernickel)
+                 (lettuce avocado)
+                 (tomato pumpernickel)
+                 (tomato avocado)))
+
