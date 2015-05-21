@@ -325,31 +325,38 @@
            (rembero 'q `(a b a d . ,w) `(a b a d . ,w))
            => '(()))
 
+;; helper to explain why an answer is provided.
+(define (whyo w1 v)
+  (fresh (y z out w)
+    (rembero y `(a b ,y d ,z . ,w) out)
+    (== w w1)
+    (== v `((y ,y)
+            (z ,z)
+            (out ,out)))))
+
+(check-run 1 (v)
+           (whyo '(_.0) v)
+           => '(((y a)
+                 (z _.0)
+                 (out (b a d _.0 _.0)))))
+
 ;; 63
-(check-run 1 (r)
-           (fresh (w y z out)
-             (rembero y `(a b ,y d ,z . ,w) out)
-             (== w '(_.0 . _.1))
-             (== r `((y ,y) (z ,z) (out ,out))))
+(check-run 1 (v)
+           (whyo '(_.0 . _.1) v)
            => '(((y a)
                  (z _.0)
                  (out (b a d _.0 _.0 . _.1)))))
+
 ;; 64
-(check-run 1 (r)
-           (fresh (w y z out)
-             (rembero y `(a b ,y d ,z . ,w) out)
-             (== w '(_.0))
-             (== r `((y ,y) (z ,z) (out ,out))))
+(check-run 1 (v)
+           (whyo '(_.0) v)
            => '(((y a)
                  (z _.0)
                  (out (b a d _.0 _.0)))))
 
 ;; 65
-(check-run 1 (r)
-           (fresh (w y z out)
-             (rembero y `(a b ,y d ,z . ,w) out)
-             (== w '(_.0 _.1 . _.2))
-             (== r `((y ,y) (z ,z) (out ,out))))
+(check-run 1 (v)
+           (whyo '(_.0 _.1 . _.2) v)
            => '(((y a)
                  (z _.0)
                  (out (b a d _.0 _.0 _.1 . _.2)))))
