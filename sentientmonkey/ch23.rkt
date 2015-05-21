@@ -5,6 +5,8 @@
 (require "reasoned.rkt")
 (require "ch22.rkt")
 
+(provide eq-car? eq-caro)
+
 ;; 1
 (define (list? l)
   (cond
@@ -633,4 +635,3 @@
                  (lettuce avocado)
                  (tomato pumpernickel)
                  (tomato avocado)))
-
