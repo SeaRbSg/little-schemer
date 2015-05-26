@@ -197,33 +197,122 @@
             (rumbero x tail result)      ; as it identifies/binds it separates
             (conso head result out)))))) ; as it identifies/binds it joins
 
-; # 30
+; # 30 - 48
 [check-equal?
   (run 1 (out)
     (fresh (y)
       (rumbero 'peas `(a b ,y d peas e) out)))
   '((a b d peas e))]
 
-(run* (out)
-  (fresh (y z)
-    (rumbero y `(a b ,y d ,z e) out)))
+[check-equal?
+ (run* (out)
+       (fresh (y z)
+              (rumbero y `(a b ,y d ,z e) out)))
+ '((b a d _.0 e)
+   (a b d _.0 e)
+   (a b d _.0 e)
+   (a b d _.0 e)
+   (a b _.0 d e)
+   (a b e d _.0)
+   (a b _.0 d _.1 e))]
 
-; fast-forward we have already gone through the first 2 elements consed in (a b ..)
-; now (rumbero y `(,y d ,z e) out) the caro conde succeeds and the cdro is set as solution
-;   => (d _.0 e) => SOL #1 (a b d _.0 e)
-; refresh and go other conde => head: ,y // tail: (d ,z e)
-;   rumbero y (d ,z e) out
-;     --> cons d forward
-;     --> caro with ,z (like before) => take out => sol '(e), pull!! (a b _.0 d e) SOL #2
-; ... wip
+; it is much simpler to use logic. All answers are easy.
 
+; # 49 - 56
 
+[check-equal?
+ (run* (r)
+       (fresh (y z)
+              (rumbero y `(,y d ,z e) `(,y d e))
+              (== `(,y ,z) r)))
+ '((d d) (d d) (_.0 _.0) (e e))]
 
+; # 57 - 67
 
+[check-equal?
+ (run 13 (w)
+      (fresh (y z out)
+             (rumbero y `(a b ,y d ,z . ,w) out)))
+ '(_.0                      ; y is a, the simplest w is ()
+  _.0                       ; y is b, the simplest w is also ()
+  _.0                       ; y is y, the simplest w is also ()
+  _.0                       ; y is d, the simplest w is also ()
+  _.0                       ; y is z (co refer), the simplest w is also ()
+  ()                        ; see bellow
+  (_.0 . _.1)
+  (_.0)
+  (_.0 _.1 . _.2)
+  (_.0 _.1)
+  (_.0 _.1 _.2 . _.3)
+  (_.0 _.1 _.2)
+  (_.0 _.1 _.2 _.3 . _.4))]
 
+; once we reach w, lets do (rumbero y `(,w) out), where w needs to be a list so we are proper
+; the first conde (nullo) works for w '() 
+; the second conde makes w an inproper pair of freshies, the cdro does the same, => (_.0 . _.1)
+; the third conde first makes w an inproper pair of freshies,
+;   then consosos the head _.0 into a recursive call
+;     the first conde works for nullo () => consosing => (_.0)
+;     the second conde works as before, another pair => consosing ==> (_.0) + (_.1 . _2) ==> (_.0 _.1 . _.2) 
+; etc.
 
+; # 68
+(define sorpreso
+  (lambda (s)
+    (rumbero s '(a b c) '(a b c))))
 
+; returns a goal that will succeed as long as s is not a, b nor c
 
+; # 69
+[check-equal?
+ (run* (r)
+       (== 'd r)
+       (sorpreso r))
+ '(d)]
 
+; # 70
+[check-equal?
+ (run* (r) (sorpreso r))
+ '(_.0)]
 
+; this is ok, because sorpreso gives a goal, and r is fresh, so there is no contradiction
+; because r is not defined/assigned/bound
 
+[check-equal?
+ (run* (r)
+       (== 'b r)
+       (sorpreso r))
+ '(b)]
+
+; why is this so? the above is analogous to the following simplified version
+
+[check-equal?
+ (run* (r)
+       (== 'b r)
+       (rumbero r '(b) '(b)))
+ '(b)]
+
+; or even worse
+[check-equal?
+ (run* (r)
+       (rumbero 'b '(b) '(b))) ; shouldn't it fail?
+ '(_.0)]
+
+; first, rumbero is a function that returns a goal
+; whatever rumbero's returned goal is, it is succeeding for r not becoming '()
+
+; when going through the conde in rumbero, the first one does not apply (nullo)
+; the second one 
+;   the eq-caro unfolds '(b) into a pair, where car is b => (b . _.0)
+;   the returned goal is (cdro '(b . _.0) '(b))
+;   which succeeds for _.0 == '() !!!
+
+; so the above can also be made
+[check-equal?
+ (run* (r)
+      ;(rumbero 'b '(b) '(b))) ; shouldn't it fail?
+       (fresh (x)
+              (cdro `(b . ,x) '(b))))
+ '(_.0)]
+
+; sorpresas te da la vida, la vida te da sorpresas
