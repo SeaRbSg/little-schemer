@@ -305,7 +305,7 @@
 ; the second one 
 ;   the eq-caro unfolds '(b) into a pair, where car is b => (b . _.0)
 ;   the returned goal is (cdro '(b . _.0) '(b))
-;   which succeeds for _.0 == '() !!!
+;   which succeeds for _.0 == '(b) !!!
 
 ; so the above can also be made
 [check-equal?
