@@ -284,7 +284,7 @@
        (sorpreso r))
  '(b)]
 
-; why is this so? the above is analogous to the following simplified version
+; why is this so? the above is analogous to the following simplified version '(b) instead '(a b c)
 
 [check-equal?
  (run* (r)
@@ -292,7 +292,8 @@
        (rumbero r '(b) '(b)))
  '(b)]
 
-; or even worse
+; or even simpler
+
 [check-equal?
  (run* (r)
        (rumbero 'b '(b) '(b))) ; shouldn't it fail?
@@ -302,17 +303,15 @@
 ; whatever rumbero's returned goal is, it is succeeding for r not becoming '()
 
 ; when going through the conde in rumbero, the first one does not apply (nullo)
-; the second one 
-;   the eq-caro unfolds '(b) into a pair, where car is b => (b . _.0)
-;   the returned goal is (cdro '(b . _.0) '(b))
-;   which succeeds for _.0 == '(b) !!!
-
+; the second one fails in the cdro
+; the third one works (because the recursion fails and comes back as nullo
 ; so the above can also be made
+
 [check-equal?
  (run* (r)
-      ;(rumbero 'b '(b) '(b))) ; shouldn't it fail?
-       (fresh (x)
-              (cdro `(b . ,x) '(b))))
+       (fresh (result head tail)
+              (conso head tail '(b))
+              (rumbero 'b tail result)
+              (conso head result '(b))
+              ))
  '(_.0)]
-
-; sorpresas te da la vida, la vida te da sorpresas
