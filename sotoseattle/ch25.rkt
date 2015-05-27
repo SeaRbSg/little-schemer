@@ -183,11 +183,203 @@
       (fresh (y z)
              (appendauto x y z)))
  '(() (_.0) (_.0 _.1) (_.0 _.1 _.2) (_.0 _.1 _.2 _.3) (_.0 _.1 _.2 _.3 _.4) (_.0 _.1 _.2 _.3 _.4 _.5))]
+; (nullo...)                ; first sol is obviously nullo x => ()
+; (conso a d x)             ; x is unfolded in pair _0 . _1
+; (conso a res z)           ; z is also unfolded in a pair where both heads are equal _0 . _2
+; (appendauto d y res)))))) ; appendauto (cdr x) y (cdr z) == app _1 y _2
+;                               success at nullo _1 => x is (_0)
+;                               recursivelly add another var
 
-; # 34
+; # 34 - 35
 [check-equal?
  (run 7 (y)
       (fresh (x z)
              (appendauto x y z)))
  '(_.0 _.0 _.0 _.0 _.0 _.0 _.0)]
+; (nullo...)                ; first sol is obviously nullo x => (), s == out, y == z, a freshy _0
+; (conso a d x)             ; x is unfolded in pair _0 . _1
+; (conso a res z)           ; z is also unfolded in a pair where both heads are equal _0 . _2
+; (appendauto d y res)))))) ; appendauto (cdr x) y (cdr z) == app _1 y _2
+;                               success at nullo _1 => x is (_0), again y == (cdr z) == another freshy
+;                               recursivelly add another var to x, yet again y is always another freshy
+
+; # 36
+[check-equal?
+ (run 7 (z)
+   (fresh (x y)
+     (appendauto x y z)))
+ '(_.0
+   (_.0 . _.1)
+   (_.0 _.1 . _.2)
+   (_.0 _.1 _.2 . _.3)
+   (_.0 _.1 _.2 _.3 . _.4)
+   (_.0 _.1 _.2 _.3 _.4 . _.5)
+   (_.0 _.1 _.2 _.3 _.4 _.5 . _.6))]
+; you can follow the code as we did in the two previous explanations,
+; or you can just add the two previous explanations (since appendauting x y gives you z)
+
+; # 37
+[check-equal?
+ (run 7 (r)
+   (fresh (x y z)
+     (appendauto x y z)
+     (== `(,x ,y ,z) r)))
+ '((() _.0 _.0)
+   ((_.0) _.1 (_.0 . _.1))
+   ((_.0 _.1) _.2 (_.0 _.1 . _.2))
+   ((_.0 _.1 _.2) _.3 (_.0 _.1 _.2 . _.3))
+   ((_.0 _.1 _.2 _.3) _.4 (_.0 _.1 _.2 _.3 . _.4))
+   ((_.0 _.1 _.2 _.3 _.4) _.5 (_.0 _.1 _.2 _.3 _.4 . _.5))
+   ((_.0 _.1 _.2 _.3 _.4 _.5) _.6 (_.0 _.1 _.2 _.3 _.4 _.5 . _.6)))]
+
+; # 38
+(define swappendo
+  (lambda (l s out)
+    (conde
+     ((fresh (a d res)
+             (conso a d l)
+             (conso a res out)
+             (swappendo d s res)))
+     ((nullo l) (== s out)))))
+
+; # 39 - 40
+; (run 1 (z)
+;   (fresh (x y)
+;     (swappendo x y z)))
+; nooooooooo, it recurs infinitelly and never gets out in the nullo !!!
+; swappendo of d s res is swappendo of three fresh variables, like x y z, ad infinitum
+
+; # 41 - 44
+(define unpack  ; instead of unwrap
+  (lambda (x)
+    (cond
+      [(pair? x) (unpack (car x))]
+      [else x])))
+
+[check-equal? (unpack '((((pizza))))) 'pizza]
+[check-equal? (unpack '((((pizza pie) with)) extra cheese)) 'pizza]
+
+; # 45 - 47
+(define unpaco
+  (lambda (package out)
+    (conde
+      ((pairo package)
+       (fresh (a)
+        (caro package a)
+        (unpaco a out)))
+      ((== package out)))))
+
+[check-equal?
+ (run* (x)
+   (unpaco '(((pizza))) x))
+ '(pizza (pizza) ((pizza)) (((pizza))))]
+; the package is unfolded into a pair, and then we have two branches
+; the first one recurrs unpacking the car of the package (as long as it can be unfoldd, until we find an atom)
+; the second branch always succeeds, it always gives a solution, the package itself at that point
+
+; # 48 - 51
+; (run 1 (x) (unpaco x 'pizza))
+; it is an infinite loop because it gets down the rabbit hole of recursion and
+; never finishes (nor hits the package out conde)
+; x => (_0 . _1) => _0 => (_2 . _3) => _2 => (_4 . _5) => ...
+
+; the same applies to:
+; (run 1 (x) (unpaco `((,x)) 'pizza))
+
+; # 52
+(define unwrapo
+  (lambda (package out)
+    (conde
+      ((== package out))
+      ((pairo package)
+       (fresh (a)
+        (caro package a)
+        (unwrapo a out))))))
+
+; # 53
+[check-equal?
+  (run 5 (x) (unwrapo x 'pizza))
+  '(pizza
+    (pizza . _.0)
+    ((pizza . _.0) . _.1)
+    (((pizza . _.0) . _.1) . _.2)
+    ((((pizza . _.0) . _.1) . _.2) . _.3))]
+
+; # 54
+[check-equal?
+  (run 5 (x) (unwrapo x '((pizza))))
+  '(((pizza))
+    (((pizza)) . _.0)
+    ((((pizza)) . _.0) . _.1)
+    (((((pizza)) . _.0) . _.1) . _.2)
+    ((((((pizza)) . _.0) . _.1) . _.2) . _.3))]
+
+; # 55 - 57
+[check-equal?
+  (run 5 (x) (unwrapo `((,x)) 'pizza))
+  '(pizza
+    (pizza . _.0)
+    ((pizza . _.0) . _.1)
+    (((pizza . _.0) . _.1) . _.2)
+    ((((pizza . _.0) . _.1) . _.2) . _.3))]
+; unwrapo ((x)) pizza
+;   -c1 ((x)) =/= pizza ❌
+;   -c2 ((x)) == ((x) . _.0)
+;       unwrapo (x) pizza
+;         -c1 (x) =/= pizza ❌
+;         -c2 (x) == (x . _.0) 
+;             unwrapo x pizza
+;               -c1 x == pizza ✅  [SOL 1]
+;               -c2 x == (_.0 . _.1)
+;                   unwrapo _.0 pizza
+;                     -c1 _.0 == pizza
+;                         x == (pizza . _.1) ✅  [SOL 2]
+;                     -c2 x == ((_.2 . _.3) . _.1)
+;                         unwrapo _.2 pizza
+;                           -c1 _.2 == pizza
+;                               x == ((pizza . _3) . _1) ✅  [SOL 3]
+;                           -c2 etc…
+
+; # 58
+(define flatten
+  (lambda (s)
+    (cond
+      [(null? s) '()]
+      [(pair? s)
+       (append
+         (flatten (car s))
+         (flatten (cdr s)))]
+      [else (cons s '())])))
+
+[check-equal? (flatten '((a b) c)) '(a b c)]
+
+; # 59 - 61 (my definition)
+(define flatteno
+  (lambda (s out)
+    (conde
+      ((nullo s) (== s out))
+      ((fresh (a d aa dd)
+         (conso a d s)
+           (flatteno a aa)
+           (flatteno d dd)
+           (appendo aa dd out)))
+      ((conso s '() out)))))
+
+[check-equal? (run 1 (x) (flatteno '((a b) c) x)) '((a b c))]
+[check-equal? (run 1 (x) (flatteno '(a (b c)) x)) '((a b c))]
+
+; # 62 - 63 see drawing ch25_62.png for walkthrough
+[check-equal?
+  (run 3 (x)
+    (flatteno '(a) x))
+  '((a) (a ()) ((a)))]
+
+; # 64 - 65 see drawing ch25_64.png for walkthrough
+[check-equal?
+  (run* (x)
+    (flatteno '((a)) x))
+  '((a) (a ()) (a ()) (a () ()) ((a)) ((a) ()) (((a))))]
+
+
+
 

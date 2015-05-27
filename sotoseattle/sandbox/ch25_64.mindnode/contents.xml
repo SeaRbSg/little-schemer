@@ -1,0 +1,907 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>author</key>
+	<string></string>
+	<key>comments</key>
+	<string></string>
+	<key>isUsingConstrainedLayout</key>
+	<true/>
+	<key>keywords</key>
+	<string></string>
+	<key>mindMap</key>
+	<dict>
+		<key>associations</key>
+		<array>
+			<dict>
+				<key>endArrow</key>
+				<integer>1</integer>
+				<key>endNodeID</key>
+				<string>2682282C-329D-46E1-98AE-FDD4EEEBA9FD</string>
+				<key>startArrow</key>
+				<integer>0</integer>
+				<key>startNodeID</key>
+				<string>3C2DE91E-28C7-449F-8F44-2A4ED9928999</string>
+				<key>strokeColor</key>
+				<string>{0.000, 0.500, 1.000, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>1</integer>
+				<key>strokeWidth</key>
+				<real>1</real>
+				<key>wayPointOffset</key>
+				<string>{0.756247, 68.7328}</string>
+			</dict>
+			<dict>
+				<key>endArrow</key>
+				<integer>1</integer>
+				<key>endNodeID</key>
+				<string>21531660-2DE0-4E17-A1F4-C12BECF387BC</string>
+				<key>startArrow</key>
+				<integer>0</integer>
+				<key>startNodeID</key>
+				<string>2682282C-329D-46E1-98AE-FDD4EEEBA9FD</string>
+				<key>strokeColor</key>
+				<string>{0.000, 0.500, 1.000, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>1</integer>
+				<key>strokeWidth</key>
+				<real>1</real>
+				<key>wayPointOffset</key>
+				<string>{-4.80625, 26.7891}</string>
+			</dict>
+		</array>
+		<key>color</key>
+		<string>{1.000, 1.000, 1.000, 1.000}</string>
+		<key>mainNodes</key>
+		<array>
+			<dict>
+				<key>contentAlignment</key>
+				<integer>1</integer>
+				<key>fillColor</key>
+				<string>{1.000, 1.000, 1.000, 1.000}</string>
+				<key>isDecreasingBranchThickness</key>
+				<true/>
+				<key>isDrawingFill</key>
+				<true/>
+				<key>isLeftAligned</key>
+				<false/>
+				<key>location</key>
+				<string>{-3289.7132812499999, -742.12552083333287}</string>
+				<key>nodeID</key>
+				<string>3D430650-9916-4D05-83F4-F3555D929DC4</string>
+				<key>strokeColor</key>
+				<string>{0.500, 0.500, 0.500, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>0</integer>
+				<key>strokeWidth</key>
+				<real>2</real>
+				<key>subnodes</key>
+				<array>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-3077.7132812499999, -766.62552083333287}</string>
+						<key>nodeID</key>
+						<string>56793569-ABCF-480C-9ABC-82982CD07504</string>
+						<key>strokeColor</key>
+						<string>{0.467, 0.000, 0.851, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>156</integer>
+							<key>htmlText</key>
+							<string>&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;c1 nullo ((k)) &lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;⛔️&lt;/span&gt;&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>0</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 c1 nullo ((k)) 
+\f1 \uc0\u9940 \u65039 }</string>
+						</dict>
+					</dict>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-3077.7132812499999, -730.62552083333287}</string>
+						<key>nodeID</key>
+						<string>5F05A4C2-F9CA-49A4-8E6F-66871C58C447</string>
+						<key>strokeColor</key>
+						<string>{0.000, 0.608, 0.847, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>228</integer>
+							<key>htmlText</key>
+							<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;c2 conso a d ((k)) =&amp;gt; a==(k) &amp;amp; d==( )&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>0</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 c2 conso a d ((k)) =&gt; a==(k) &amp; d==( )}</string>
+						</dict>
+					</dict>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-3077.7132812499999, -700.62552083333287}</string>
+						<key>nodeID</key>
+						<string>C9DBD6F4-86C8-4405-8BFA-2D0F496CBFE4</string>
+						<key>strokeColor</key>
+						<string>{0.000, 0.851, 0.671, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>300</integer>
+							<key>htmlText</key>
+							<string>&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;c3 out == x == (((k))) &lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;SOL 7&lt;/span&gt;&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>1</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 c3 out == x == (((k))) 
+\f1\fs18 \uc0\u9989  
+\f2 SOL 7}</string>
+						</dict>
+					</dict>
+				</array>
+				<key>title</key>
+				<dict>
+					<key>constrainedWidth</key>
+					<integer>300</integer>
+					<key>htmlText</key>
+					<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;(run* (x) (flatteno ((k)) x)&lt;/p&gt;</string>
+					<key>shrinkToFitContent</key>
+					<integer>1</integer>
+					<key>text</key>
+					<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 (run* (x) (flatteno ((k)) x)}</string>
+				</dict>
+			</dict>
+			<dict>
+				<key>contentAlignment</key>
+				<integer>1</integer>
+				<key>fillColor</key>
+				<string>{1.000, 1.000, 1.000, 1.000}</string>
+				<key>isDecreasingBranchThickness</key>
+				<true/>
+				<key>isDrawingFill</key>
+				<true/>
+				<key>isLeftAligned</key>
+				<false/>
+				<key>location</key>
+				<string>{-2858.3007812500009, -733.07552083333314}</string>
+				<key>nodeID</key>
+				<string>3C2DE91E-28C7-449F-8F44-2A4ED9928999</string>
+				<key>strokeColor</key>
+				<string>{0.500, 0.500, 0.500, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>0</integer>
+				<key>strokeWidth</key>
+				<real>2</real>
+				<key>subnodes</key>
+				<array>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-2686.3007812500009, -792.57552083333314}</string>
+						<key>nodeID</key>
+						<string>E3F8032F-66BF-4117-99B7-DC7C5D1667A0</string>
+						<key>strokeColor</key>
+						<string>{0.467, 0.000, 0.851, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>91</integer>
+							<key>htmlText</key>
+							<string>&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;nullo (k) &lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;⛔️&lt;/span&gt;&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>0</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 nullo (k) 
+\f1\fs18 \uc0\u9940 \u65039 }</string>
+						</dict>
+					</dict>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-2686.3007812500009, -737.07552083333314}</string>
+						<key>nodeID</key>
+						<string>76B44FC8-4F91-4E74-BE51-BB54265F27FD</string>
+						<key>strokeColor</key>
+						<string>{0.000, 0.608, 0.847, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array>
+							<dict>
+								<key>contentAlignment</key>
+								<integer>1</integer>
+								<key>fillColor</key>
+								<string>{1.000, 1.000, 1.000, 1.000}</string>
+								<key>isDecreasingBranchThickness</key>
+								<true/>
+								<key>isDrawingFill</key>
+								<false/>
+								<key>isLeftAligned</key>
+								<false/>
+								<key>location</key>
+								<string>{-2444.3007812500009, -761.57552083333314}</string>
+								<key>nodeID</key>
+								<string>DB14C507-1A0E-4E25-8363-6AD644FCB24D</string>
+								<key>strokeColor</key>
+								<string>{0.000, 0.608, 0.847, 1.000}</string>
+								<key>strokeStyle</key>
+								<integer>0</integer>
+								<key>strokeWidth</key>
+								<real>5</real>
+								<key>subnodes</key>
+								<array/>
+								<key>title</key>
+								<dict>
+									<key>constrainedWidth</key>
+									<integer>300</integer>
+									<key>htmlText</key>
+									<string>&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;aa == (k) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅&lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt; #62 sol 1&lt;/span&gt;&lt;/p&gt;</string>
+									<key>shrinkToFitContent</key>
+									<integer>1</integer>
+									<key>text</key>
+									<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 aa == (k) 
+\f1\fs18 \cf0 \uc0\u9989 
+\f2  #62 sol 1}</string>
+								</dict>
+							</dict>
+							<dict>
+								<key>contentAlignment</key>
+								<integer>1</integer>
+								<key>fillColor</key>
+								<string>{1.000, 1.000, 1.000, 1.000}</string>
+								<key>isDecreasingBranchThickness</key>
+								<true/>
+								<key>isDrawingFill</key>
+								<false/>
+								<key>isLeftAligned</key>
+								<false/>
+								<key>location</key>
+								<string>{-2444.3007812500009, -730.57552083333314}</string>
+								<key>nodeID</key>
+								<string>28EDE3E1-02E6-4AFF-B77C-13DF3764ADB1</string>
+								<key>strokeColor</key>
+								<string>{0.000, 0.608, 0.847, 1.000}</string>
+								<key>strokeStyle</key>
+								<integer>0</integer>
+								<key>strokeWidth</key>
+								<real>5</real>
+								<key>subnodes</key>
+								<array/>
+								<key>title</key>
+								<dict>
+									<key>constrainedWidth</key>
+									<integer>300</integer>
+									<key>htmlText</key>
+									<string>&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;aa == (k ( )) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;#62 sol 2&lt;/span&gt;&lt;/p&gt;</string>
+									<key>shrinkToFitContent</key>
+									<integer>1</integer>
+									<key>text</key>
+									<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 aa == (k ( )) 
+\f1\fs18 \cf0 \uc0\u9989  
+\f2 #62 sol 2}</string>
+								</dict>
+							</dict>
+							<dict>
+								<key>contentAlignment</key>
+								<integer>1</integer>
+								<key>fillColor</key>
+								<string>{1.000, 1.000, 1.000, 1.000}</string>
+								<key>isDecreasingBranchThickness</key>
+								<true/>
+								<key>isDrawingFill</key>
+								<false/>
+								<key>isLeftAligned</key>
+								<false/>
+								<key>location</key>
+								<string>{-2444.3007812500009, -699.57552083333314}</string>
+								<key>nodeID</key>
+								<string>D7E68838-5AF2-408F-87D5-96ED7556D658</string>
+								<key>strokeColor</key>
+								<string>{0.000, 0.608, 0.847, 1.000}</string>
+								<key>strokeStyle</key>
+								<integer>0</integer>
+								<key>strokeWidth</key>
+								<real>5</real>
+								<key>subnodes</key>
+								<array/>
+								<key>title</key>
+								<dict>
+									<key>constrainedWidth</key>
+									<integer>300</integer>
+									<key>htmlText</key>
+									<string>&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;aa == ((k)) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅&lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt; #62 sol 3&lt;/span&gt;&lt;/p&gt;</string>
+									<key>shrinkToFitContent</key>
+									<integer>1</integer>
+									<key>text</key>
+									<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 aa == ((k)) 
+\f1\fs18 \cf0 \uc0\u9989 
+\f2  #62 sol 3}</string>
+								</dict>
+							</dict>
+						</array>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>300</integer>
+							<key>htmlText</key>
+							<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;conso a d (k) =&amp;gt; a==k &amp;amp; d==( )&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;like #62 -&amp;gt; we pick up solutions&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>1</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 conso a d (k) =&gt; a==k &amp; d==( )\
+like #62 -&gt; we pick up solutions}</string>
+						</dict>
+					</dict>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-2686.3007812500009, -668.57552083333314}</string>
+						<key>nodeID</key>
+						<string>D21763D4-5A48-4A27-9434-B908DD450903</string>
+						<key>strokeColor</key>
+						<string>{0.000, 0.851, 0.671, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>281</integer>
+							<key>htmlText</key>
+							<string>&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;aa == ((k)) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅❓&lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;It seems &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt; &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;this&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;   &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;solution is not used.&lt;/span&gt;&lt;/p&gt;&lt;p style='font: 9px "Monaco"; text-align: left; -cocoa-font-postscriptname: "Monaco"; '&gt;               Is it because it is repeated?&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>0</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 aa == ((k)) 
+\f1\fs18 \cf0 \uc0\u9989 \uc0\u10067 
+\f2 It seems 
+\f1  
+\f2 this
+\f1    
+\f2 solution is not used.\
+               Is it because it is repeated?}</string>
+						</dict>
+					</dict>
+				</array>
+				<key>title</key>
+				<dict>
+					<key>constrainedWidth</key>
+					<integer>92</integer>
+					<key>htmlText</key>
+					<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;(flatteno (k) aa)&lt;/p&gt;</string>
+					<key>shrinkToFitContent</key>
+					<integer>0</integer>
+					<key>text</key>
+					<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 (flatteno (k) aa)}</string>
+				</dict>
+			</dict>
+			<dict>
+				<key>contentAlignment</key>
+				<integer>1</integer>
+				<key>fillColor</key>
+				<string>{1.000, 1.000, 1.000, 1.000}</string>
+				<key>isDecreasingBranchThickness</key>
+				<true/>
+				<key>isDrawingFill</key>
+				<true/>
+				<key>isLeftAligned</key>
+				<false/>
+				<key>location</key>
+				<string>{-2859.2882812500011, -595.60989583333298}</string>
+				<key>nodeID</key>
+				<string>2682282C-329D-46E1-98AE-FDD4EEEBA9FD</string>
+				<key>strokeColor</key>
+				<string>{0.500, 0.500, 0.500, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>0</integer>
+				<key>strokeWidth</key>
+				<real>2</real>
+				<key>subnodes</key>
+				<array>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-2689.2882812500011, -618.10989583333298}</string>
+						<key>nodeID</key>
+						<string>52F944AC-2B95-4D84-B226-3A31547A2005</string>
+						<key>strokeColor</key>
+						<string>{0.467, 0.000, 0.851, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>300</integer>
+							<key>htmlText</key>
+							<string>&lt;p&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;nullo ( ) &amp;amp; dd == ( ) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅&lt;/span&gt;&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>1</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 nullo ( ) &amp; dd == ( ) 
+\f1\fs18 \cf0 \uc0\u9989 }</string>
+						</dict>
+					</dict>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-2689.2882812500011, -587.10989583333298}</string>
+						<key>nodeID</key>
+						<string>85099181-8EE9-491A-8771-875644BB3F40</string>
+						<key>strokeColor</key>
+						<string>{0.000, 0.608, 0.847, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>124</integer>
+							<key>htmlText</key>
+							<string>&lt;p&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;conso a d ( ) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;⛔️&lt;/span&gt;&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>0</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 conso a d ( ) 
+\f1\fs18 \cf0 \uc0\u9940 \u65039 }</string>
+						</dict>
+					</dict>
+					<dict>
+						<key>contentAlignment</key>
+						<integer>1</integer>
+						<key>fillColor</key>
+						<string>{1.000, 1.000, 1.000, 1.000}</string>
+						<key>isDecreasingBranchThickness</key>
+						<true/>
+						<key>isDrawingFill</key>
+						<false/>
+						<key>isLeftAligned</key>
+						<false/>
+						<key>location</key>
+						<string>{-2689.2882812500011, -556.10989583333298}</string>
+						<key>nodeID</key>
+						<string>1AE0A11D-FCE5-427B-90F0-AA19259F78E5</string>
+						<key>strokeColor</key>
+						<string>{0.000, 0.851, 0.671, 1.000}</string>
+						<key>strokeStyle</key>
+						<integer>0</integer>
+						<key>strokeWidth</key>
+						<real>6</real>
+						<key>subnodes</key>
+						<array/>
+						<key>title</key>
+						<dict>
+							<key>constrainedWidth</key>
+							<integer>126</integer>
+							<key>htmlText</key>
+							<string>&lt;p&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;dd == (( )) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅&lt;/span&gt;&lt;/p&gt;</string>
+							<key>shrinkToFitContent</key>
+							<integer>0</integer>
+							<key>text</key>
+							<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 dd == (( )) 
+\f1\fs18 \cf0 \uc0\u9989 }</string>
+						</dict>
+					</dict>
+				</array>
+				<key>title</key>
+				<dict>
+					<key>constrainedWidth</key>
+					<integer>90</integer>
+					<key>htmlText</key>
+					<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;(flatteno ( ) dd)&lt;/p&gt;</string>
+					<key>shrinkToFitContent</key>
+					<integer>0</integer>
+					<key>text</key>
+					<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 (flatteno ( ) dd)}</string>
+				</dict>
+			</dict>
+			<dict>
+				<key>contentAlignment</key>
+				<integer>1</integer>
+				<key>fillColor</key>
+				<string>{1.000, 1.000, 1.000, 1.000}</string>
+				<key>isDecreasingBranchThickness</key>
+				<true/>
+				<key>isDrawingFill</key>
+				<true/>
+				<key>isLeftAligned</key>
+				<false/>
+				<key>location</key>
+				<string>{-2921.6382812500015, -511.2755208333333}</string>
+				<key>nodeID</key>
+				<string>21531660-2DE0-4E17-A1F4-C12BECF387BC</string>
+				<key>strokeColor</key>
+				<string>{0.500, 0.500, 0.500, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>0</integer>
+				<key>strokeWidth</key>
+				<real>2</real>
+				<key>subnodes</key>
+				<array/>
+				<key>title</key>
+				<dict>
+					<key>constrainedWidth</key>
+					<integer>300</integer>
+					<key>htmlText</key>
+					<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;appendo aa dd =&amp;gt; combine&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt; aa : ((k) (k ( )) ((k)) &lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-decoration: line-through; -cocoa-font-postscriptname: "HelveticaNeue"; -cocoa-strikethrough: single; '&gt;((k))&lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;)&lt;/span&gt;&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt; dd : (( ) (( )))&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  (appendo (k) ( )) =&amp;gt; (k) &lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;SOL&lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt; 1&lt;/span&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  (appendo (k) (( ))) =&amp;gt; (k ( )) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;SOL&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt; 2&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  (appendo (k ( )) ( )) =&amp;gt; (k ( )) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;SOL&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt; 3&lt;/span&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  (appendo (k) ( ) (( ))) =&amp;gt; (k ( ) ( )) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;SOL&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt; 4&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  (appendo ((k)) ( )) =&amp;gt; ((k)) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;SOL&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt; 5&lt;/span&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  (appendo ((k)) (( ))) =&amp;gt; ((k) ( )) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; -cocoa-font-postscriptname: "Monaco"; '&gt;SOL&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; -cocoa-font-postscriptname: "AppleColorEmoji"; '&gt; 6&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  &lt;/span&gt;&lt;span style='font: 12px "Helvetica Neue"; text-decoration: line-through; -cocoa-font-postscriptname: "HelveticaNeue"; -cocoa-strikethrough: single; '&gt;(appendo ((k)) ( )) =&amp;gt; ((k)) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; text-decoration: line-through; -cocoa-font-postscriptname: "AppleColorEmoji"; -cocoa-strikethrough: single; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; text-decoration: line-through; -cocoa-font-postscriptname: "Monaco"; -cocoa-strikethrough: single; '&gt;SOL&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; text-decoration: line-through; -cocoa-font-postscriptname: "AppleColorEmoji"; -cocoa-strikethrough: single; '&gt; 7&lt;/span&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='font: 12px "Helvetica Neue"; -cocoa-font-postscriptname: "HelveticaNeue"; '&gt;  &lt;/span&gt;&lt;span style='font: 12px "Helvetica Neue"; text-decoration: line-through; -cocoa-font-postscriptname: "HelveticaNeue"; -cocoa-strikethrough: single; '&gt;(appendo ((k)) (( ))) =&amp;gt; ((k) ( )) &lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; text-decoration: line-through; -cocoa-font-postscriptname: "AppleColorEmoji"; -cocoa-strikethrough: single; '&gt;✅ &lt;/span&gt;&lt;span style='font: 9px "Monaco"; text-decoration: line-through; -cocoa-font-postscriptname: "Monaco"; -cocoa-strikethrough: single; '&gt;SOL&lt;/span&gt;&lt;span style='font: 9px "Apple Color Emoji"; text-decoration: line-through; -cocoa-font-postscriptname: "AppleColorEmoji"; -cocoa-strikethrough: single; '&gt; 8&lt;/span&gt;&lt;/p&gt;</string>
+					<key>shrinkToFitContent</key>
+					<integer>1</integer>
+					<key>text</key>
+					<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 AppleColorEmoji;
+\f3\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 appendo aa dd =&gt; combine\
+ aa : ((k) (k ( )) ((k)) \strike \strikec2 ((k))\strike0\striked0 )\
+ dd : (( ) (( )))\
+
+\f1 \cf0 \
+
+\f0 \cf2   (appendo (k) ( )) =&gt; (k) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  1
+\f1\fs24 \cf0 \
+
+\f0   (appendo (k) (( ))) =&gt; (k ( )) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  2
+\f0\fs24 \
+\
+  (appendo (k ( )) ( )) =&gt; (k ( )) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  3
+\f0\fs24 \
+  (appendo (k) ( ) (( ))) =&gt; (k ( ) ( )) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  4
+\f0\fs24 \
+\
+  (appendo ((k)) ( )) =&gt; ((k)) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  5
+\f0\fs24 \
+  (appendo ((k)) (( ))) =&gt; ((k) ( )) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  6
+\f0\fs24 \
+\
+  \strike \strikec0 (appendo ((k)) ( )) =&gt; ((k)) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  7
+\f0\fs24 \strike0\striked0 \
+  \strike \strikec0 (appendo ((k)) (( ))) =&gt; ((k) ( )) 
+\f2\fs18 \uc0\u9989  
+\f3 SOL
+\f2  8}</string>
+				</dict>
+			</dict>
+			<dict>
+				<key>contentAlignment</key>
+				<integer>1</integer>
+				<key>fillColor</key>
+				<string>{1.000, 1.000, 1.000, 1.000}</string>
+				<key>isDecreasingBranchThickness</key>
+				<true/>
+				<key>isDrawingFill</key>
+				<true/>
+				<key>isLeftAligned</key>
+				<false/>
+				<key>location</key>
+				<string>{-3304.8750000000009, -658.01875000000018}</string>
+				<key>nodeID</key>
+				<string>52A2D455-61BD-44D5-8953-71C8BB22A375</string>
+				<key>strokeColor</key>
+				<string>{1.000, 1.000, 1.000, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>0</integer>
+				<key>strokeWidth</key>
+				<real>2</real>
+				<key>subnodes</key>
+				<array/>
+				<key>title</key>
+				<dict>
+					<key>constrainedWidth</key>
+					<integer>300</integer>
+					<key>htmlText</key>
+					<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; text-align: left; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;(define flatteno&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; text-align: left; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;   (lambda (s out)&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; text-align: left; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;     (conde&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(119, 0, 217, 1.000000); font: 14px "Inconsolata for Powerline"; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;c1&lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;     ((nullo s) (== s out))&lt;/span&gt;&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(35, 155, 216, 1.000000); font: 14px "Inconsolata for Powerline"; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;c2&lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;     ((fresh (a d aa dd)&lt;/span&gt;&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; text-align: left; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;          (conso a d s)&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; text-align: left; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;            (flatteno a aa)&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; text-align: left; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;            (flatteno d dd)&lt;/p&gt;&lt;p style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; text-align: left; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;            (appendo aa dd out)))&lt;/p&gt;&lt;p style='text-align: left; '&gt;&lt;span style='color: rgba(50, 216, 171, 1.000000); font: 14px "Inconsolata for Powerline"; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;c3&lt;/span&gt;&lt;span style='color: rgba(0, 0, 0, 1.000000); font: 14px "Inconsolata for Powerline"; -cocoa-font-postscriptname: "InconsolataForPowerline"; '&gt;     ((conso s &amp;apos;() out)))))&lt;/span&gt;&lt;/p&gt;</string>
+					<key>shrinkToFitContent</key>
+					<integer>1</integer>
+					<key>text</key>
+					<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 InconsolataForPowerline;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red119\green0\blue217;\red35\green155\blue216;
+\red50\green216\blue171;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs28 \cf2 (define flatteno
+\f1\fs24 \cf0 \
+
+\f0\fs28 \cf2    (lambda (s out)
+\f1\fs24 \cf0 \
+
+\f0\fs28 \cf2      (conde
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs28 \cf3 c1\cf2      ((nullo s) (== s out))
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs28 \cf4 c2\cf2      ((fresh (a d aa dd)
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs28 \cf2           (conso a d s)
+\f1\fs24 \cf0 \
+
+\f0\fs28 \cf2             (flatteno a aa)
+\f1\fs24 \cf0 \
+
+\f0\fs28 \cf2             (flatteno d dd)
+\f1\fs24 \cf0 \
+
+\f0\fs28 \cf2             (appendo aa dd out)))
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs28 \cf5 c3\cf2      ((conso s '() out)))))}</string>
+				</dict>
+			</dict>
+			<dict>
+				<key>contentAlignment</key>
+				<integer>1</integer>
+				<key>fillColor</key>
+				<string>{1.000, 0.978, 0.697, 1.000}</string>
+				<key>isDecreasingBranchThickness</key>
+				<false/>
+				<key>isDrawingFill</key>
+				<true/>
+				<key>isLeftAligned</key>
+				<false/>
+				<key>location</key>
+				<string>{-3291.1843750000003, -826.85625000000027}</string>
+				<key>nodeID</key>
+				<string>E40962DD-8BC6-4A58-A874-6FEF2E314C66</string>
+				<key>strokeColor</key>
+				<string>{1.000, 1.000, 1.000, 1.000}</string>
+				<key>strokeStyle</key>
+				<integer>0</integer>
+				<key>strokeWidth</key>
+				<real>2</real>
+				<key>subnodes</key>
+				<array/>
+				<key>title</key>
+				<dict>
+					<key>constrainedWidth</key>
+					<integer>300</integer>
+					<key>htmlText</key>
+					<string>&lt;p style='color: rgba(0, 0, 0, 1.000000); font: bold 14px "Helvetica Neue"; text-align: left; -cocoa-font-postscriptname: "HelveticaNeue-Bold"; '&gt;Ch 25: Segment 64&lt;/p&gt;</string>
+					<key>shrinkToFitContent</key>
+					<integer>1</integer>
+					<key>text</key>
+					<string>{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue-Bold;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\b\fs28 \cf2 Ch 25: Segment 64}</string>
+				</dict>
+			</dict>
+		</array>
+	</dict>
+	<key>printInfo</key>
+	<data>
+	BAtzdHJlYW10eXBlZIHoA4QBQISEhAtOU1ByaW50SW5mbwGEhAhOU09iamVjdACFkoSE
+	hBNOU011dGFibGVEaWN0aW9uYXJ5AISEDE5TRGljdGlvbmFyeQCUhAFpCJKEhIQITlNT
+	dHJpbmcBlIQBKxZOU0hvcml6b250YWxseUNlbnRlcmVkhpKEhIQITlNOdW1iZXIAhIQH
+	TlNWYWx1ZQCUhAEqhIQBY50BhpKEmZkNTlNSaWdodE1hcmdpboaShJuchIQBZp5IhpKE
+	mZkMTlNMZWZ0TWFyZ2luhpKEm5ygnkiGkoSZmRVOU0hvcml6b25hbFBhZ2luYXRpb26G
+	koSbnISXlwKGkoSZmRROU1ZlcnRpY2FsUGFnaW5hdGlvboaShJucpZcAhpKEmZkUTlNW
+	ZXJ0aWNhbGx5Q2VudGVyZWSGkpqShJmZC05TVG9wTWFyZ2luhpKEm5ygnlqGkoSZmQ5O
+	U0JvdHRvbU1hcmdpboaShJucoJ5ahoaG
+	</data>
+	<key>title</key>
+	<string>(run* (x) (flatteno (k) x)</string>
+	<key>version</key>
+	<integer>4</integer>
+</dict>
+</plist>
