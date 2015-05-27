@@ -1,19 +1,36 @@
 #lang racket
 
-(provide %u %s)
+(provide %u %s eq-car? caro cdro conso nullo pairo eqo)
+(require "../lib/mk.rkt")
 
-(define-syntax mzero
-  (syntax-rules ()
-    ((_) #f)))
+(define %s (== #f #f))
+(define %u (== #f #t))
 
-(define-syntax unit
-  (syntax-rules ()
-    ((_ a) a)))
+(define eq-car?
+  (lambda (l x)
+    (eq? (car l) x)))
 
-(define %s
-  (lambda (s)
-    (unit s)))
+(define caro
+  (lambda (lst head)
+    (fresh (tail)
+      (== (cons head tail) lst))))
 
-(define %u
-  (lambda (s)
-    (mzero)))
+(define cdro
+  (lambda (lst tail)
+    (fresh (head)
+      (== (cons head tail) lst))))
+
+(define conso
+  (lambda (head tail lst)
+    (== (cons head tail) lst)))
+
+(define nullo
+  (lambda (lst)
+    (== '() lst)))
+
+(define eqo ==)
+
+(define pairo
+  (lambda (pair)
+    (fresh (head tail)
+      (conso head tail pair))))

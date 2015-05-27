@@ -1,6 +1,6 @@
 #lang racket
 
-(require minikanren)
+(require "../lib/mk.rkt")
 (require rackunit)
 (require "reasoned-prelude.rkt")
 
@@ -61,6 +61,10 @@
   (lambda (head tail lst)
     (== (cons head tail) lst)))
 
+(define conso2
+  (lambda (head tail lst)
+    (== (cons head tail) lst)))
+
 [check-equal?
   (run* (l)
     (conso '(a b c) '(d e) l))
@@ -117,6 +121,6 @@
 
 (define pairo-by-cons
   (lambda (pair)
-    (fresh (tail)
+    (fresh (head tail)
       (conso head tail lst))))
 

@@ -1,0 +1,15 @@
+;; I GET IT! 'd' is the 'decrement' part, like in 'cdr',
+;; and 'a' is the 'address' part, like in 'car'.
+#lang racket
+
+(require "../lib/mk.rkt")
+(require rackunit)
+(require "reasoned-prelude.rkt")
+
+(define mem
+  (lambda (x l)))
+
+[
+check-equal?
+
+  #f]
