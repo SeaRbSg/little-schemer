@@ -2,6 +2,13 @@
 
 (require "lib/reasonable.rkt")
 
+(provide car°
+         cdr°
+         pair°
+         null°
+         eq°
+         cons°)
+
 (define (cons° a d l)
   (≈ (cons a d) l))
 

@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require rackunit)
-(require minikanren)
+(require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
 (check-run* (q)
@@ -49,20 +49,20 @@
 
 (check-run* (q)
             (fresh (x)
-                   (== #t x)
-                   (== #t q))
+              (== #t x)
+              (== #t q))
             => '(#t))
 
 (check-run* (q)
             (fresh (x)
-                   (== x #t)
-                   (== #t q))
+              (== x #t)
+              (== #t q))
             => '(#t))
 
 (check-run* (q)
             (fresh (x)
-                   (== x #t)
-                   (== q #t))
+              (== x #t)
+              (== q #t))
             => '(#t))
 
 (check-run* (x)
@@ -72,31 +72,31 @@
 (check-run* (x)
             (let ([x #f])
               (fresh (x)
-                     (== #t x)))
+                (== #t x)))
             => '(_.0))
 
 (check-run* (r)
             (fresh (x y)
-                   (== (cons x (cons y '())) r))
+              (== (cons x (cons y '())) r))
             => '((_.0 _.1)))
 
 (check-run* (s)
             (fresh (t u)
-                   (== (cons t (cons u '())) s))
+              (== (cons t (cons u '())) s))
             => '((_.0 _.1)))
 
 (check-run* (r)
             (fresh (x)
-                   (let ([y x])
-                     (fresh (x)
-                            (== (cons y (cons x (cons y '()))) r))))
+              (let ([y x])
+                (fresh (x)
+                  (== (cons y (cons x (cons y '()))) r))))
             => '((_.0 _.1 _.0)))
 
 (check-run* (r)
             (fresh (x)
-                   (let ([y x])
-                     (fresh (x)
-                            (== (cons x (cons y (cons x '()))) r))))
+              (let ([y x])
+                (fresh (x)
+                  (== (cons x (cons y (cons x '()))) r))))
             => '((_.0 _.1 _.0)))
 
 (check-run* (q)
@@ -116,25 +116,25 @@
 
 (check-run* (r)
             (fresh (x)
-                   (== x r))
+              (== x r))
             => '(_.0))
 
 (check-run* (q)
             (fresh (x)
-                   (== #t x)
-                   (== x q))
+              (== #t x)
+              (== x q))
             => '(#t))
 
 (check-run* (q)
             (fresh (x)
-                   (== x q)
-                   (== #t x))
+              (== x q)
+              (== #t x))
             => '(#t))
 
 (check-run* (q)
             (fresh (x)
-                   (== #t x)
-                   (== x q))
+              (== #t x)
+              (== x q))
             => '(#t))
 
 (check-equal? (cond
@@ -191,27 +191,27 @@
 
 (check-run* (r)
             (fresh (x y)
-                   (== 'split x)
-                   (== 'pea y)
-                   (== (cons x (cons y '())) r))
+              (== 'split x)
+              (== 'pea y)
+              (== (cons x (cons y '())) r))
             => '((split pea)))
 
 (check-run* (r)
             (fresh (x y)
-                   (conde
-                     ((== 'split x) (== 'pea y))
-                     ((== 'navy x) (== 'bean y))
-                     (else u#))
-                   (== (cons x (cons y '())) r))
+              (conde
+                ((== 'split x) (== 'pea y))
+                ((== 'navy x) (== 'bean y))
+                (else u#))
+              (== (cons x (cons y '())) r))
             => '((split pea) (navy bean)))
 
 (check-run* (r)
             (fresh (x y)
-                   (conde
-                     ((== 'split x) (== 'pea y))
-                     ((== 'navy x) (== 'bean y))
-                     (else u#))
-                   (== (cons x (cons y (cons 'soup '()))) r))
+              (conde
+                ((== 'split x) (== 'pea y))
+                ((== 'navy x) (== 'bean y))
+                (else u#))
+              (== (cons x (cons y (cons 'soup '()))) r))
             => '((split pea soup) (navy bean soup)))
 
 (define (teacupo x)
@@ -226,30 +226,30 @@
 
 (check-run* (r)
             (fresh (x y)
-                   (conde
-                     ((teacupo x) (== #t y) s#)
-                     ((== #f x) (== #t y))
-                     (else u#))
-                   (== (cons x (cons y '())) r))
-            => '((#f #t) (tea #t) (cup #t))) ; not sure why ordering is different than in book
+              (conde
+                ((teacupo x) (== #t y) s#)
+                ((== #f x) (== #t y))
+                (else u#))
+              (== (cons x (cons y '())) r))
+            => '((tea #t) (cup #t) (#f #t))) ; fixed ordering with mk.rkt
 
 (check-run* (r)
             (fresh (x y z)
-                   (conde
-                     ((== y x) (fresh (x) (== z x)))
-                     ((fresh (x) (== y x)) (== z x))
-                     (else u#))
-                   (== (cons y (cons z '())) r))
+              (conde
+                ((== y x) (fresh (x) (== z x)))
+                ((fresh (x) (== y x)) (== z x))
+                (else u#))
+              (== (cons y (cons z '())) r))
             => '((_.0 _.1) (_.0 _.1)))
 
 (check-run* (r)
             (fresh (x y z)
-                   (conde
-                     ((== y x) (fresh (x) (== z x)))
-                     ((fresh (x) (== y x)) (== z x))
-                     (else u#))
-                   (== #f x)
-                   (== (cons y (cons z '())) r))
+              (conde
+                ((== y x) (fresh (x) (== z x)))
+                ((fresh (x) (== y x)) (== z x))
+                (else u#))
+              (== #f x)
+              (== (cons y (cons z '())) r))
             => '((#f _.0) (_.0 #f)))
 
 (check-run* (q)
@@ -261,8 +261,8 @@
 (check-run* (q)
             (let ((a (== #t q))
                   (b (fresh (x)
-                            (== x q)
-                            (== #f x)))
+                       (== x q)
+                       (== #f x)))
                   (c (conde
                        ((== #t q) s#)
                        (else (== #f q)))))

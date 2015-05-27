@@ -1,7 +1,7 @@
 #lang racket
 (require "../lib/mk.rkt")
 
-(provide s# u# caro cdro conso nullo eqo pairo listo)
+(provide s# u# caro cdro conso nullo eqo pairo listo eq-car? eq-caro)
 
 (define s# (== #f #f)) ;; succeed
 (define u# (== #f #t)) ;; fail
@@ -55,3 +55,12 @@
              (cdro l d)
              (listo d)))
      (else u#))))
+
+
+(define eq-car?
+  (lambda (l x)
+    (eq? (car l) x)))
+
+(define eq-caro
+  (lambda (l x)
+    (caro l x)))

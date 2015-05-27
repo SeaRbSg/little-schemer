@@ -1,15 +1,13 @@
 #lang racket/base
 
 (require rackunit)
-(require minikanren)
+(require "../lib/mk.rkt")
 
-(provide s# u# else check-run* check-run)
+(provide s# u# check-run* check-run)
 
 ; redefine succeed and fail to avoid conflict with rackunit
 (define s# (== #f #f))
 (define u# (== #f #t))
-; else. a conde that is always true?
-(define else (== #t #t))
 
 ; test macros via zenspider
 (define-syntax check-run*
@@ -25,3 +23,4 @@
      (check-equal? (run n (vars ...)
                         rules ...)
                    expect)]))
+
