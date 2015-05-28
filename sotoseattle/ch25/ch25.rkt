@@ -1,9 +1,9 @@
 #lang racket
-(require "./basic_defs.rkt")
-(require "lib/shared.rkt")
+(require "../basic_defs.rkt")
+(require "../lib/shared.rkt")
 (require rackunit)
 (require racket/trace)
-(require "../lib/mk.rkt")
+(require "../../lib/mk.rkt")
 
 ; # 1 - 8
 (define append
@@ -380,6 +380,49 @@
     (flatteno '((a)) x))
   '((a) (a ()) (a ()) (a () ()) ((a)) ((a) ()) (((a))))]
 
+; # 66 - 67 see ch25_66.png
+[check-equal?
+  (run* (x)
+    (flatteno '(((a))) x))
+  '((a) (a ( ))
+    (a ( )) (a ( ) ( ))
+    (a ( )) (a ( ) ( ))
+    (a () ()) (a () () ())
+    ((a)) ((a) ())
+    ((a) ()) ((a) () ())
+    (((a))) (((a)) ())
+    ((((a)))))]
 
+; # 68 - 70 see ch25_68.png
+[check-equal?
+  (run* (x)
+    (flatteno '((a b) c) x))
+  '((a b c) (a b c ()) (a b (c))
+    (a b () c) (a b () c ()) (a b () (c))
+    (a (b) c) (a (b) c ()) (a (b) (c))
+    ((a b) c) ((a b) c ()) ((a b) (c))
+    (((a b) c)))]
 
+; # 71 - 76
+(define flatuleno
+  (lambda (s out)
+    (conde
+      ((conso s '() out))
+      ((nullo s) (== s out))
+      ((fresh (a d aa dd)
+         (conso a d s)
+           (flatuleno a aa)
+           (flatuleno d dd)
+           (appendo aa dd out))))))
+
+; I dont think the pairo goal was needed before either, conso suffices (imo)
+; see ch25_75.png
+[check-equal?
+  (run* (x)
+    (flatuleno '((a b) c) x))
+  '((((a b) c))
+    ((a b) (c)) ((a b) c ()) ((a b) c)
+    (a (b) (c)) (a (b) c ()) (a (b) c)
+    (a b () (c)) (a b () c ()) (a b () c)
+    (a b (c)) (a b c ()) (a b c))]
 
