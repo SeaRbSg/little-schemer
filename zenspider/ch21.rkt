@@ -2,6 +2,13 @@
 
 (require "lib/reasonable.rkt")
 
+(provide (rename-out (teacup-o teacup°)))
+
+(define (teacup-o x)
+  (cond-e [(≈ 'tea x) %s]
+          [(≈ 'cup x) %s]
+          [else %u]))
+
 (module+ test
   (require rackunit)
   (require (submod "lib/reasonable.rkt" test))
@@ -205,11 +212,6 @@
                         [else %u])
                 (≈ (list x y 'soup) r))
               => '((split pea soup) (navy bean soup)))
-
-  (define (teacup-o x)
-    (cond-e [(≈ 'tea x) %s]
-            [(≈ 'cup x) %s]
-            [else %u]))
 
   (check-run* (x)                       ; 56
               (teacup-o x)
