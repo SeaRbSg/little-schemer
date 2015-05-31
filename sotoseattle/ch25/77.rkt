@@ -39,7 +39,7 @@
 ;     (flatuleno d dd)
 ;     (appendo aa dd '(a b c)))))))
 
-; the first question to anwser is what is (flatuleno _0 _1)
+; the first question to answer is what is (flatuleno _0 _1)
 
 [check-equal?
   (run 9 (x)
@@ -61,7 +61,7 @@
 
 ; up until now, both flatulenos succeed for an infinite stream of cases
 ; hold the thought, the streams exist, it doesn't mean it is a rabbit hole that
-; never finsihes, not yet because we still have other goals to evaluate
+; never finishes, not yet because we still have other goals to evaluate
 ;
 ; besides the flatuleno goals, we also have an appendo goal that has to
 ; succeed: (appendo aa dd '(a b c))
@@ -72,7 +72,7 @@
 ;     and aa==() ==> a==()
 ;     therefore consosing into x ==> x==(a b . c) FIRST SOL
 
-;     So it is this last goal the one that drives the excution (order of
+;     So it is this last goal the one that drives the execution (order of
 ;     solutions). The first conde here that succeeds, means it is the first
 ;     time that ALL goals succeed, therefore the first solution.
 ;
@@ -96,7 +96,27 @@
 ; Consider that not only the 2 flatulenos give us infinite streams of possible
 ; solutions, but the appendo too!
 ;
-; As we recurr inside the appendo, I become uterly lost and desperate
+; As we recur inside the appendo, I become utterly lost and desperate
 ; I imagine that it is because the nullo in the recursive appendo is never hit
 ; again, and it never exits the rabbit hole
 
+; Now, consider that there are OTHER solutions to the flatulencio problem
+; there are values from the aa and dd streams that satisfy the problem
+; for example:
+
+[check-equal?
+  (run* (x)
+    (flatuleno '((a) b c) '(a b c))
+    (== #t x))
+  '(#t)]
+
+; or...
+
+[check-equal?
+  (run* (x)
+    (flatuleno '((a b) c) '(a b c))
+    (== #t x))
+  '(#t)]
+
+; the problem is that they are not used because the appendo went rabbit-holing
+; and they never came up for use!!

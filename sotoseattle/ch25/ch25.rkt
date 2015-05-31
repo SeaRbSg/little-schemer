@@ -188,7 +188,7 @@
 ; (conso a res z)           ; z is also unfolded in a pair where both heads are equal _0 . _2
 ; (appendauto d y res)))))) ; appendauto (cdr x) y (cdr z) == app _1 y _2
 ;                               success at nullo _1 => x is (_0)
-;                               recursivelly add another var
+;                               recursively add another var
 
 ; # 34 - 35
 [check-equal?
@@ -201,7 +201,7 @@
 ; (conso a res z)           ; z is also unfolded in a pair where both heads are equal _0 . _2
 ; (appendauto d y res)))))) ; appendauto (cdr x) y (cdr z) == app _1 y _2
 ;                               success at nullo _1 => x is (_0), again y == (cdr z) == another freshy
-;                               recursivelly add another var to x, yet again y is always another freshy
+;                               recursively add another var to x, yet again y is always another freshy
 
 ; # 36
 [check-equal?
@@ -274,7 +274,7 @@
     (unpaco '(((pizza))) x))
   '(pizza (pizza) ((pizza)) (((pizza))))]
 ; the package is unfolded into a pair, and then we have two branches
-; the first one recurrs unpacking the car of the package (as long as it can be unfoldd, until we find an atom)
+; the first one recurs unpacking the car of the package (as long as it can be unfolded, until we find an atom)
 ; the second branch always succeeds, it always gives a solution, the package itself at that point
 
 ; # 48 - 51
@@ -426,10 +426,10 @@
     (a b () (c)) (a b () c ()) (a b () c)
     (a b (c)) (a b c ()) (a b c))]
 
-; # 77
+; # 77 - end
 [check-equal?
   (run 1 (x)
     (flatuleno x '(a b c)))
   '((a b . c))]
 
-; this one is a dozy, see my quasy explanation on 77.rkt
+; this one is a dozy, see my quasi explanation on 77.rkt
