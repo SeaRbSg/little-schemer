@@ -22,51 +22,51 @@
 (define appendo
   (lambda (l s out)
     (conde
-     ((nullo l) (== s out))
-     ((fresh (a d res)
-             (conso a d l)
-             (appendo d s res)
-             (conso a res out))))))
+      ((nullo l) (== s out))
+      ((fresh (a d res)
+         (conso a d l)
+         (appendo d s res)
+         (conso a res out))))))
 
 ; # 10 - 14
 [check-equal?
- (run* (x) (appendo  '(cake) '(tastes yummy) x))
- '((cake tastes yummy))]
+  (run* (x) (appendo  '(cake) '(tastes yummy) x))
+  '((cake tastes yummy))]
 
 [check-equal?
- (run* (x)
-       (fresh (y)
-              (appendo
-               `(cake with ice ,y)
-               '(tastes yummy)
-               x)))
- '((cake with ice _.0 tastes yummy))]
+  (run* (x)
+    (fresh (y)
+      (appendo
+        `(cake with ice ,y)
+        '(tastes yummy)
+        x)))
+  '((cake with ice _.0 tastes yummy))]
 
 [check-equal?
- (run* (x)
-       (fresh (y)
-              (appendo
-               '(cake with ice cream)
-               y
-               x)))
- '((cake with ice cream . _.0))]
+  (run* (x)
+    (fresh (y)
+      (appendo
+        '(cake with ice cream)
+        y
+        x)))
+  '((cake with ice cream . _.0))]
 
 [check-equal?
- (run 1 (x)
-      (fresh (y)
-             (appendo `(cake with ice . ,y) '(d t) x)))
- '((cake with ice d t))]
+  (run 1 (x)
+    (fresh (y)
+      (appendo `(cake with ice . ,y) '(d t) x)))
+  '((cake with ice d t))]
 
 ; # 16
 [check-equal?
- (run 5 (x)
-      (fresh (y)
-             (appendo `(cake with ice . ,y) '(d t) x)))
- '((cake with ice d t)
-  (cake with ice _.0 d t)
-  (cake with ice _.0 _.1 d t)
-  (cake with ice _.0 _.1 _.2 d t)
-  (cake with ice _.0 _.1 _.2 _.3 d t))]
+  (run 5 (x)
+    (fresh (y)
+      (appendo `(cake with ice . ,y) '(d t) x)))
+  '((cake with ice d t)
+    (cake with ice _.0 d t)
+    (cake with ice _.0 _.1 d t)
+    (cake with ice _.0 _.1 _.2 d t)
+    (cake with ice _.0 _.1 _.2 _.3 d t))]
 
 ; trivial by now, from the definition of appendo
 ;     ((nullo l) (== s out))
@@ -77,64 +77,64 @@
 
 ; # 17 - 19
 [check-equal?
- (run 5 (y)
-      (fresh (x)
-             (appendo `(cake with ice . ,y) '(d t) x)))
- '(() (_.0) (_.0 _.1) (_.0 _.1 _.2) (_.0 _.1 _.2 _.3))]
+  (run 5 (y)
+    (fresh (x)
+      (appendo `(cake with ice . ,y) '(d t) x)))
+  '(() (_.0) (_.0 _.1) (_.0 _.1 _.2) (_.0 _.1 _.2 _.3))]
 
 ; we are building the same stuff, but asking a different question (now y instead of x)
 
 ; # 20
 [check-equal?
- (run 5 (x)
-      (fresh (y)
-             (appendo
-              `(cake with ice . ,y)
-              `(d t . ,y)
-              x)))
- '((cake with ice d t)
-   (cake with ice _.0 d t _.0)
-   (cake with ice _.0 _.1 d t _.0 _.1)
-   (cake with ice _.0 _.1 _.2 d t _.0 _.1 _.2)
-   (cake with ice _.0 _.1 _.2 _.3 d t _.0 _.1 _.2 _.3))]
+  (run 5 (x)
+    (fresh (y)
+      (appendo
+        `(cake with ice . ,y)
+        `(d t . ,y)
+        x)))
+  '((cake with ice d t)
+    (cake with ice _.0 d t _.0)
+    (cake with ice _.0 _.1 d t _.0 _.1)
+    (cake with ice _.0 _.1 _.2 d t _.0 _.1 _.2)
+    (cake with ice _.0 _.1 _.2 _.3 d t _.0 _.1 _.2 _.3))]
 
 ; # 21 - 22
 [check-equal?
- (run* (x)
-       (fresh (z)
-              (appendo
-               '(cake with ice cream)
-               `(d t . ,z)
-               x)))
- '((cake with ice cream d t . _.0))]
+  (run* (x)
+    (fresh (z)
+      (appendo
+        '(cake with ice cream)
+        `(d t . ,z)
+        x)))
+  '((cake with ice cream d t . _.0))]
 
 ; the key is that z is consososed un-unified, un-unfolded, as-is
 
 ; # 23 - 26
 [check-equal?
- (run 6 (x)
-      (fresh (y)
-             (appendo x y '(cake with ice d t))))
- '(() (cake) (cake with) (cake with ice) (cake with ice d) (cake with ice d t))]
+  (run 6 (x)
+    (fresh (y)
+      (appendo x y '(cake with ice d t))))
+  '(() (cake) (cake with) (cake with ice) (cake with ice d) (cake with ice d t))]
 
 [check-equal?
- (run 6 (y)
-      (fresh (x)
-             (appendo x y '(cake with ice d t))))
- '((cake with ice d t) (with ice d t) (ice d t) (d t) (t) ())]
+  (run 6 (y)
+    (fresh (x)
+      (appendo x y '(cake with ice d t))))
+  '((cake with ice d t) (with ice d t) (ice d t) (d t) (t) ())]
 
 ; # 27 - 28 combining both prefixes and suffixes / cares and coulderes
 [check-equal?
- (run 6 (r)
-      (fresh (x y)
-             (appendo x y '(cake with ice d t))
-             (== `(,x ,y) r)))
- '((() (cake with ice d t))
-  ((cake) (with ice d t))
-  ((cake with) (ice d t))
-  ((cake with ice) (d t))
-  ((cake with ice d) (t))
-  ((cake with ice d t) ()))]
+  (run 6 (r)
+    (fresh (x y)
+      (appendo x y '(cake with ice d t))
+      (== `(,x ,y) r)))
+  '((() (cake with ice d t))
+    ((cake) (with ice d t))
+    ((cake with) (ice d t))
+    ((cake with ice) (d t))
+    ((cake with ice d) (t))
+    ((cake with ice d t) ()))]
 
 ; # 29
 ;(run 7 (r)
@@ -157,32 +157,32 @@
 (define appendauto
   (lambda (l s out)
     (conde
-     ((nullo l) (== s out))
-     ((fresh (a d res)
-             (conso a d l)
-             (conso a res out)
-             (appendauto d s res)))))) ; recurse at the end
+      ((nullo l) (== s out))
+      ((fresh (a d res)
+         (conso a d l)
+         (conso a res out)
+         (appendauto d s res)))))) ; recurse at the end
 
 [check-equal?
- (run 7 (r)
-      (fresh (x y)
-             (appendauto x y '(cake with ice d t))
-             (== `(,x ,y) r)))
- '((() (cake with ice d t))
-  ((cake) (with ice d t))
-  ((cake with) (ice d t))
-  ((cake with ice) (d t))
-  ((cake with ice d) (t))
-  ((cake with ice d t) ()))]
+  (run 7 (r)
+    (fresh (x y)
+      (appendauto x y '(cake with ice d t))
+      (== `(,x ,y) r)))
+  '((() (cake with ice d t))
+    ((cake) (with ice d t))
+    ((cake with) (ice d t))
+    ((cake with ice) (d t))
+    ((cake with ice d) (t))
+    ((cake with ice d t) ()))]
 
 ; walkthrough t.b.d
 
 ; # 33
 [check-equal?
- (run 7 (x)
-      (fresh (y z)
-             (appendauto x y z)))
- '(() (_.0) (_.0 _.1) (_.0 _.1 _.2) (_.0 _.1 _.2 _.3) (_.0 _.1 _.2 _.3 _.4) (_.0 _.1 _.2 _.3 _.4 _.5))]
+  (run 7 (x)
+    (fresh (y z)
+      (appendauto x y z)))
+  '(() (_.0) (_.0 _.1) (_.0 _.1 _.2) (_.0 _.1 _.2 _.3) (_.0 _.1 _.2 _.3 _.4) (_.0 _.1 _.2 _.3 _.4 _.5))]
 ; (nullo...)                ; first sol is obviously nullo x => ()
 ; (conso a d x)             ; x is unfolded in pair _0 . _1
 ; (conso a res z)           ; z is also unfolded in a pair where both heads are equal _0 . _2
@@ -192,10 +192,10 @@
 
 ; # 34 - 35
 [check-equal?
- (run 7 (y)
-      (fresh (x z)
-             (appendauto x y z)))
- '(_.0 _.0 _.0 _.0 _.0 _.0 _.0)]
+  (run 7 (y)
+    (fresh (x z)
+      (appendauto x y z)))
+  '(_.0 _.0 _.0 _.0 _.0 _.0 _.0)]
 ; (nullo...)                ; first sol is obviously nullo x => (), s == out, y == z, a freshy _0
 ; (conso a d x)             ; x is unfolded in pair _0 . _1
 ; (conso a res z)           ; z is also unfolded in a pair where both heads are equal _0 . _2
@@ -205,42 +205,42 @@
 
 ; # 36
 [check-equal?
- (run 7 (z)
-   (fresh (x y)
-     (appendauto x y z)))
- '(_.0
-   (_.0 . _.1)
-   (_.0 _.1 . _.2)
-   (_.0 _.1 _.2 . _.3)
-   (_.0 _.1 _.2 _.3 . _.4)
-   (_.0 _.1 _.2 _.3 _.4 . _.5)
-   (_.0 _.1 _.2 _.3 _.4 _.5 . _.6))]
+  (run 7 (z)
+    (fresh (x y)
+      (appendauto x y z)))
+  '(_.0
+     (_.0 . _.1)
+     (_.0 _.1 . _.2)
+     (_.0 _.1 _.2 . _.3)
+     (_.0 _.1 _.2 _.3 . _.4)
+     (_.0 _.1 _.2 _.3 _.4 . _.5)
+     (_.0 _.1 _.2 _.3 _.4 _.5 . _.6))]
 ; you can follow the code as we did in the two previous explanations,
 ; or you can just add the two previous explanations (since appendauting x y gives you z)
 
 ; # 37
 [check-equal?
- (run 7 (r)
-   (fresh (x y z)
-     (appendauto x y z)
-     (== `(,x ,y ,z) r)))
- '((() _.0 _.0)
-   ((_.0) _.1 (_.0 . _.1))
-   ((_.0 _.1) _.2 (_.0 _.1 . _.2))
-   ((_.0 _.1 _.2) _.3 (_.0 _.1 _.2 . _.3))
-   ((_.0 _.1 _.2 _.3) _.4 (_.0 _.1 _.2 _.3 . _.4))
-   ((_.0 _.1 _.2 _.3 _.4) _.5 (_.0 _.1 _.2 _.3 _.4 . _.5))
-   ((_.0 _.1 _.2 _.3 _.4 _.5) _.6 (_.0 _.1 _.2 _.3 _.4 _.5 . _.6)))]
+  (run 7 (r)
+    (fresh (x y z)
+      (appendauto x y z)
+      (== `(,x ,y ,z) r)))
+  '((() _.0 _.0)
+    ((_.0) _.1 (_.0 . _.1))
+    ((_.0 _.1) _.2 (_.0 _.1 . _.2))
+    ((_.0 _.1 _.2) _.3 (_.0 _.1 _.2 . _.3))
+    ((_.0 _.1 _.2 _.3) _.4 (_.0 _.1 _.2 _.3 . _.4))
+    ((_.0 _.1 _.2 _.3 _.4) _.5 (_.0 _.1 _.2 _.3 _.4 . _.5))
+    ((_.0 _.1 _.2 _.3 _.4 _.5) _.6 (_.0 _.1 _.2 _.3 _.4 _.5 . _.6)))]
 
 ; # 38
 (define swappendo
   (lambda (l s out)
     (conde
-     ((fresh (a d res)
-             (conso a d l)
-             (conso a res out)
-             (swappendo d s res)))
-     ((nullo l) (== s out)))))
+      ((fresh (a d res)
+         (conso a d l)
+         (conso a res out)
+         (swappendo d s res)))
+      ((nullo l) (== s out)))))
 
 ; # 39 - 40
 ; (run 1 (z)
@@ -265,14 +265,14 @@
     (conde
       ((pairo package)
        (fresh (a)
-        (caro package a)
-        (unpaco a out)))
+         (caro package a)
+         (unpaco a out)))
       ((== package out)))))
 
 [check-equal?
- (run* (x)
-   (unpaco '(((pizza))) x))
- '(pizza (pizza) ((pizza)) (((pizza))))]
+  (run* (x)
+    (unpaco '(((pizza))) x))
+  '(pizza (pizza) ((pizza)) (((pizza))))]
 ; the package is unfolded into a pair, and then we have two branches
 ; the first one recurrs unpacking the car of the package (as long as it can be unfoldd, until we find an atom)
 ; the second branch always succeeds, it always gives a solution, the package itself at that point
@@ -293,17 +293,17 @@
       ((== package out))
       ((pairo package)
        (fresh (a)
-        (caro package a)
-        (unwrapo a out))))))
+         (caro package a)
+         (unwrapo a out))))))
 
 ; # 53
 [check-equal?
   (run 5 (x) (unwrapo x 'pizza))
   '(pizza
-    (pizza . _.0)
-    ((pizza . _.0) . _.1)
-    (((pizza . _.0) . _.1) . _.2)
-    ((((pizza . _.0) . _.1) . _.2) . _.3))]
+     (pizza . _.0)
+     ((pizza . _.0) . _.1)
+     (((pizza . _.0) . _.1) . _.2)
+     ((((pizza . _.0) . _.1) . _.2) . _.3))]
 
 ; # 54
 [check-equal?
@@ -318,10 +318,10 @@
 [check-equal?
   (run 5 (x) (unwrapo `((,x)) 'pizza))
   '(pizza
-    (pizza . _.0)
-    ((pizza . _.0) . _.1)
-    (((pizza . _.0) . _.1) . _.2)
-    ((((pizza . _.0) . _.1) . _.2) . _.3))]
+     (pizza . _.0)
+     ((pizza . _.0) . _.1)
+     (((pizza . _.0) . _.1) . _.2)
+     ((((pizza . _.0) . _.1) . _.2) . _.3))]
 ; unwrapo ((x)) pizza
 ;   -c1 ((x)) =/= pizza ❌
 ;   -c2 ((x)) == ((x) . _.0)
@@ -360,9 +360,9 @@
       ((nullo s) (== s out))
       ((fresh (a d aa dd)
          (conso a d s)
-           (flatteno a aa)
-           (flatteno d dd)
-           (appendo aa dd out)))
+         (flatteno a aa)
+         (flatteno d dd)
+         (appendo aa dd out)))
       ((conso s '() out)))))
 
 [check-equal? (run 1 (x) (flatteno '((a b) c) x)) '((a b c))]
@@ -385,23 +385,23 @@
   (run* (x)
     (flatteno '(((a))) x))
   '((a) (a ( ))
-    (a ( )) (a ( ) ( ))
-    (a ( )) (a ( ) ( ))
-    (a () ()) (a () () ())
-    ((a)) ((a) ())
-    ((a) ()) ((a) () ())
-    (((a))) (((a)) ())
-    ((((a)))))]
+        (a ( )) (a ( ) ( ))
+        (a ( )) (a ( ) ( ))
+        (a () ()) (a () () ())
+        ((a)) ((a) ())
+        ((a) ()) ((a) () ())
+        (((a))) (((a)) ())
+        ((((a)))))]
 
 ; # 68 - 70 see ch25_68.png
 [check-equal?
   (run* (x)
     (flatteno '((a b) c) x))
   '((a b c) (a b c ()) (a b (c))
-    (a b () c) (a b () c ()) (a b () (c))
-    (a (b) c) (a (b) c ()) (a (b) (c))
-    ((a b) c) ((a b) c ()) ((a b) (c))
-    (((a b) c)))]
+            (a b () c) (a b () c ()) (a b () (c))
+            (a (b) c) (a (b) c ()) (a (b) (c))
+            ((a b) c) ((a b) c ()) ((a b) (c))
+            (((a b) c)))]
 
 ; # 71 - 76
 (define flatuleno
@@ -411,9 +411,9 @@
       ((nullo s) (== s out))
       ((fresh (a d aa dd)
          (conso a d s)
-           (flatuleno a aa)
-           (flatuleno d dd)
-           (appendo aa dd out))))))
+         (flatuleno a aa)
+         (flatuleno d dd)
+         (appendo aa dd out))))))
 
 ; I dont think the pairo goal was needed before either, conso suffices (imo)
 ; see ch25_75.png
@@ -426,3 +426,10 @@
     (a b () (c)) (a b () c ()) (a b () c)
     (a b (c)) (a b c ()) (a b c))]
 
+; # 77
+[check-equal?
+  (run 1 (x)
+    (flatuleno x '(a b c)))
+  '((a b . c))]
+
+; this one is a dozy, see my quasy explanation on 77.rkt
