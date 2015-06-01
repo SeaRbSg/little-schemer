@@ -124,4 +124,63 @@
     (1 1 1 1 1))]
 ; fulladdero solves b + x + y = r + (2c)
 
+; # 19 - 42
+; numbers are lists of 0 1
+; the first bit tells us if it is even or odd
+; they all end with a 1
+; 0 is () empty list
+; (0) means nothing
+; (a b c) => a2^0 + b2^1 + c2^2
+; (0 . n) is twice n
+; (1 . n) is twice n + 1
+
+(define numb_me
+  (lambda (l)
+    (cond
+      [(null? l) 0]
+      [else (+ (car l)
+               (* (numb_me (cdr l)) 2))])))
+(module+ test
+  [check-equal? (run* (s) (== (numb_me '()) s)) 0]
+  [check-equal? (run* (s) (== (numb_me '(1)) s)) 1]
+  [check-equal? (run* (s) (== (numb_me '(1 0 1 1)) s)) 13]
+  [check-equal? (run* (s) (== (numb_me '(0 1 0 1 0 0 0 1 1 1 0 0 0 0 1)) s))
+                17290])
+
+; # 43 do build-num a.k.a biteme
+(define bit_it
+  (lambda (n)
+    (cond
+      [(zero? n) '()]
+      [(and (not (zero? n)) (even? n))
+       (cons 0 (bit_it (/ n 2)))]
+      [(odd? n) (cons 1 (bit_it (/ (- n 1) 2)))])))
+
+[check-equal?  (run* (s) (== s (bit_it 13))) '((1 0 1 1))]
+; honestly, it would have taken me forever to come up with that def
+
+; # 44 - 46 the same but different
+(define bite_me
+  (lambda (n)
+    (cond
+      [(odd? n) (cons 1 (bite_me (/ (- n 1) 2)))]
+      [(and (not (zero? n)) (even? n))
+       (cons 0 (bite_me (/ n 2)))]
+      [(zero? n) '()])))
+
+[check-equal?  (run* (s) (== s (bite_me 13))) '((1 0 1 1))]
+; interestingly enough, only one condition will be true in each pass
+; therefore, the order of the conditions is irrelevant
+
+; # 47 -  52
+(define suma
+  (lambda (l1 l2)
+    (bite_me (+ (numb_me l1) (numb_me l2)))))
+
+(module+ test
+  [check-equal? (run* (s) (== (suma '(1) '(1)) s)) '(0 1)]
+  [check-equal? (run* (s) (== (suma '(0 0 0 1) '(1 1 1)) s)) '(1 1 1 1)]
+  [check-equal? (run* (s) (== (suma '(1 1 1) '(0 0 0 1)) s)) '(1 1 1 1)]
+  [check-equal? (run* (s) (== (suma '() '(1 1 0 0 1)) s)) '(1 1 0 0 1)]
+  [check-equal? (run* (s) (== (suma '(1 1 0 0 1) '(1)) s)) '(0 0 0 1 1)])
 
