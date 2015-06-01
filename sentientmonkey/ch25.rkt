@@ -373,3 +373,185 @@
 
 ;; 56
 ;; Yeah, I do need a break after that. Time for some steaks.
+
+;; 57
+;; Steaks were delicious. Thanks for asking.
+
+;; 58
+(define (flatten s)
+  (cond
+    [(null? s) '()]
+    [(pair? s)
+     (append
+       (flatten (car s))
+       (flatten (cdr s)))]
+    [else (cons s '())]))
+
+(check-equal? (flatten '((a b) c)) '(a b c))
+
+;; 59
+(define (flatteno s out)
+  (conde
+    [(nullo s) (== out '())]
+    [(pairo s)
+     (fresh (a d resa resb)
+       (conso a d s)
+       (flatteno a resa)
+       (flatteno d resb)
+       (appendo3 resa resb out))]
+    [else
+      (conso s '() out)]))
+
+;; 60
+(check-run 1 (x)
+           (flatteno '((a b) c) x)
+           => '((a b c)))
+
+;; 61
+(check-run 1 (x)
+           (flatteno '(a (b c)) x)
+           => '((a b c)))
+
+;; 63
+(check-run* (x)
+            (flatteno '(a) x)
+            => '((a)
+                 (a ())
+                 ((a))))
+
+;; >_>
+
+;; 64
+(check-run* (x)
+            (flatteno '((a)) x)
+            => '((a)
+                 (a ())
+                 (a ())
+                 (a () ())
+                 ((a))
+                 ((a) ())
+                 (((a)))))
+
+;; >_<
+
+;; 65
+;; (a () ())
+
+;; 66
+(check-run* (x)
+            (flatteno '(((a))) x)
+            => '((a)
+                 (a ())
+                 (a ())
+                 (a () ())
+                 (a ())
+                 (a () ())
+                 (a () ())
+                 (a () () ())
+                 ((a))
+                 ((a) ())
+                 ((a) ())
+                 ((a) () ())
+                 (((a)))
+                 (((a)) ())
+                 ((((a))))))
+
+;; O_O
+
+;; 67
+;; second, third, fourth.
+;; four, six, seven.
+;; ten & eleven
+
+;; 68
+(check-run* (x)
+            (flatteno '((a b) c) x)
+            => '((a b c)
+                 (a b c ())
+                 (a b (c))
+                 (a b () c)
+                 (a b () c ())
+                 (a b () (c))
+                 (a (b) c)
+                 (a (b) c ())
+                 (a (b) (c))
+                 ((a b) c)
+                 ((a b) c ())
+                 ((a b) (c))
+                 (((a b) c))))
+
+;; 69
+;; none of them are the same, none of this makes sense!!
+
+;; 70
+;; I see. All of these lists flatten to (a b c)
+
+;; 71
+;; (run* (x)
+;;  (flatteno x '(a b c)))
+;; no answer
+
+;; 72
+;; I guess swap conde lines?
+
+;; 73
+(define (flattenrevo s out)
+  (conde
+    [s# (conso s '() out)]
+    [(nullo s) (== '() out)]
+    [else
+      (fresh (a d res-a res-d)
+        (conso a d s)
+        (flattenrevo a res-a)
+        (flattenrevo d res-d)
+        (appendo3 res-a res-d out))]))
+
+;; 74
+;; conso will fair if s is not a pair
+
+;; 75
+(check-run* (x)
+            (flattenrevo '((a b) c) x)
+            => '((((a b) c))
+                 ((a b) (c))
+                 ((a b) c ())
+                 ((a b) c)
+                 (a (b) (c))
+                 (a (b) c ())
+                 (a (b) c)
+                 (a b () (c))
+                 (a b () c ())
+                 (a b () c)
+                 (a b (c))
+                 (a b c ())
+                 (a b c)))
+
+;; 76
+(check-equal?
+  (reverse (run* (x)
+             (flattenrevo '((a b) c) x)))
+  (run* (x)
+    (flatteno '((a b) c) x)))
+
+;; 77
+(check-run 2 (x)
+           (flattenrevo x '(a b c))
+           => '((a b . c)
+                (a b c)))
+
+;; 78
+;; both of them are answers
+
+;; 79
+;; (run 3 (x)
+;;   (flattenrevo x '(a b c)))
+;; no answer
+
+;; 80
+(check-equal? (length
+                (run* (x)
+                  (flattenrevo '((((a (((b))) c))) d) x)))
+              574)
+
+;; that's mucho revo.
+
