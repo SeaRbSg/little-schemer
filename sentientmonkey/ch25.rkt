@@ -279,8 +279,24 @@
 ;; tl;dr: we didn't terminate our recursion early
 ;; vlonger answer: this switches out search to be depth vs. breadth first search.
 
-;; TODO try lambda-limited
+;; Here's swappendo that's limited to 5 answers via lambda-limited
 
+(define swappendo-limited
+  (lambda-limited 5 (l s out)
+    (conde
+      [s#
+        (fresh (a d res)
+          (conso a d l)
+          (conso a res out)
+          (swappendo-limited d s res))]
+      [else (nullo l) (== s out)])))
+
+(check-run 1 (z)
+           (fresh (x y)
+             (swappendo-limited x y z))
+           => '((_.0 _.1 _.2 _.3 . _.4)))
+
+;; lambda-limited seems interesting. Looks like it just keeps a limit on number of fresh values introduced. I don't really know how var, walk and ext-s work yet, so will revisit this when I understand it more.
 
 ;; 41
 (define (unwrap x)
