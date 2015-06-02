@@ -437,6 +437,65 @@
 
 ;; >_>
 
+;; Okay, let's explain this.
+
+;; flatteno first gets called and s is '(a) and x is our fresh variable.
+;; s does not unify with nullo, so we continue.
+;; we then introduce a d resa and resb as being fresh.
+;; conso unifies a with the head of the list, d with the rest of the list,
+;; and s gets unified with the rest of the list. With s being '(a) this means
+;; a is unified with 'a and d is unified with '())
+
+(check-run* (r)
+            (fresh (a d)
+              (conso a d '(a))
+              (== `(,a ,d) r))
+            => '((a ())))
+
+;; next we have the flatteno call. a is 'a and resa is fresh.
+;; calling into flatteno again, s does not unify with null, and does not unify with pairo.
+;; this drops us to our else, and we unify the conso, which unifies our return (resa) 
+;; with '(a)
+
+(check-run* (resa)
+              (flatteno 'a resa)
+            => '((a)))
+
+;; now we have our second flattno call this time with out set to '()
+;; nullo unifies s and unifies out with '() -- but we keep going because of conde!
+;; pairo of '() also succeeds, so we keep on going.
+;; (conso a d '()) unifies a with '() and d with '().
+;; we then call flatteno again with a as '() and resa (which unfies with '())
+;; and flatteno yet again with b as '() and resb) (which unifies with '())
+;; appendo with '() '() unifies our out with '(())
+;; our result then resb with '() and '(())
+
+(check-run* (resb)
+              (flatteno '() resb)
+            => '(() (())))
+
+;; and now we see each result of appendo3 for each of these
+
+(check-run* (out)
+              (appendo3 '(a) '() out)
+            => '((a)))
+
+(check-run* (out)
+              (appendo3 '(a) '(()) out)
+            => '((a ())))
+
+;; each of these then unify back to conso on out, wrapping them in another list.
+(check-run* (out)
+            (conso 'a '() out)
+            => '((a)))
+
+(check-run* (out)
+            (conso 'a '(()) out)
+            => '((a ())))
+
+;; and that's it.
+;; (flatteno '() out) should unified out with '() and not '(())
+
 ;; 64
 (check-run* (x)
             (flatteno '((a)) x)
@@ -570,4 +629,3 @@
               574)
 
 ;; that's mucho revo.
-
