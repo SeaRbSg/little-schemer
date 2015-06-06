@@ -454,7 +454,7 @@
 
 ;; next we have the flatteno call. a is 'a and resa is fresh.
 ;; calling into flatteno again, s does not unify with null, and does not unify with pairo.
-;; this drops us to our else, and we unify the conso, which unifies our return (resa) 
+;; this drops us to our else, and we unify the conso, which unifies our return (resa)
 ;; with '(a)
 
 (check-run* (resa)

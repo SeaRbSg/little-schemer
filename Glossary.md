@@ -12,3 +12,4 @@ lat    | list-of-atoms
 aexp   | arithmetic-expression
 mem    | remaining (returns list of items beginning with first occurrence of an item).
 rember | remove-member (but only removes the first occurrence of an item)
+sal    | succeeds at least once

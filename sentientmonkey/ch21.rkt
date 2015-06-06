@@ -4,6 +4,8 @@
 (require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
+(provide teacupo)
+
 (check-run* (q)
             u#
             => '())
