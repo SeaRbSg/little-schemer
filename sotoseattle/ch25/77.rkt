@@ -15,6 +15,7 @@
          (conso a res out))))))
 
 (define flatuleno
+  #| (lambda-limited 3 (s out) |#
   (lambda (s out)
     (conde
       ((conso s '() out))
@@ -42,81 +43,88 @@
 ; the first question to answer is what is (flatuleno _0 _1)
 
 [check-equal?
-  (run 9 (x)
-    (fresh (a aa)
-      (flatuleno a aa)
-      (== a x)))
-;   a/d                               aa/dd
-; ------------------------------    --------------------------
+  (run 9 (a)
+    (fresh (aa)
+      (flatuleno a aa)))
+  ;   a/d                               aa/dd
+  ; ------------------------------    --------------------------
   '(_.0                           ;  (_.0)
-    ()                            ;  ()
-    (_.0 . _.1)                   ;  (_.0 _.1)
-    (_.0)                         ;  (_.0)
-    (_.0 _.1 . _.2)               ;  (_.0 _.1 _.2)
-    (_.0 _.1)                     ;  (_.0 _.1)
-    (_.0 _.1 _.2 . _.3)           ;  (_.0 _.1 _.2 _.3)
-    (_.0 _.1 _.2)                 ;  (_.0 _.1 _.2)
-    (_.0 _.1 _.2 _.3 . _.4)       ;  (_.0 _.1 _.2 _.3 _.4)
-    )] ; never ends
+     ()                            ;  ()
+     (_.0 . _.1)                   ;  (_.0 _.1)
+     (_.0)                         ;  (_.0)
+     (_.0 _.1 . _.2)               ;  (_.0 _.1 _.2)
+     (_.0 _.1)                     ;  (_.0 _.1)
+     (_.0 _.1 _.2 . _.3)           ;  (_.0 _.1 _.2 _.3)
+     (_.0 _.1 _.2)                 ;  (_.0 _.1 _.2)
+     (_.0 _.1 _.2 _.3 . _.4)       ;  (_.0 _.1 _.2 _.3 _.4)
+     )] ; never ends
 
-; up until now, both flatulenos succeed for an infinite stream of cases
-; hold the thought, the streams exist, it doesn't mean it is a rabbit hole that
-; never finishes, not yet because we still have other goals to evaluate
-;
-; besides the flatuleno goals, we also have an appendo goal that has to
-; succeed: (appendo aa dd '(a b c))
-; inside the appendo there are two conditions:
-;   - the first one says: if the first element is nullo, the second is the output
-;     so for aa==() [we have it as 2nd sol] ==> dd==(a b c)
-;     and for the equivalence table above, dd==(a b c) ==> d==(a b . c)
-;     and aa==() ==> a==()
-;     therefore consosing into x ==> x==(a b . c) FIRST SOL
-
-;     So it is this last goal the one that drives the execution (order of
-;     solutions). The first conde here that succeeds, means it is the first
-;     time that ALL goals succeed, therefore the first solution.
-;
-;   - the second condition:
-;      ((fresh (a d res)
-;         (conso a d aa)
-;         (appendo d dd res)
-;         (conso a res '(a b c)))))))
-;     Consider that up to this point we have determined aa, dd, and (a b c)
-;     This will succeed when it exits successfully, when it reaches the nullo
-;     conde in a recursion call => when d is nullo, and res==dd
-;     And from the equivalence table, d==() ==> dd==()
-;     so a==(a b c) and (conso a d x) ==> x==(a b c) SECOND SOL
-
-;     Again, this is the second consecutive case in which ALL goals succeed
-;     and therefore shows up as second solution
-;     The key is that we juggle, we have all stream solutions on the air
-;     and only when we evaluate ALL conditions simultaneously in the block
-;     (inside the (fresh (a d aa dd)...)) we follow the order of successes
-
-; Consider that not only the 2 flatulenos give us infinite streams of possible
-; solutions, but the appendo too!
-;
-; As we recur inside the appendo, I become utterly lost and desperate
-; I imagine that it is because the nullo in the recursive appendo is never hit
-; again, and it never exits the rabbit hole
-
-; Now, consider that there are OTHER solutions to the flatulencio problem
+; there more than 2 solutions to the flatulencio problem
 ; there are values from the aa and dd streams that satisfy the problem
-; for example:
 
 [check-equal?
   (run* (x)
-    (flatuleno '((a) b c) '(a b c))
-    (== #t x))
+    (conde
+      ((flatuleno '((a) b c)   '(a b c)) )  ; a==(a)       d==(b c) ??
+      ((flatuleno '((a b) c)   '(a b c)) )  ; a==(a b)     d==c     ??
+      ((flatuleno '((a . b) c) '(a b c)) )  ; a==(a . b)   d==c     ??
+      ((flatuleno '(a b . c)   '(a b c)) )  ; a==(a b . c) d==()    SOL 1
+      ((flatuleno '(a b c)     '(a b c))   ); a==(a b c)   d==()    SOL 2
+      )
+      (== #t x))
+  '(#t #t #t #t #t)]
+
+[check-equal? ; proof that '((a) b c) solves and a/aa d/dd hit in the process
+  (run* (q)
+    (conso '(a) '(b c) '((a) b c))
+    (appendo '(a) '(b c) '(a b c))
+    (flatuleno '(a) '(a))
+    (flatuleno '(b c) '(b c))
+    (== q #t))
   '(#t)]
 
-; or...
-
-[check-equal?
-  (run* (x)
-    (flatuleno '((a b) c) '(a b c))
-    (== #t x))
+[check-equal? ; proof that '((a b) c) solves and a/aa d/dd hit in the process
+  (run* (q)
+    (conso '(a b) 'c '((a b) . c))
+    (appendo '(a b) '(c) '(a b c))
+    (flatuleno '(a b) '(a b))
+    (flatuleno 'c '(c))
+    (== q #t))
   '(#t)]
 
-; the problem is that they are not used because the appendo went rabbit-holing
-; and they never came up for use!!
+; could it be the appendo who is directing the search/walk?
+(run 4 (q)
+  (fresh (x y)
+    (appendo x y '(a b c))
+    (== `(,x ,y) q)))
+; '((() (a b c))
+;   ((a) (b c))
+;   ((a b) (c))
+;   ((a b c) ()) <--- solutions taken from here ???
+;   ==> infinite-loop-entrance)
+
+; No idea yet...
+
+; MY PAST EXPLANATION ==> WRONG!!
+; up until now, both flatulenos succeed for an infinite stream of cases
+;
+; So the (flatuleno a aa) gets first possible solution a==_.0 and aa==(_.0)
+; then it goes for (flatuleno d dd) and for the first solution it tries to append
+; and fails. Then it tries the next sol of (flatuleno a aa) => a==()==aa
+; and walks the stream of solutions of (flatuleno d dd) untile d==(_.0 _.1 _.2)
+; it again tries to append, and BINGO! it works ==> x==(a b . c) FIRST SOL
+
+; We have found a solution in the first element of (flatuleno a aa) and the
+; second solution of (flatuleno d dd). NOW, instead of keeping exploring other
+; solutions to d (keeping a fixed) => which would get us into infinite loop,
+; we go back up to (flatuleno a aa) and keep exploring solutions of a/aa
+; ====> NOT DEPTH FIRST SEARCH <====
+
+; We keep trying and failing until we hit a==(a b c), at which time we look into
+; (flatuleno d dd) and keep going until d==()==dd, for which the appendo works
+; and the consing of x works too ==> x==(a b c) the SECOND SOL
+;
+; We go back up to (flatuleno a aa) and keep working the stream of possible
+; solutions continuing with a==(_.0 _.1 _.2 _.3 . _.4) and we will never stop
+; because from no onwards no solutions exist that satisfy all goals
+
