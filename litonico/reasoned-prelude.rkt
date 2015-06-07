@@ -1,6 +1,6 @@
 #lang racket
 
-(provide %u %s eq-car? caro cdro conso nullo pairo eqo)
+(provide %u %s eq-car? caro cdro conso nullo pairo eqo teacupo)
 (require "../lib/mk.rkt")
 
 (define %s (== #f #f))
@@ -34,3 +34,10 @@
   (lambda (pair)
     (fresh (head tail)
       (conso head tail pair))))
+
+(define teacupo
+  (lambda (x)
+    (conde
+      [(== 'tea x) %s]
+      [(== 'cup x) %s]
+      [%u])))
