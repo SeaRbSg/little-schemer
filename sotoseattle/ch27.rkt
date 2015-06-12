@@ -64,7 +64,7 @@
     (all
       (bitchocho x y r) ; given 2 I know the other. 1 eq 3 var
       (bitano x y c)))) ; given 2 I know the other. 1 eq 3 var
-; halfaddero because of all is 2 eq with 4 var
+                        ; halfaddero is then: 2 eq with 4 var
 
 [check-equal?
   (run* (r)
@@ -81,7 +81,7 @@
       (== `(,x ,y ,r ,c) s)))
   '((0 0 0 0) (1 0 1 0) (0 1 1 0) (1 1 0 1))]
 ; all possible values again
-; halfaddero x + y = r + (2c) BUT it is NOT 1 eq 4 var. It is 2 eq!!
+; halfaddero x + y = r + (2c)
 
 ; # 15 - 16
 (define fulladdero
@@ -184,3 +184,105 @@
   [check-equal? (run* (s) (== (suma '() '(1 1 0 0 1)) s)) '(1 1 0 0 1)]
   [check-equal? (run* (s) (== (suma '(1 1 0 0 1) '(1)) s)) '(0 0 0 1 1)])
 
+;# 80 - 84
+(define poso
+  (lambda (n)
+    (fresh (a d)
+      (== `(,a . ,d) n))))
+
+[check-equal? (run* (q) (poso '(0 0 1)) (== #t q)) '(#t)]
+[check-equal? (run* (q) (poso '(1)) (== #t q))     '(#t)]
+[check-equal? (run* (q) (poso '(a b c)) (== #t q)) '(#t)]
+[check-equal? (run* (q) (poso '()) (== #t q))      '()]
+
+
+[check-equal? (run* (r) (poso r)) '((_.0 . _.1))]
+
+; # 85 - 91
+(define >1o
+  (lambda (n)
+    (fresh (a aa dd)
+      (== `(,a ,aa . ,dd) n))))
+
+[check-equal? (run* (q) (>1o '(0 1 1)) (== #t q)) '(#t)]
+[check-equal? (run* (q) (>1o '(1)) (== #t q))     '()]
+[check-equal? (run* (q) (>1o '()) (== #t q))      '()]
+[check-equal? (run* (r) (>1o r)) '((_.0 _.1 . _.2))]
+
+; # 118
+(define addero
+  (lambda (d n m r)
+    (condi
+      [(== 0 d) (== '() m) (== n r)]
+      [(== 0 d) (== '() n) (== m r)
+       (poso m)]
+      [(== 1 d) (== '() m)
+       (addero 0 n '(1) r)]
+      [(== 1 d) (== '() n)
+       (poso m)
+       (addero 0 '(1) m r)]
+      [(== '(1) n) (== '(1) m)
+       (fresh (a c)
+         (== `(,a ,c) r)
+         (fulladdero d 1 1 a c))]
+      [(== '(1) n) (gen-addero d n m r)]
+      [(== '(1) m) (>1o n) (>1o r)
+         (addero d '(1) n r)]
+      [(>1o n) (gen-addero d n m r)]
+      [u#])))
+
+; # 118
+(define gen-addero
+  (lambda (d n m r)
+    (fresh (a b c e x y z)
+      (== `(,a . ,x) n)
+      (== `(,b . ,y) m) (poso y)
+      (== `(,c . ,z) r) (poso z)
+      (alli
+        (fulladdero d a b c e)
+        (addero e x y z)))))
+
+; # 120 -125
+[check-equal?
+  (run* (s) (gen-addero 1 '(0 1 1) '(1 1) s))
+  '((0 1 0 1))]
+
+; $ 126 - 127
+[check-equal?
+  (run* (s)
+    (fresh (x y)
+      (addero 0 x y '(1 0 1))
+      (== `(,x ,y) s)))
+  '(((1 0 1) ())
+    (() (1 0 1))
+    ((1) (0 0 1))
+    ((0 0 1) (1))
+    ((1 1) (0 1))
+    ((0 1) (1 1)))]
+
+; # 128 - 129
+(define +o
+  (lambda (n m k)
+    (addero 0 n m k)))
+
+[check-equal?
+  (run* (s)
+    (fresh (x y)
+      (+o x y '(1 0 1))
+      (== `(,x ,y) s)))
+  '(((1 0 1) ())
+    (() (1 0 1))
+    ((1) (0 0 1))
+    ((0 0 1) (1))
+    ((1 1) (0 1))
+    ((0 1) (1 1)))]
+
+; # 130 - 133
+(define -o
+  (lambda (n m k)
+    (+o m k n)))
+
+(module+ test
+  [check-equal?  (run* (q) (-o '(0 0 0 1) '(1 0 1) q)) '((1 1))]
+  [check-equal?  (run* (q) (-o '(0 1 1) '(0 1 1) q)) '(())]
+  [check-equal?  (run* (q) (-o '(0 1 1) '(0 0 0 1) q)) '()])
