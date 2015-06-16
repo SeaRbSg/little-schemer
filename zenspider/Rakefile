@@ -9,6 +9,10 @@ task :test do
   sh "time raco test --direct #{files}"
 end
 
+task :reason do
+  sh "time raco test --direct ch2*.rkt"
+end
+
 task :slow do
   sh "time raco test #{files}"
 end
