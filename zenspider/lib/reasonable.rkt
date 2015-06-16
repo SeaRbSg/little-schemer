@@ -74,9 +74,27 @@
          fresh
          none
          run*
-         run)
+         run
+         dbg)
 
 (require (only-in racket/list empty))
+
+(require (for-syntax racket/base))
+(define-for-syntax reasonable/trace #f)
+
+(define-syntax (require/if stx)
+  (syntax-case stx ()
+    [(_ enable? id ...)
+     (if #'enable?
+         #'(require id ...)
+         #'(begin))]))
+
+(require/if reasonable/trace unstable/debug)
+
+(define-syntax dbg
+  (if reasonable/trace
+      (syntax-rules () [(_ fmt v) (debug #:name fmt v)])
+      (syntax-rules () [(_ fmt v) v])))
 
 (define none empty)
 
@@ -139,8 +157,8 @@
      (let ((n ñ)
            (x (var 'x)))
        (if (or (not n) (> n 0))
-           (map∞ n (lambda (s) (reify (walk* x s)))
-                 ((all g ...) empty-s))
+           (dbg "run" (map∞ n (lambda (s) (reify (walk* x s)))
+                            ((all g ...) empty-s)))
            '())))))
 
 (define-syntax run*
@@ -179,11 +197,12 @@
 (define (map∞ n p a∞)
   (case∞ a∞
          '()
-         ((a) (cons (p a) '()))
-         ((a f) (cons (p a) (cond
-                              ((not n) (map∞ n p (f)))
-                              ((> n 1) (map∞ (- n 1) p (f)))
-                              (else '()))))))
+         ((a)   (dbg "map solo" (cons (p a) '())))
+         ((a f) (dbg "map pair" (cons (dbg "map inner" (p a))
+                                      (cond
+                                        ((not n) (map∞ n p (f)))
+                                        ((> n 1) (map∞ (- n 1) p (f)))
+                                        (else '())))))))
 
 (define-syntax λg (syntax-rules () ((_ a c ...) (lambda a c ...))))
 (define-syntax λf (syntax-rules () ((_ a c ...) (lambda a c ...))))
@@ -193,15 +212,15 @@
 (define %s #%s)                         ; TODO: cleanup
 (define %u #%u)                         ; TODO: cleanup
 
-
 ;; (set-sharp-read-syntax! #\s (lambda (port) '#%s))
 ;; (set-sharp-read-syntax! #\u (lambda (port) '#%u))
 
 (define (≈ v w)
   (λg (s)
-      (cond
-        ((unify v w s) => #%s)
-        (else (#%u s)))))
+      (dbg "≈"
+           (cond
+             ((unify v w s) => #%s)
+             (else (#%u s))))))
 
 (define-syntax fresh
   (syntax-rules ()
@@ -210,35 +229,36 @@
          (let ((x (var 'x)) ...)
            ((all g ...) s))))))
 
-(define-syntax all    (syntax-rules () ((_ g ...) (all-aux bind  g ...))))
+(define-syntax all    (syntax-rules () ((_ g ...) (dbg "all" (all-aux bind   g ...)))))
 (define-syntax all-i  (syntax-rules () ((_ g ...) (all-aux bind-i g ...))))
 
 (define-syntax all-aux
   (syntax-rules ()
-    ((_ bnd)          #%s)
-    ((_ bnd g)        g)
-    ((_ bnd g0 g ...) (let ((g^ g0))
-                        (λg (s)
-                            (bnd (g^ s)
-                                 (λg (s) ((all-aux bnd g ...) s))))))))
+    ((_ bnd)          (dbg "all-aux happy" #%s))
+    ((_ bnd g)        (dbg "all-aux solo" g))
+    ((_ bnd g0 g ...) (dbg "all-aux multi"
+                           (let ((g^ g0))
+                             (λg (s)
+                                 (bnd (g^ s)
+                                      (λg (s) ((all-aux bnd g ...) s)))))))))
 
-(define-syntax cond-e (syntax-rules () ((_ c ...) (cond-aux if-e c ...))))
+(define-syntax cond-e (syntax-rules () ((_ c ...) (dbg "cond-e" (cond-aux if-e c ...)))))
 (define-syntax cond-i (syntax-rules () ((_ c ...) (cond-aux if-i c ...))))
 (define-syntax cond-a (syntax-rules () ((_ c ...) (cond-aux if-a c ...))))
 (define-syntax cond-u (syntax-rules () ((_ c ...) (cond-aux if-u c ...))))
 
 (define-syntax cond-aux
   (syntax-rules (else)
-    ((_ ifer) #%u)
-    ((_ ifer (else g ...))     (all g ...))
-    ((_ ifer (g ...))          (all g ...))
-    ((_ ifer (g0 g ...) c ...) (ifer g0 (all g ...) (cond-aux ifer c ...)))))
+    ((_ ifer)                  (dbg "cond-aux %u"    #%u))
+    ((_ ifer (else g ...))     (dbg "cond-aux else"  (all g ...)))
+    ((_ ifer (g ...))          (dbg "cond-aux goals" (all g ...)))
+    ((_ ifer (g0 g ...) c ...) (dbg "cond-aux mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))
 
 (define (mplus a∞ f)
   (case∞ a∞
          (f)
-         ((a)    (choice a f))
-         ((a f0) (choice a (λf () (mplus   (f0) f))))))
+         ((a)    (dbg "mplus1" (choice a f)))
+         ((a f0) (dbg "mplus2" (choice a (λf () (mplus   (f0) f)))))))
 
 (define (mplus-i a∞ f)
   (case∞ a∞
@@ -247,10 +267,10 @@
          ((a f0) (choice a (λf () (mplus-i (f) f0))))))
 
 (define (bind a∞ g)
-  (case∞ a∞
-         (mzero)
-         ((a)   (g a))
-         ((a f) (mplus   (g a) (λf () (bind   (f) g))))))
+  (dbg "bind" (case∞ a∞
+                     (mzero)
+                     ((a)   (dbg "bind1" (g a)))
+                     ((a f) (dbg "bind2" (mplus (dbg "bind-inner" (g a)) (λf () (bind   (f) g))))))))
 
 (define (bind-i a∞ g)
   (case∞ a∞
