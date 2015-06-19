@@ -195,3 +195,56 @@
 
 (let ([s `((,y . (,z ,w c ,w)) (,x . ,y) (,z . a))])
   (check-equal? (reify (walk* x s)) '(a _.0 c _.0)))
+
+;; 59
+(define (occurs√ x v s)
+  (let ([v (walk v s)])
+    (cond
+      [(var? v) (eq? v x)]
+      [(pair? v)
+       (or
+         (occurs√ x (car v) s)
+         (occurs√ x (cdr v) s))]
+      [else #f])))
+
+;; 60
+(define (unify√ v w s)
+  (let ([v (walk v s)]
+        [w (walk w s)])
+    (cond
+      [(eq? v w) s]
+      [(var? v) (ext-s√ v w s)]
+      [(var? w) (ext-s√ w v s)]
+      [(and (pair? v) (pair? w))
+       (cond
+        [(unify√ (car v) (car w) s) =>
+                                    (lambda (s)
+                                      (unify√ (cdr v) (cdr w) s))]
+        [else #f])]
+      [(equal? v w) s]
+      [else #f])))
+
+(define (ext-s√ x v s)
+  (cond
+    [(occurs√ x v s) #f]
+    [else (ext-s x v s)]))
+
+;; 61
+; (run 1 (x)
+;   (== `(,x) x))
+; no answer...
+
+;; 62
+(check-run 1 (q)
+           (fresh (x)
+             (== `(,x) x)
+             (== #f q))
+           => '(#f))
+
+;; 63
+(check-run 1 (q)
+           (fresh (x y)
+             (== `(,x) x)
+             (== `(,y) x)
+             (== #t q))
+           => '(#t))
