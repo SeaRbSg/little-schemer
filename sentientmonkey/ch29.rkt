@@ -248,3 +248,36 @@
              (== `(,y) x)
              (== #t q))
            => '(#t))
+
+;; 64
+(define (==√ v w)
+  (lambda (s)
+    (cond
+      [(unify√ v w s) => s#]
+      [else (u# s)])))
+
+(check-run 1 (x)
+           (==√ `(,x) x)
+           => '())
+
+;; 65
+; (run 1 (x)
+;   (fresh (y z)
+;     (== x z)
+;     (== `(a b ,z) y)
+;     (== x y))
+;   => '())
+; no answer...
+
+;; 66
+(check-run 1 (x)
+           (fresh (y z)
+             (== x z)
+             (== `(a b ,z) y)
+             (==√ x y))
+           => '())
+
+;; 67
+; (run 1 (x)
+;   (== `(,x) x))
+; no answer...
