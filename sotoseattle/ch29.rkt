@@ -299,24 +299,26 @@
 ; A goal g is a function that takes a substitution s and returns a stream of substitutions.
 ; (For clarity we notate lambda as λg when creating such a function g.)
 ; Because the sequence of substitutions may be infinite, we represent it not as a list but a stream.
-; Streams contain either zero, one, or more substitutions.
+; Streams contain either zero, one, or more substitutions. Can be finite or infinite, but
+; we generalized from now on to infinite.
 
-; DOUBT: A stream of substitutions, is the same as an infinite s, with assocs and deeply nested assocs
-; (substitutions themselves) inside.
+; DOUBT: A stream of substitutions, is it the same as an infinite s, with assocs and
+; deeply nested assocs (substitutions themselves) inside?
 
 (define-syntax λg
   (syntax-rules ()
     ((_ (s) e) (lambda (s) e))))
 
 ; We use (mzero) to represent the empty stream of substitutions '().
+; codewise mzero is the same as #f
 ; (define-syntax mzero
 ;   (syntax-rules ()
-;     ((_) #f))) <==== BUT HERE IS #f, not '()
+;     ((_) #f)))
 
 ; #u is a goal, takes as input an s, and returns mzero.
 ; (define fail (λg (s) (mzero)))
 
-; If a is a substitution, then (unit a) represents the streams containing just a.
+; If a is a substitution, then (unit a) represents the stream containing just a.
 ; A finite stream with that single substitution.
 ;
 ; #s is a goal that takes as input s, and returns a stream with only s (unit s).
@@ -325,7 +327,7 @@
 ; == creates a goal, a function that takes an s, and tries to extend it as seen above
 ; if it succeeds, the new s (which we have seen can be the same input s) is given
 ; as input to #s/succeed and returns a stream with just s.
-; if it fails to unify, it invoques the goal #u/fail and return the mzero stream
+; if it fails to unify, it invokes the goal #u/fail and return the mzero stream
 
 (define my_==
   (lambda (v w)
@@ -335,22 +337,21 @@
         (else (u# s))))))     ; (else (fail s))))))
 
 ; run converts a stream of substitutions a-inf to a list of values using map-inf.
-; wtf?
 
 (define-syntax my_run
   (syntax-rules ()
     ((_ n^ (x) g ...)
-     (let ((n n^) (x (var 'x)))                 ; <== creates the query variable as fresh
+     (let ((n n^) (x (var 'x)))             ; <== creates the query variable as fresh
        (if (or (not n) (> n 0))
          (map-inf n
            (lambda (s) (reify (walk* x s)))
-           ((all g ...) empty-s))               ; <== this is the infinite stream
+           ((all g ...) empty-s))           ; <== the result of this is the infinite stream
          '())))))
 
 ; the key seems to be in map-inf (map infinite stream), which takes three inputs:
 ; n => the number of solutions to cap at
 ; lambda => a procedure to reify whatever the query var is associated with
-; a-inf => ((all g ...) ())
+; a-inf => ((all g ...) ()) the stream of substitutions
 
 ; Lets see with an example
 ; (run* (q)
@@ -374,6 +375,7 @@
 
 ; (run 1 (x) (== `(,x) x))    ; runs for ever :: circular
 ; (walk* x `((,x . (,x))))    ; runs for ever :: circular
+; the s created is ((x . (x)) ==> which shows when run as ((x x)) [don't get confused]
 
 [check-equal?
   (run 1 (q)
@@ -404,3 +406,27 @@
   (run 1 (x) (==✓ (list x) x))
   '()]
 
+; unify will add the assoc (x x)...
+[check-equal? (unify `(,x) x '()) '((#(x) #(x)))]
+; which goes circular ... but unify✓ will plainly fail
+[check-equal? (unify✓ `(,x) x '()) '#f]
+; because in ext-s✓ the condition (occurs✓ x x s) will trigger the #f
+
+; (run 1 (x)
+;   (fresh (y z)
+;     (== x z)
+;     (== `(a b ,z) y)
+;     (== x y)))         ; circular too
+
+(run 1 (x)
+  (fresh (y z)
+    (== x z)
+    (== `(a b ,z) y)
+    (==✓ x y)))          ; in the same way the circularity is averted
+
+; when it fails, what is the s?
+; first unification  -> s: ((x . z))                    add (x . z) to ()
+; second unification -> s: ((y . `(a b ,z)) (x . z))    add (y . (a b z)) to ((x . z))
+; third unification  -> fails and the s is unchanged
+
+; the final frames have been explained previously
