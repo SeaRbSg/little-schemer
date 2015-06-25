@@ -3,7 +3,6 @@
 (require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
-
 (define bit-xoro
   (lambda (x y r)
     (conde
@@ -99,6 +98,7 @@
               '((1 1))]
 
 ;; 17
+;; TO DISCUSS HOW THE HELL DID THIS HAPPEN!
 [check-equal? (run* (s)
                     (fresh (b x y r c)
                            (full-addero b x y r c)
