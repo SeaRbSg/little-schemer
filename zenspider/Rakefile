@@ -36,3 +36,41 @@ task :sync do
     sh "rsync -avP --existing ../../zenspider/schemers/little-schemer/ ."
   end
 end
+
+task :wtf => "wtf:reset" do
+  ENV["TRACE"] = "1"
+
+  Dir["wtf*.rkt"].each do |path|
+    warn path
+    sh "racket #{path} 2>&1 | ./clean.rb >> #{path}"
+  end
+end
+
+task "wtf:reset" do
+  ENV["TRACE"] = "1"
+
+  Dir["wtf*.rkt"].each do |path|
+    out_path = "tmp.#{$$}"
+    File.open out_path, "w" do |out|
+      out.puts File.read(path).split(/;;/, 2).first
+    end
+    mv out_path, path
+  end
+end
+
+def diff m, n, title
+  puts ";;;; #{title}"
+  puts
+  system "diff -U 1000 wtf%02d.rkt wtf%02d.rkt" % [m, n]
+  # system "diff -y -W 175 wtf%02d.rkt wtf%02d.rkt" % [m, n]
+  puts
+end
+
+task :diff do
+  diff 0, 1, "nothing vs something good"
+  diff 1, 2, "something good vs something bad"
+  diff 1, 3, "something good vs cond-e 1 good"
+  diff 3, 4, "cond-e 1 good vs cond-e 2 good"
+  diff 3, 5, "cond-e 1 good vs cond-e 1 good 1 bad"
+  diff 5, 6, "cond-e 1 good 1 bad vs cond-e 1 bad 1 good"
+end

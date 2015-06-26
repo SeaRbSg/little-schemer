@@ -69,7 +69,7 @@
 (require (only-in racket/list empty))
 
 (require (for-syntax racket/base))
-(define-for-syntax reasonable/trace #f)
+(define-for-syntax reasonable/trace (getenv "TRACE"))
 
 (define-syntax (require/if stx)
   (syntax-case stx ()
@@ -82,14 +82,12 @@
 
 (define-syntax dbg
   (if reasonable/trace
-      (syntax-rules () [(_ fmt v) (debug #:name fmt v)])
+      (syntax-rules () [(_ fmt v) (debug #:name (string->symbol fmt) v)])
       (syntax-rules () [(_ fmt v) v])))
 
 (define none empty)
 
-(define var vector)                     ; 9:6
-
-(define var? vector?)                   ; 9:6
+(struct var (name) #:transparent)       ; 9:6 -- modified to struct
 
 (define empty-s '())                    ; 9:13
 
@@ -105,19 +103,20 @@
   (cons (cons x v) s))
 
 (define (unify v w s)                   ; 9:36
-  (if (eq? v w) s                       ; 9:37 optimization
-      (let ((v (walk v s))
-            (w (walk w s)))
-        (cond ((eq? v w) s)
-              ((var? v) (ext-s v w s))
-              ((var? w) (ext-s w v s))
-              ((and (pair? v) (pair? w))
-               (cond
-                 ((unify (car v) (car w) s) =>
-                  (lambda (s) (unify (cdr v) (cdr w) s)))
-                 (else #f)))
-              ((equal? v w) s)
-              (else #f)))))
+  (dbg "unify"
+       (if (eq? v w) s                  ; 9:37 optimization
+           (let ((v (walk v s))
+                 (w (walk w s)))
+             (cond ((eq? v w) s)
+                   ((var? v) (ext-s v w s))
+                   ((var? w) (ext-s w v s))
+                   ((and (pair? v) (pair? w))
+                    (cond
+                      ((unify (car v) (car w) s) =>
+                       (lambda (s) (unify (cdr v) (cdr w) s)))
+                      (else #f)))
+                   ((equal? v w) s)
+                   (else #f))))))
 
 (define (walk* v s)                     ; 9:47
   (let ((v (walk v s)))
@@ -129,7 +128,7 @@
 (define size-s length)
 
 (define (reify-name n)
-  (string->symbol (string-append "_" "." (number->string n))))
+  (string->symbol (format "_.~s" n)))
 
 (define (reify-s v s)                   ; 9:52
   (let ((v (walk v s)))
@@ -138,7 +137,7 @@
           (else s))))
 
 (define (reify v)
-  (walk* v (reify-s v empty-s)))
+  (dbg "reify" (walk* v (reify-s v empty-s))))
 
 (define-syntax run                      ; 9 : 6, 13, 47, 58
   (syntax-rules ()
@@ -150,13 +149,8 @@
                             ((all g ...) empty-s)))
            '())))))
 
-(define-syntax run*
-  (syntax-rules ()
-    ((_ (x) g ...) (run #f (x) g ...))))
-
-(define-syntax run1
-  (syntax-rules ()
-    ((_ (x) g ...) (run 1 (x) g ...))))
+(define-syntax-rule (run* (x) g ...) (run #f (x) g ...))
+(define-syntax-rule (run1 (x) g ...) (run 1 (x) g ...))
 
 (define-syntax case∞
   (syntax-rules ()
@@ -171,33 +165,35 @@
                      many)))))))
 
 
-(define-syntax mzero
-  (syntax-rules ()
-    ((_) #f)))
-
-(define-syntax unit
-  (syntax-rules ()
-    ((_ a) a)))
-
-(define-syntax choice
-  (syntax-rules ()
-    ((_ a f) (cons a f))))
+(define-syntax-rule (mzero) #f)
+(define-syntax-rule (unit a) a)
+(define-syntax-rule (choice a f) (cons a f))
 
 (define (map∞ n p a∞)
   (case∞ a∞
-         [()    '()]
-         [(a)   (dbg "map solo" (cons (p a) '()))]
-         [(a f) (dbg "map pair" (cons (dbg "map inner" (p a))
-                                      (cond
-                                        ((not n) (map∞ n p (f)))
-                                        ((> n 1) (map∞ (- n 1) p (f)))
-                                        (else '()))))]))
+         [()    (dbg "map0" '())]
+         [(a)   (dbg "map1" (cons (dbg "map1/car" (p a)) '()))]
+         [(a f) (dbg "mapN" (cons (dbg "mapN/car" (p a))
+                                  (dbg "mapN/cdr" (cond
+                                                    [(not n) (map∞ n p (f))]
+                                                    [(> n 1) (map∞ (- n 1) p (f))]
+                                                    [else '()]))))]))
 
-(define-syntax λg (syntax-rules () ((_ a c ...) (lambda a c ...))))
-(define-syntax λf (syntax-rules () ((_ a c ...) (lambda a c ...))))
+(struct r/λ (code output)
+  #:property prop:procedure (struct-field-index code)
+  #:methods gen:custom-write [(define (write-proc proc port mode)
+                                (fprintf port "~a" (r/λ-output proc)))])
 
-(define %s (λg (s) (unit s)))
-(define %u (λg (s) (mzero)))
+(define-syntax λg
+  (syntax-rules (=>)
+    [(_ a c ... => x) (r/λ (lambda a c ...) x)]
+    [(_ a c ...)      (r/λ (lambda a c ...) '(λg a c ...))]))
+(define-syntax λf
+  (syntax-rules ()
+    [(_ a c ...)      (r/λ (lambda a c ...) '(λf a c ...))]))
+
+(define %s (λg (s) (unit s) => '%s))
+(define %u (λg (s) (mzero)  => '%u))
 
 (define (≈ v w)
   (λg (s)
@@ -210,21 +206,22 @@
   (syntax-rules ()
     ((_ (x ...) g ...)
      (λg (s)
-         (let ((x (var 'x)) ...)
+         (let ([x (var 'x)] ...)
            ((all g ...) s))))))
 
-(define-syntax all    (syntax-rules () ((_ g ...) (dbg "all" (all-aux bind   g ...)))))
-(define-syntax all-i  (syntax-rules () ((_ g ...) (all-aux bind-i g ...))))
+(define-syntax all    (syntax-rules () ((_ g ...) (dbg "all"   (all-aux bind   g ...)))))
+(define-syntax all-i  (syntax-rules () ((_ g ...) (dbg "all-i" (all-aux bind-i g ...)))))
 
 (define-syntax all-aux
   (syntax-rules ()
-    ((_ bnd)          (dbg "all-aux happy" %s))
-    ((_ bnd g)        (dbg "all-aux solo" g))
-    ((_ bnd g0 g ...) (dbg "all-aux multi"
-                           (let ((g^ g0))
+    ((_ bnd)          (dbg "all-aux0" %s))
+    ((_ bnd g)        (dbg "all-aux1" g))
+    ((_ bnd g0 g ...) (dbg "all-auxN"
+                           (let ([g^ g0])
                              (λg (s)
-                                 (bnd (g^ s)
-                                      (λg (s) ((all-aux bnd g ...) s)))))))))
+                                 (dbg "all-aux/inner"
+                                      (bnd (g^ s)
+                                           (λg (s) ((all-aux bnd g ...) s))))))))))
 
 (define-syntax cond-e (syntax-rules () ((_ c ...) (dbg "cond-e" (cond-aux if-e c ...)))))
 (define-syntax cond-i (syntax-rules () ((_ c ...) (cond-aux if-i c ...))))
@@ -233,10 +230,10 @@
 
 (define-syntax cond-aux
   (syntax-rules (else)
-    ((_ ifer)                  (dbg "cond-aux %u"    %u))
-    ((_ ifer (else g ...))     (dbg "cond-aux else"  (all g ...)))
-    ((_ ifer (g ...))          (dbg "cond-aux goals" (all g ...)))
-    ((_ ifer (g0 g ...) c ...) (dbg "cond-aux mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))
+    ((_ ifer)                  (dbg "cond-aux0"    %u))
+    ((_ ifer (else g ...))     (dbg "cond-aux/else"  (all g ...)))
+    ((_ ifer (g ...))          (dbg "cond-aux/goals" (all g ...)))
+    ((_ ifer (g0 g ...) c ...) (dbg "cond-aux/mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))
 
 (define (mplus a∞ f)
   (case∞ a∞
@@ -252,9 +249,9 @@
 
 (define (bind a∞ g)
   (dbg "bind" (case∞ a∞
-                     [()    (mzero)]
+                     [()    (dbg "bind0" (mzero))]
                      [(a)   (dbg "bind1" (g a))]
-                     [(a f) (dbg "bind2" (mplus (dbg "bind-inner" (g a)) (λf () (bind   (f) g))))])))
+                     [(a f) (dbg "bind2" (mplus (dbg "bind2/car" (g a)) (λf () (bind   (f) g))))])))
 
 (define (bind-i a∞ g)
   (case∞ a∞
@@ -276,7 +273,7 @@
   (syntax-rules ()
     ((_ g0 g1 g2)
      (λg (s)
-         (let ((s∞ (g0 s)))
+         (let ([s∞ (g0 s)])
            (case∞ s∞
                   [()    (g2 s)]
                   [(s)   (g1 s)]
@@ -286,7 +283,7 @@
   (syntax-rules ()
     ((_ g0 g1 g2)
      (λg (s)
-         (let ((s∞ (g0 s)))
+         (let ([s∞ (g0 s)])
            (case∞ s∞
                   [()    (g2 s)]
                   [(s)   (g1 s)]
