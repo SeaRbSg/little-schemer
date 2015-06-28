@@ -3,6 +3,17 @@
 (require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
+(provide bit-xoro
+         bit-ando
+         half-addero
+         full-addero
+         poso
+         >1o
+         addero
+;;         gen-addero
+         +o
+         -o)
+
 (define bit-xoro
   (lambda (x y r)
     (conde
