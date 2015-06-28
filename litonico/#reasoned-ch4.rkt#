@@ -7,9 +7,10 @@
 (require "reasoned-prelude.rkt")
 
 (define mem
-  (lambda (x l)))
-
-[
-check-equal?
+  (lambda (x l)
+    (cond
+    [(null? l) #f:q!jkujkj)
+)
+[check-equal?
 
   #f]
