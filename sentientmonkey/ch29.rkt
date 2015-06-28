@@ -5,9 +5,9 @@
 (require "reasoned.rkt")
 
 ;; 6
-(define-syntax var
-  (syntax-rules ()
-    ((var w) (vector w))))
+; (define-syntax var
+;   (syntax-rules ()
+;     ((var w) (vector w))))
 
 (define u (var 'u))
 (define v (var 'v))
@@ -21,18 +21,18 @@
 (check-equal? y (vector 'y))
 (check-equal? z (vector 'z))
 
-(define-syntax var?
-  (syntax-rules ()
-    ((var? w) (vector? w))))
+; (define-syntax var?
+;   (syntax-rules ()
+;     ((var? w) (vector? w))))
 
 (check-true (var? x))
 (check-true (var? y))
 (check-true (var? z))
 
 ;; 7
-(define-syntax rhs
-  (syntax-rules ()
-    ((rhs a) (cdr a))))
+; (define-syntax rhs
+;   (syntax-rules ()
+;     ((rhs a) (cdr a))))
 
 (check-equal? (rhs `(,z . a)) 'a)
 
@@ -49,15 +49,15 @@
 (define empty-s '())
 
 ;; 27
-(define (walk v s)
-  (cond
-    [(var? v)
-     (cond
-       [(assq v s) =>
-           (lambda (a)
-             (walk (rhs a) s))]
-       [else v])]
-    [else v]))
+; (define (walk v s)
+;   (cond
+;     [(var? v)
+;      (cond
+;        [(assq v s) =>
+;            (lambda (a)
+;              (walk (rhs a) s))]
+;        [else v])]
+;     [else v]))
 
 ;; 14
 (check-equal? (walk z `((,z . a) (,x . ,w) (,y . ,z))) 'a)
@@ -139,36 +139,36 @@
 (check-equal? (unify v w empty-s) `((,v . ,w)))
 
 ;; 47
-(define (walk* v s)
-  (let ([v (walk v s)])
-    (cond
-      [(var? v) v]
-      [(pair? v)
-       (cons
-         (walk* (car v) s)
-         (walk* (cdr v) s))]
-      [else v])))
+; (define (walk* v s)
+;   (let ([v (walk v s)])
+;     (cond
+;       [(var? v) v]
+;       [(pair? v)
+;        (cons
+;          (walk* (car v) s)
+;          (walk* (cdr v) s))]
+;       [else v])))
 
 ;; 44
 (check-equal? (walk* x `((,y . (a ,z c)) (,x . ,y) (,z . a))) '(a a c))
 
 ;; 52
-(define (reify-name n)
-  (string->symbol
-    (string-append "_" "." (number->string n))))
+; (define (reify-name n)
+;   (string->symbol
+;     (string-append "_" "." (number->string n))))
 
-(define-syntax size-s
-  (syntax-rules ()
-    ((size-s l) (length l))))
+; (define-syntax size-s
+;   (syntax-rules ()
+;     ((size-s l) (length l))))
 
-(define (reify-s v s)
-  (let ([v (walk v s)])
-    (cond
-      [(var? v)
-       (ext-s v (reify-name (size-s s)) s)]
-      [(pair? v) (reify-s (cdr v)
-                          (reify-s (car v) s))]
-      [else s])))
+; (define (reify-s v s)
+;   (let ([v (walk v s)])
+;     (cond
+;       [(var? v)
+;        (ext-s v (reify-name (size-s s)) s)]
+;       [(pair? v) (reify-s (cdr v)
+;                           (reify-s (car v) s))]
+;       [else s])))
 
 (check-equal? (reify-s v empty-s) `((,v . _.0)))
 
@@ -190,8 +190,8 @@
     (check-equal? (walk* r (reify-s r empty-s)) '(a _.0 c _.0))))
 
 ;; 58
-(define (reify v)
-  (walk* v (reify-s v empty-s)))
+; (define (reify v)
+;   (walk* v (reify-s v empty-s)))
 
 (let ([s `((,y . (,z ,w c ,w)) (,x . ,y) (,z . a))])
   (check-equal? (reify (walk* x s)) '(a _.0 c _.0)))
