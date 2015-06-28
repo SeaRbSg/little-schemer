@@ -95,7 +95,178 @@
 ;; 34
 [check-equal? (my-walk x (ext-s z w `((,y . ,z) (,x . ,y)))) w]
 
-;; 35
-[check-equal? (unify v w s) '()]
-      
-       
+(define my-unify
+  (lambda (v w s)
+    (let ((v (walk v s))
+          (w (walk w s)))
+      (cond
+       [(eq? v w) s]
+       [(var? v) (ext-s v w s)]
+       [(var? w) (ext-s w v s)]
+       [(and (pair? v) (pair? w))
+        (cond
+         [(my-unify (car v) (car w) s) => 
+          (lambda (s)
+            (my-unify (cdr v) (cdr w) s))]
+         [else #f])]
+       [(equal? v w) s]
+       [else #f]))))
+
+;; 44
+[check-equal? (walk* x `((,y . (a ,z c)) (,x . ,y) (,z . a))) '(a a c)]
+
+;; 45
+[check-equal? (walk* x `((,y . (,z ,w c)) (,x . ,y) (,z . a))) `(a ,w c)]
+
+;; 46
+[check-equal? (walk* y `((,y . (,w ,z c)) (,v . b) (,x . ,v) (,z . ,x))) 
+              `(,w b c)]
+
+;; 47
+(define my-walk*
+  (lambda (v s)
+    (let ((v (walk v s)))
+      (cond
+        ((var? v) v)
+        ((pair? v)
+         (cons
+           (my-walk* (car v) s)
+           (my-walk* (cdr v) s)))
+        (else v)))))
+
+;; 52
+;; DISCUSSION: if v is walk*-ed already why are we walking it again in
+;; the let before doing anything else?
+
+(define my-reify-s
+  (lambda (v s)
+    (let ((v (walk v s)))
+      (cond
+        [(var? v) 
+         (ext-s v (reify-name (size-s s)) s)]
+        [(pair? v) (my-reify-s (cdr v) 
+                            (my-reify-s (car v) s))]
+        [else s]))))
+
+;;53
+[check-equal? (let ((r `(,w ,x ,y)))
+                (walk* r (reify-s r empty-s)))
+              '(_.0 _.1 _.2)]
+
+;; 54
+[check-equal? (let ((r (walk* `(,x ,y ,z) empty-s)))
+                (walk* r (reify-s r empty-s)))
+              '(_.0 _.1 _.2)]
+
+;; 55
+[check-equal? (let ((r `(,u (,v (,w ,x) ,y) ,x)))
+                (walk* r (reify-s r empty-s)))
+              '(_.0 (_.1 (_.2 _.3) _.4) _.3)]
+
+;; 56
+[check-equal? (let ((s `((,y . (,z ,w c ,w)) (,x . ,y) (,z . a))))
+                (let ((r (walk* x s)))
+                  (walk* r (reify-s r empty-s))))
+              '(a _.0 c _.0)]
+
+;; 58
+(define my-reify
+  (lambda (v)
+    (walk* v (reify-s v empty-s))))
+
+[check-equal? (let ((s `((,y . (,z ,w c ,w)) (,x . ,y) (,z . a))))
+                (reify (walk* x s)))
+              '(a _.0 c _.0)]
+
+;; 59
+(define ext-s-check
+  (lambda (x v s)
+    (cond
+     [(occurs-check x v s) #f]
+     [else (ext-s x v s)])))
+
+(define occurs-check
+  (lambda (x v s)
+    (let ((v (walk v s)))
+      (cond
+       [(var? v) (eq? v x)]
+       [(pair? v)
+        (or
+         (occurs-check x (car v) s)
+         (occurs-check x (cdr v) s))]
+       [else #f]))))
+
+(define unify-check
+  (lambda (v w s)
+    (let ((v (walk v s))
+          (w (walk w s)))
+      (cond
+       [(eq? v w) s]
+       [(var? v) (ext-s-check v w s)]
+       [(var? w) (ext-s-check w v s)]
+       [(and (pair? v) (pair? w))
+        (cond
+         [(unify-check (car v) (car w) s) =>
+          (lambda (s)
+            (unify-check (cdr v) (cdr w) s))]
+         [else #f])]
+       [(equal? v w) s]
+       [else #f]))))
+
+
+;; 62
+[check-equal? (run 1 (q) (fresh (x)
+                                (== `(,x) x)
+                                (== #t q)))
+              '(#t)]
+
+;; This is an infinite loop
+;; (run 1 (x) (== `(,x) x))
+
+;; This isn't an infinite loop. 
+[check-equal? (run 1 (q) (fresh (x)
+                                (== `(,x) x)))
+              '(_.0)]
+
+;; Nor is this
+[check-equal? (run 1 (x) (fresh (x)
+                                (== `(,x) x)))
+              '(_.0)]
+
+;; Nor is this
+[check-equal? (run 1 (q) (== `(,x) x))
+              '(_.0)]
+
+
+;; DISCUSSION: Why is the above true? 
+
+;; 63
+[check-equal? (run 1 (q) 
+                   (fresh (x y)
+                          (== `(,x) y)
+                          (== `(,y) x)
+                          (== #t q)))
+              '(#t)]
+
+;; 64
+[check-equal? (run 1 (x) (==-check `(,x) x))
+              '()]
+
+;; 65
+;; [check-equal? (run 1 (x)
+;;                    (fresh (y z)
+;;                           (== x z)
+;;                           (== `(a b ,z) y)
+;;                           (== x y)))
+;;               ]
+
+
+;; 66
+[check-equal? (run 1 (x)
+                   (fresh (y z)
+                          (== x z)
+                          (== `(a b ,z) y)
+                          (==-check x y)))
+              '()]
+
+
