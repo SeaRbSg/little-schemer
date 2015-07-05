@@ -5,6 +5,8 @@
 (require "reasoned.rkt")
 (require "ch21.rkt")
 
+(provide alwayso salo nevero)
+
 ;; 1
 (define (anyo g)
   (conde

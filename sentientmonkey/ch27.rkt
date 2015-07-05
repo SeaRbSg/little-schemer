@@ -4,6 +4,8 @@
 (require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
+(provide -o +o poso full-addero addero)
+
 ;; 5
 ;; I like building up from nand :]
 (define (bit-nando x y r)
