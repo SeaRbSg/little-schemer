@@ -4,7 +4,7 @@
 (require "../lib/mk.rkt")
 (require "reasoned.rkt")
 
-(provide -o +o poso full-addero addero)
+(provide -o +o poso full-addero addero >1o)
 
 ;; 5
 ;; I like building up from nand :]
