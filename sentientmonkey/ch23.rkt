@@ -5,7 +5,7 @@
 (require "reasoned.rkt")
 (require "ch22.rkt")
 
-(provide eq-car? eq-caro)
+(provide eq-car? eq-caro membero pmembero)
 
 ;; 1
 (define (list? l)

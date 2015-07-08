@@ -6,6 +6,8 @@
 (require "ch22.rkt")
 (require "ch23.rkt")
 
+(provide rembero)
+
 ;; 1
 (define (mem x l)
   (cond

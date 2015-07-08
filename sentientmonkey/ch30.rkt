@@ -7,6 +7,8 @@
 (require "ch26.rkt")
 (require "ch27.rkt")
 
+(provide onceo)
+
 ;; 1
 (check-run* (r)
            (conda

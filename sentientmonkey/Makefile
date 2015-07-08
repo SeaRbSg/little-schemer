@@ -1,4 +1,5 @@
 files = $(wildcard ch*.rkt)
+files += apartment.rkt
 targets = $(patsubst %.rkt,%,$(files))
 
 test:
