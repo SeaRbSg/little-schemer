@@ -1,8 +1,5 @@
 #lang racket
 (require "../../basic_defs.rkt")
-(require "../../lib/shared.rkt")
-(require rackunit)
-(require racket/trace)
 (require "../../../lib/mk.rkt")
 
 ; 1. Adam does not live on the top floor.
@@ -11,7 +8,6 @@
 ; 4. Dale lives on a higher floor than does Bill.
 ; 5. Erin does not live on a floor adjacent to Cora's.
 ; 6. Cora does not live on a floor adjacent to Bill's.
-; Floors: a(top) b c d e(ground)
 
 (define tenant
   (lambda (guy l)
@@ -21,14 +17,14 @@
         [(== floor guy)]
         [(tenant guy d)]))))
 
-(define residents
-  (lambda (floors names)
+(define living
+  (lambda (names floors)
     (conde
       [(nullo names)]
       [(fresh (x y)
          (conso x y names)
          (tenant x floors)
-         (residents floors y))])))
+         (living y floors))])))
 
 (define not_at
   (lambda (guy floor)
@@ -54,28 +50,22 @@
         [(== x1 guy2) (not_at guy1 x2)]
         [(no_adj guy1 guy2 y)]))))
 
-(define above
+(define higher
   (lambda (top bottom floors)
     (fresh (x1 x2 y)
       (conso x1 y floors)
       (caro y x2)
       (conde
         [(== x1 bottom) (not_ea top y)]
-        [(above top bottom y)]))))
+        [(higher top bottom y)]))))
 
 (run* (brix)
-  (fresh (a b c d e)
-    (== brix (list a b c d e))
-
-    (residents brix '(adam bill dale cora erin))
-
-    (not_at 'adam a)                     ; Adam is not at top floor
-    (not_at 'bill e)                     ; Bill is not at ground floor
-    (not_ea 'cora (list a e))            ; Cora is neither at top nor ground
-
-    (above 'dale 'bill brix)             ; Dale lives above Bill
-
-    (no_adj 'erin 'cora brix)            ; Erin and Cora don't live in adj floors
-    (no_adj 'cora 'bill brix)            ; Cora and Bill don't live in adj floors
-    ))
-
+  (fresh (PH LV3 LV2 LV1 GROUND)
+    (== brix (list PH LV3 LV2 LV1 GROUND))     ; list of floors
+    (living '(adam bill dale cora erin) brix)  ; list of tenants
+    (not_at 'adam PH)                          ; Adam is not at penthouse
+    (not_at 'bill GROUND)                      ; Bill is not at ground floor
+    (not_ea 'cora (list PH GROUND))            ; Cora is neither top nor bottom
+    (higher 'dale 'bill brix)                  ; Dale lives above Bill
+    (no_adj 'erin 'cora brix)                  ; Erin and Cora not in adj floors
+    (no_adj 'cora 'bill brix)))                ; Cora and Bill not in adj floors
