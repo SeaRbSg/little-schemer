@@ -43,14 +43,38 @@
              (not_at guy x)
              (not_ea guy y)))])))
 
+(define no_adj
+  (lambda (guy1 guy2 floors)
+    (fresh (x1 x2 y)
+      (conso x1 y floors)
+      (caro y x2)
+      (conda
+        [(== x1 guy1) (not_at guy2 x2)]
+        [(== x1 guy2) (not_at guy1 x2)]
+        [(no_adj guy1 guy2 y)]))))
+
+; (define above
+;   (lambda (top bottom floors)
+;     (fresh (x1 x2 y)
+;       (conso x1 y floors)
+;       (caro y x2)
+;       (conde
+;         [(== x2 top) (not_at bottom x1)]
+;         [(above top bottom y)]))))
+
 (run* (brix)
-  (fresh (a b c)
-    (== brix (list a b c))
+  (fresh (a b c d e)
+    (== brix (list a b c d e))
 
-    (residents brix '(adam pepe lola))
+    (residents brix '(adam bill dale cora erin))
 
-    (not_ea 'adam (list a b))
-    (not_at 'lola b)
-    (not_at 'pepe c)
+    (not_at 'adam a)                     ; Adam is not at top floor
+    (not_at 'bill e)                     ; Bill is not at ground floor
+    (not_ea 'cora (list a e))            ; Cora is neither at top nor ground
+
+    ; (above 'dale 'bill brix)             ; Dale lives above Bill
+
+    (no_adj 'erin 'cora brix)            ; Erin and Cora don't live in adj floors
+    (no_adj 'cora 'bill brix)            ; Cora and Bill don't live in adj floors
     ))
 
