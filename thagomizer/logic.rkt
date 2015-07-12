@@ -168,3 +168,73 @@
 ;; 4. Dale lives on a higher floor than does Bill.
 ;; 5. Erin does not live on a floor adjacent to Cora's.
 ;; 6. Cora does not live on a floor adjacent to Bill's.
+
+
+;;; Problem of my choice
+
+
+;; 1. The rocket that will launch in February is made by Rubicorp.
+;; 2. The rocket that will launch in March is made by Permias.
+;; 3. The rocket developed by Omnipax will launch 1 month before the Dreadco.
+;; 4. The Athios will launch 1 month before the Cornick.
+
+;; Names: Athios, Cornick, Dreadco, Foltron
+;; Companies: Omnipax, Permias, Rubicorp, Vexatech
+;; Months: January, February, March, April
+
+;; Correct answer:
+;; Months	  Names	   Companies
+;; January	  Foltron  Omnipax
+;; February       Dreadco  Rubicorp
+;; March	  Athios   Permias
+;; April	  Cornick  Vexatech
+
+
+
+(define one-month-before
+  (lambda (x y l)
+    (conde
+     [(nullo l) u#]
+     [else
+      (fresh (kar kdr kadr kddr)
+             (conso kar kdr l)
+             (conso kadr kddr kdr)
+             (conde
+              [(== x kar) (== y kadr)]
+              [else
+               (one-month-before x y kdr)]))])))
+
+;; The rocket developed by Omnipax will launch 1 month before the Dreadco.
+(define clause-three
+  (lambda (cx ny l)
+    (conde
+     [(nullo l) u#]
+     [else
+      (fresh (kar kdr kadr kddr karn karc kadrn kadrc)
+             (conso kar kdr l)
+             (conso kadr kddr kdr)
+             (conso karn karc kar)
+             (conso kadrn kadrc kadr)
+             (conde
+              [(eq-caro karc cx) (== kadrn ny)]
+              [else
+               (clause-three cx ny kdr)]))])))
+
+(define my-logic
+  (lambda (l)
+    (fresh (nj nf nm na cj cf cm ca)
+           (all
+            (== cf 'Rubicorp)
+            (== cm 'Permias)
+            (clause-three 'Omnipax 'Dreadco `((,nj ,cj) (,nf ,cf) (,nm ,cm) (,na ,ca)))
+            (one-month-before 'Athios 'Cornick `(,nj ,nf ,nm ,na))
+            (membero 'Folton `(,nj ,nf ,nm ,na))
+            (membero 'Vexatech `(,cj ,cf ,cm ,ca)))
+           (== `((,nj ,cj) (,nf ,cf) (,nm ,cm) (,na ,ca)) l))))
+
+[check-equal? (run* (r)
+                    (my-logic r))
+              '(((Folton Omnipax) (Dreadco Rubicorp) (Athios Permias) (Cornick Vexatech)))]
+
+
+
