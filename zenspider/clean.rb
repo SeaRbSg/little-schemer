@@ -4,7 +4,7 @@ old_result = nil
 
 ARGF.each_line do |line|
   line.chomp!
-  line.sub!(%r%/Users/ryan/Work/git/zenspider/schemers/little-schemer%, ".")
+  line.sub!(%r%#{Dir.pwd}%o, ".")
   line.sub!(%r%wtf\d\d%, "wtf##")
 
   case line
