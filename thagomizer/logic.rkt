@@ -5,7 +5,7 @@
 
 (define memberrevo
   (lambda (x l)
-    (conde 
+    (conde
      [s# (fresh (d)
                 (cdro l d)
                 (memberrevo x d))]
@@ -19,7 +19,7 @@
 
 (define membero
   (lambda (x l)
-    (conde 
+    (conde
      [(eq-caro l x) s#]
      [(nullo '())
       (fresh (d)
@@ -27,9 +27,9 @@
              (membero x d))])))
 
 
-(define distincto 
+(define distincto
   (lambda (l)
-    (conde 
+    (conde
      [(nullo l) s#]
      [else
       (fresh (head tail)
@@ -58,64 +58,107 @@
            [check-equal? (run* (r)
                                (distincto '(a b a))
                                (== #t r))
+                         '()])
+
+
+(define higher
+  (lambda (upper lower condo_list)
+    (condu
+     [(nullo condo_list) u#]
+     [(eq-caro condo_list upper) s#]
+     [(eq-caro condo_list lower) u#]
+     [else
+      (fresh (new_list)
+             (cdro condo_list new_list)
+             (higher upper lower new_list))])))
+
+
+(test-case "higher"
+           [check-equal? (run* (r)
+                               (higher 'a 'b '(a b))
+                               (== #t r))
+                         '(#t)]
+           [check-equal? (run* (r)
+                               (higher 'a 'b '(b a))
+                               (== #t r))
                          '()]
-           )
+           [check-equal? (run* (r)
+                               (higher 'a 'b '(e f a b))
+                               (== #t r))
+                         '(#t)]
+           [check-equal? (run* (r)
+                               (higher 'a 'b '(e f b a))
+                               (== #t r))
+                         '()]
+           [check-equal? (run* (r)
+                               (higher 'a 'b '())
+                               (== #t r))
+                         '()]
+           [check-equal? (run* (r)
+                               (higher 'a 'b '(a c b))
+                               (== #t r))
+                         '(#t)]
+           [check-equal? (run* (r)
+                               (higher 'a 'b '(b e a))
+                               (== #t r))
+                         '()])
 
+(define not-adjacent
+  (lambda (x y l)
+  (fresh (ca caa d1 d2)
+         (conso ca d1 l)  ;; car cdr
+         (conso caa d2 d1) ;; cadr cddr
+         (conde
+          [(nullo l) u#]
+          [(== x ca) (membero y d2)]
+          [(== y ca) (membero x d2)]
+          [else
+           (not-adjacent x y d1)]))))
 
-;; Something is a permutation of l if:
-;;  the car of l is in p somewhere and
-;;  the rest of l is in p with car of l removed
-;; (define permuteo
-;;   (lambda (l p)
-;;     (conde
-;;      [(nullo l) (nullo p)]
-;;      [else
-;;       (fresh (l_head l_tail new_p)
-;;              (conso l_head l_tail l)
-;;              (conde 
-;;               [(membero l_head p)])
-            
-;; [check-equal? (run* (r)
-;;                     (fresh (x)
-;;                            (possibilities x 'a 'b)
-;;                            (== x r)))
-;;               '((a a) (a b) (b a) (b b))]
-
-
+(test-case "not-adjacent"
+           [check-equal? (run* (r)
+                               (not-adjacent 'a 'b '(a b))
+                               (== #t r))
+                         '()]
+           [check-equal? (run* (r)
+                               (not-adjacent 'a 'b '(b a))
+                               (== #t r))
+                         '()]
+           [check-equal? (run* (r)
+                               (not-adjacent 'a 'b '(a f b))
+                               (== #t r))
+                         '(#t)]
+           [check-equal? (run* (r)
+                               (not-adjacent 'a 'b '(b f a))
+                               (== #t r))
+                         '(#t)]
+           [check-equal? (run* (r)
+                               (not-adjacent 'a 'b '())
+                               (== #t r))
+                         '()])
 
 (define logic
   (lambda (l)
-    (fresh (v w x y z)
-           (all 
-            (membero 'A `(,w ,x ,y ,z)) ;; Adam does not live on the top
-            (membero 'B `(,v ,w ,x ,y)) ;; Bill does not live on the bottom
-            (membero 'C `(,w ,x ,y))    ;; Cora lives in the middle
-            (conde
-             [(== 'D v) (membero 'B `(,w ,x ,y))]
-             [(== 'D w) (membero 'B `(,x ,y))]
-             [(== 'D x) (== 'B y)])
-            (conde 
-             [(== 'C w) (== 'E y)]
-             [(== 'C w) (== 'E z)]
-             [(== 'C x) (== 'E v)]
-             [(== 'C x) (== 'E z)]
-             [(== 'C y) (== 'E v)]
-             [(== 'C y) (== 'E w)])
-            (conde
-             [(== 'C w) (== 'B y)]
-             [(== 'C w) (== 'B z)]
-             [(== 'C x) (== 'B v)]
-             [(== 'C x) (== 'B z)]
-             [(== 'C y) (== 'B v)]
-             [(== 'C y) (== 'B w)])
-            )
-           (== l `(,v ,w ,x ,y ,z)))))
+    (fresh (funf vier drei zwei eins)
+           (all
+            ;; Adam does not live on the top
+            (membero 'A `(,vier ,drei ,zwei ,eins))
+            ;; Bill does not live on the bottom
+            (membero 'B `(,funf ,vier ,drei ,zwei))
+            ;; Cora lives in the middle
+            (membero 'C `(,vier ,drei ,zwei))
+            ;; Dale lives on a higher floor than does Bill
+            (higher 'D 'B `(,funf ,vier ,drei ,zwei ,eins))
+            ;; Erin does not live on a floor adjacent to Cora's
+            (not-adjacent 'C 'E `(,funf ,vier ,drei ,zwei ,eins))
+            ;; Cora does not live on a floor adjacent to Bill's
+            (not-adjacent 'C 'B `(,funf ,vier ,drei ,zwei ,eins)))
+           (== l `(,funf ,vier ,drei ,zwei ,eins)))))
 
 [check-equal? (run* (r)
                     (logic r))
               '((D C A B E))]
-             
-             
+
 
 ;; 1. Adam does not live on the top floor.
 ;; 2. Bill does not live on the bottom floor.
