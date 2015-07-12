@@ -1,9 +1,21 @@
 #lang racket/base
 
-
-
 (require "./unreasonable.rkt")
-(provide (all-from-out "./unreasonable.rkt"))
+(provide %s
+         %u
+         ≈
+         all
+         all-i
+         cond-e
+         cond-i
+         cond-a
+         cond-u
+         fresh
+         none
+         run*
+         run
+         if-a
+         dbg)
 
 (module+ test
   (require (submod "./unreasonable.rkt" test))

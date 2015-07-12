@@ -10,7 +10,7 @@ task :test do
 end
 
 task :reason do
-  sh "time raco test --direct ch2*.rkt"
+  sh "time raco test --direct ch2*.rkt ch30.rkt"
 end
 
 task :slow do
