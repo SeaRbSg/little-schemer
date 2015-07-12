@@ -105,15 +105,17 @@
 
 (define not-adjacent
   (lambda (x y l)
-  (fresh (ca caa d1 d2)
-         (conso ca d1 l)  ;; car cdr
-         (conso caa d2 d1) ;; cadr cddr
-         (conde
-          [(nullo l) u#]
-          [(== x ca) (membero y d2)]
-          [(== y ca) (membero x d2)]
-          [else
-           (not-adjacent x y d1)]))))
+    (conde
+     [(nullo l) u#]
+     [else
+      (fresh (kar kdr kadr kddr)
+             (conso kar kdr l)
+             (conso kadr kddr kdr)
+             (conde
+              [(== x kar) (membero y kddr)]
+              [(== y kar) (membero x kddr)]
+              [else
+               (not-adjacent x y kdr)]))])))
 
 (test-case "not-adjacent"
            [check-equal? (run* (r)
