@@ -64,50 +64,72 @@
       (only_once v 8)))
   '((* * 8 *))]
 
+(define at_most_once
+  (lambda (l x)
+    (fresh (a d)
+      (conso a d l)
+      (conda
+        [(nullo d) s#]
+        [(== a x) (nono d x)]
+        [else (at_most_once d x)]))))
+
+[check-equal?
+  (run* (q)
+    (fresh (a b c d h v)
+      (== q (list a b c d))
+      (== h (list a b c))
+      (== v (list c d))
+      (all
+        (conde [(== a 8)] [(== a '*)])
+        (conde [(== b 8)] [(== b '*)])
+        (conde [(== c 8)] [(== c '*)])
+        (conde [(== d 8)] [(== d '*)]))
+      (at_most_once q 8)
+      (at_most_once h 8)
+      (at_most_once v 8)))
+  '((8 * * *) (* 8 * *) (* * 8 *) (* * * 8) (* * * *))]
+
+(define at_most_once_each
+  (lambda (listas thingy)
+    (conde
+      [(nullo listas)]
+      [(fresh (a d)
+         (conso a d listas)
+         (at_most_once a thingy)
+         (at_most_once_each d thingy))])))
+
+(define initialize
+  (lambda (board thingy)
+    (conde
+      [(nullo board)]
+      [(fresh (a d)
+         (conso a d board)
+         (conde [(== a thingy)] [(== a '_)])
+         (initialize d thingy))])))
+
 [check-equal?
   (run* (board)
-    (fresh (a1 a2 b1 b2)
+    (fresh (Q a1 a2 b1 b2)
+      (== Q 'Q)
       (== board (list a1 a2 b1 b2))
-      (fresh (Q h1 h2 v1 v2)
-        (== Q 'Q)
+      (initialize board Q)
+      (fresh (h1 h2 v1 v2 d1 d2)
         (== h1 (list a1 a2)) (== h2 (list b1 b2))
         (== v1 (list a1 b1)) (== v2 (list a2 b2))
-        (all
-          (conde [(== a1 Q)] [(== a1 '_)])
-          (conde [(== a2 Q)] [(== a2 '_)])
-          (conde [(== b1 Q)] [(== b1 '_)])
-          (conde [(== b2 Q)] [(== b2 '_)]))
-        (only_once h1 Q)
-        (only_once h2 Q)
-        (only_once v1 Q)
-        (only_once v2 Q))))
-  '((Q _ _ Q) (_ Q Q _))]
+        (== d1 (list a1 b2)) (== d2 (list a2 b1))
+        (at_most_once_each (list h1 h2 v1 v2 d1 d2) Q)
+        )))
+  '((Q _ _ _) (_ Q _ _) (_ _ Q _) (_ _ _ Q) (_ _ _ _))]
 
-; (run* (board)
-;   (fresh (a1 a2 a3 b1 b2 b3 c1 c2 c3)
-;     (== board (list a1 a2 a3 b1 b2 b3 c1 c2 c3))
-;     (fresh (Q h1 h2 h3 v1 v2 v3 d1 d2 d3 d4 d5 d6)
-;       (== Q 'Q)
-;       (== h1 (list a1 a2 a3)) (== h2 (list b1 b2 b3)) (== h3 (list c1 c2 c3))
-;       (== v1 (list a1 b1 c1)) (== v2 (list a2 b2 c2)) (== v3 (list a3 b3 c3))
-;       (== d1 (list a1 b2 c3)) (== d2 (list a3 b2 c1))
-;       (all
-;           (conde [(== a1 Q)] [(== a1 '_)])
-;           (conde [(== a2 Q)] [(== a2 '_)])
-;           (conde [(== a3 Q)] [(== a3 '_)])
-;           (conde [(== b1 Q)] [(== b1 '_)])
-;           (conde [(== b2 Q)] [(== b2 '_)])
-;           (conde [(== b3 Q)] [(== b3 '_)])
-;           (conde [(== c1 Q)] [(== c1 '_)])
-;           (conde [(== c2 Q)] [(== c2 '_)])
-;           (conde [(== c3 Q)] [(== c3 '_)]))
-;       (only_once h1 Q)
-;       (only_once h2 Q)
-;       (only_once h3 Q)
-;       (only_once v1 Q)
-;       (only_once v2 Q)
-;       (only_once v3 Q)
-;       (only_once d1 Q)
-;       (only_once d2 Q)
-;       )))
+(run* (board)
+  (fresh (Q a1 a2 a3 b1 b2 b3 c1 c2 c3)
+    (== Q 'Q)
+    (== board (list a1 a2 a3 b1 b2 b3 c1 c2 c3))
+    (initialize board Q)
+    (fresh (h1 h2 h3 v1 v2 v3 d1 d2 d3 d4 d5 d6)
+      (== h1 (list a1 a2 a3)) (== h2 (list b1 b2 b3)) (== h3 (list c1 c2 c3))
+      (== v1 (list a1 b1 c1)) (== v2 (list a2 b2 c2)) (== v3 (list a3 b3 c3))
+      (== d1 (list a1 b2 c3)) (== d2 (list a3 b2 c1))
+      (at_most_once_each (list h1 h2 h3 v1 v2 v3 d1 d2) Q)
+      )))
 
