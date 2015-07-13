@@ -3,66 +3,12 @@
 (require "../../../lib/mk.rkt")
 (require rackunit)
 
-; (ifa (== x 'Q) (none y) (only_once y)))))
-; (define not_at (lambda (square x) (ifa (== square x) u# s#)))
-; (define none (lambda (l x) (fresh (a d) (conso a d l) (conda [(not_at a x)] [else (none d x)]))))
-; (define (memebero x l) (conde [(caro l x)] [(fresh (d) (cdro l d) (memebero x d))]))
-
 (define (nono l x)
   (conde
     [(nullo l)]
     [(fresh (a d)
        (conso a d l)
        (ifa (== a x) u# (nono d x)))]))
-
-[check-equal?
-  (run* (q)
-    (fresh (a b c)
-      (all
-        (conde [(== a 9)] [(== a '*)])
-        (conde [(== b 9)] [(== b '*)])
-        (conde [(== c 9)] [(== c '*)]))
-      (all
-        (nono (list a b) 9)
-        (nono (list b) 9))
-      (== q `(,a ,b ,c))))
-  '((* * 9) (* * *))]
-
-(define only_once
-  (lambda (l x)
-    (fresh (a d)
-      (conso a d l)
-      (conda
-        [(== a x) (nono d x)]
-        [(only_once d x)]))))
-
-[check-equal?
-  (run* (q)
-    (fresh (a b c d)
-      (== q (list a b c d))
-      (all
-        (conde [(== a 9)] [(== a '*)])
-        (conde [(== b 9)] [(== b '*)])
-        (conde [(== c 9)] [(== c '*)])
-        (conde [(== d 9)] [(== d '*)]))
-      (only_once q 9)))
-  '((9 * * *) (* 9 * *) (* * 9 *) (* * * 9))]
-
-[check-equal?
-  (run* (q)
-    (fresh (a b c d h v)
-      (== q (list a b c d))
-      (== h (list a b c))
-      (== v (list c d))
-      (all
-        (conde [(== a 8)] [(== a '*)])
-        (conde [(== b 8)] [(== b '*)])
-        (conde [(== c 8)] [(== c '*)])
-        (conde [(== d 8)] [(== d '*)]))
-      (only_once q 8)
-      (only_once h 8)
-      (only_once v 8)))
-  '((* * 8 *))]
 
 (define at_most_once
   (lambda (l x)
@@ -72,22 +18,6 @@
         [(nullo d) s#]
         [(== a x) (nono d x)]
         [else (at_most_once d x)]))))
-
-[check-equal?
-  (run* (q)
-    (fresh (a b c d h v)
-      (== q (list a b c d))
-      (== h (list a b c))
-      (== v (list c d))
-      (all
-        (conde [(== a 8)] [(== a '*)])
-        (conde [(== b 8)] [(== b '*)])
-        (conde [(== c 8)] [(== c '*)])
-        (conde [(== d 8)] [(== d '*)]))
-      (at_most_once q 8)
-      (at_most_once h 8)
-      (at_most_once v 8)))
-  '((8 * * *) (* 8 * *) (* * 8 *) (* * * 8) (* * * *))]
 
 (define at_most_once_each
   (lambda (listas thingy)
@@ -107,29 +37,74 @@
          (conde [(== a thingy)] [(== a '_)])
          (initialize d thingy))])))
 
-[check-equal?
-  (run* (board)
-    (fresh (Q a1 a2 b1 b2)
-      (== Q 'Q)
-      (== board (list a1 a2 b1 b2))
-      (initialize board Q)
-      (fresh (h1 h2 v1 v2 d1 d2)
-        (== h1 (list a1 a2)) (== h2 (list b1 b2))
-        (== v1 (list a1 b1)) (== v2 (list a2 b2))
-        (== d1 (list a1 b2)) (== d2 (list a2 b1))
-        (at_most_once_each (list h1 h2 v1 v2 d1 d2) Q)
-        )))
-  '((Q _ _ _) (_ Q _ _) (_ _ Q _) (_ _ _ Q) (_ _ _ _))]
-
-(run* (board)
-  (fresh (Q a1 a2 a3 b1 b2 b3 c1 c2 c3)
+(run 1 (board)
+  (fresh (Q a1 a2 a3 a4 a5 a6 a7 a8
+            b1 b2 b3 b4 b5 b6 b7 b8
+            c1 c2 c3 c4 c5 c6 c7 c8
+            d1 d2 d3 d4 d5 d6 d7 d8
+            e1 e2 e3 e4 e5 e6 e7 e8
+            f1 f2 f3 f4 f5 f6 f7 f8
+            g1 g2 g3 g4 g5 g6 g7 g8
+            h1 h2 h3 h4 h5 h6 h7 h8)
     (== Q 'Q)
-    (== board (list a1 a2 a3 b1 b2 b3 c1 c2 c3))
+    (== board (list a1 a2 a3 a4 a5 a6 a7 a8 b1 b2 b3 b4 b5 b6 b7 b8
+                    c1 c2 c3 c4 c5 c6 c7 c8 d1 d2 d3 d4 d5 d6 d7 d8
+                    e1 e2 e3 e4 e5 e6 e7 e8 f1 f2 f3 f4 f5 f6 f7 f8
+                    g1 g2 g3 g4 g5 g6 g7 g8 h1 h2 h3 h4 h5 h6 h7 h8))
     (initialize board Q)
-    (fresh (h1 h2 h3 v1 v2 v3 d1 d2 d3 d4 d5 d6)
-      (== h1 (list a1 a2 a3)) (== h2 (list b1 b2 b3)) (== h3 (list c1 c2 c3))
-      (== v1 (list a1 b1 c1)) (== v2 (list a2 b2 c2)) (== v3 (list a3 b3 c3))
-      (== d1 (list a1 b2 c3)) (== d2 (list a3 b2 c1))
-      (at_most_once_each (list h1 h2 h3 v1 v2 v3 d1 d2) Q)
+    (fresh (h1 h2 h3 h4 h5 h6 h7 h8
+            v1 v2 v3 v4 v5 v6 v7 v8
+            d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11 d12 d13
+            D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13)
+      (== h1 (list a1 a2 a3 a4 a5 a6 a7 a8))
+      (== h2 (list b1 b2 b3 b4 b5 b6 b7 b8))
+      (== h3 (list c1 c2 c3 c4 c5 c6 c7 c8))
+      (== h4 (list d1 d2 d3 d4 d5 d6 d7 d8))
+      (== h5 (list e1 e2 e3 e4 e5 e6 e7 e8))
+      (== h6 (list f1 f2 f3 f4 f5 f6 f7 f8))
+      (== h7 (list g1 g2 g3 g4 g5 g6 g7 g8))
+      (== h8 (list h1 h2 h3 h4 h5 h6 h7 h8))
+
+      (== v1 (list a1 b1 c1 d1 e1 f1 g1 h1))
+      (== v2 (list a2 b2 c2 d2 e2 f2 g2 h2))
+      (== v3 (list a3 b3 c3 d3 e3 f3 g3 h3))
+      (== v4 (list a4 b4 c4 d4 e4 f4 g4 h4))
+      (== v5 (list a5 b5 c5 d5 e5 f5 g5 h5))
+      (== v6 (list a6 b6 c6 d6 e6 f6 g6 h6))
+      (== v7 (list a7 b7 c7 d7 e7 f7 g7 h7))
+      (== v8 (list a8 b8 c8 d8 e8 f8 g8 h8))
+
+      (== d1  (list b1 a2))
+      (== d2  (list c1 b2 a3))
+      (== d3  (list d1 c2 b3 a4))
+      (== d4  (list e1 d2 c3 b4 a5))
+      (== d5  (list f1 e2 d3 c4 b5 a6))
+      (== d6  (list g1 f2 e3 d4 c5 b6 a7))
+      (== d7  (list h1 g2 f3 e4 d5 c6 b7 a8))
+      (== d8  (list h2 g3 f4 e5 d6 c7 b8))
+      (== d9  (list h3 g4 f5 e6 d7 c8))
+      (== d10 (list h4 g5 f6 e7 d8))
+      (== d11 (list h5 g6 f7 e8))
+      (== d12 (list h6 g7 f8))
+      (== d13 (list h7 g8))
+
+      (== D1  (list a7 b8))
+      (== D2  (list a6 b7 c8))
+      (== D3  (list a5 b6 c7 d8))
+      (== D4  (list a4 b5 c6 d7 e8))
+      (== D5  (list a3 b4 c5 d6 e7 f8))
+      (== D6  (list a2 b3 c4 d5 e6 f7 g8))
+      (== D7  (list a1 b2 c3 d4 e5 f6 g7 h8))
+      (== D8  (list b1 c2 d3 e4 f5 g6 h7))
+      (== D9  (list c1 d2 e3 f4 g5 h6))
+      (== D10 (list d1 e2 f3 g4 h5))
+      (== D11 (list e1 f2 g3 h4))
+      (== D12 (list f1 g2 h3))
+      (== D13 (list g1 h2))
+
+      (at_most_once_each (list h1 h2 h3 h4 h5 h6 h7 h8
+                               v1 v2 v3 v4 v5 v6 v7 v8
+                               d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11 d12 d13
+                               D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13) Q)
       )))
 
