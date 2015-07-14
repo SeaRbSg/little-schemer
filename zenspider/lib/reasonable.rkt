@@ -11,7 +11,6 @@
          cond-a
          cond-u
          fresh
-         none
          run*
          run
          if-a

@@ -85,8 +85,6 @@
       (syntax-rules () [(_ fmt v) (debug #:name (string->symbol fmt) v)])
       (syntax-rules () [(_ fmt v) v])))
 
-(define none empty)
-
 (struct var (name) #:transparent)       ; 9:6 -- modified to struct
 
 (define empty-s '())                    ; 9:13
@@ -293,6 +291,9 @@
   (require rackunit)
 
   (provide (all-defined-out))
+
+  (define none empty)
+  (define good '(#t))
 
   (define-syntax check-run*
     (syntax-rules (=>)
