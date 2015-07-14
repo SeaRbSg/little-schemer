@@ -17,13 +17,6 @@
     (cond-e [(≈ lo a) (member° hi d)]
             [(higher-than hi lo d)])))
 
-(define (distinct° l)
-  (cond-e [(null° l)]
-          [(fresh (a d)
-             (cons° a d l)
-             (cond-a [(member° a d) %u]
-                     [else (distinct° d)]))]))
-
 (define (non-adjacent p1 p2 l)
   (cond-e [(null° l)]
           [(fresh (a d)
@@ -45,7 +38,6 @@
     ;; 0. Basic housekeeping
     (≈ floors (list f1 f2 f3 f4 f5))
     (members° '(adam bill cora dale erin) floors)
-    ;; (distinct° floors)                 ; not strictly necessary
 
     ;; 1. Adam does not live on the top floor.
     (member° 'adam (list f1 f2 f3 f4   )) ; (not-on 'adam f5)
@@ -68,31 +60,6 @@
 (module+ test
   (require rackunit)
   (require (submod "lib/reasonable.rkt" test))
-
-  (check-run* (q)
-              (distinct° '())
-              (≈ q #t)
-              => '(#t))
-
-  (check-run* (q)
-              (distinct° '(a))
-              (≈ q #t)
-              => '(#t))
-
-  (check-run* (q)
-              (distinct° '(a b c d e))
-              (≈ q #t)
-              => '(#t))
-
-  (check-run* (q)
-              (distinct° '(a a))
-              (≈ q 'wtf)
-              => none)
-
-  (check-run* (q)
-              (distinct° '(a b c d a))
-              (≈ q 'wtf)
-              => none)
 
   (check-run* (q)
               (non-adjacent 'a 'b '())
