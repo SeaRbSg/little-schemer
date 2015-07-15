@@ -90,6 +90,7 @@
           (== ⇘5  (list c1 d2))
           (at_most_once_each (list →1 →2 →3 →4 ↓1 ↓2 ↓3 ↓4 ⇗1 ⇗2 ⇗3 ⇗4 ⇗5 ⇘1 ⇘2 ⇘3 ⇘4 ⇘5)))))))
 
+; (solutions_nQ (4Queens) 4)
 ; [check-equal? (solution_nQ (4Queens) 4) '(_ Q _ _
 ;                                           _ _ _ Q
 ;                                           Q _ _ _

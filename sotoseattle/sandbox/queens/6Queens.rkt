@@ -20,7 +20,7 @@
 
         (paralelize_seeds
           (list a1 a2 a3 a4 a5 b1 b2 b3 b4 b5 c1 c2 c3 c4 c5 d1 d2 d3 d4 d5 e1 e2 e3 e4 e5)
-          (solutions_nQ (5Queens) 4))
+          (concho (solutions_nQ (5Queens) 5) (solutions_nQ (5Queens) 4)))
 
         (initialize (list                a6
                                          b6
@@ -63,6 +63,8 @@
 
           (at_most_once_each (list →1 →2 →3 →4 →5 →6 ↓1 ↓2 ↓3 ↓4 ↓5 ↓6 ⇗1 ⇗2 ⇗3 ⇗4 ⇗5 ⇗6 ⇗7 ⇗8 ⇗9 ⇘1 ⇘2 ⇘3 ⇘4 ⇘5 ⇘6 ⇘7 ⇘8 ⇘9))
           )))))
+
+; (solutions_nQ (6Queens) 6)
 
 ; [check-equal? (solution_nQ (6Queens) 6) '(_ Q _ _ _ _
 ;                                           _ _ _ Q _ _
