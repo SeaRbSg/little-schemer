@@ -1,117 +1,28 @@
-#lang racket/base
-(require rackunit)
-(require "../lib/mk.rkt")
-(require "reasoned.rkt")
-(require "ch22.rkt")
-(require "ch23.rkt")
-(require "ch24.rkt")
-(require "ch26.rkt")
-(require "ch30.rkt")
+#lang cKanren
 
-; 1. Adam does not live on the top floor.
-; 2. Bill does not live on the bottom floor.
-; 3. Cora does not live on either the top or the bottom floor.
-; 4. Dale lives on a higher floor than does Bill.
-; 5. Erin does not live on a floor adjacent to Cora's.
-; 6. Cora does not live on a floor adjacent to Bill's.
+(require cKanren/miniKanren)
+(require cKanren/neq)
 
-(define (topo x l)
-  (caro l x))
+(define s# succeed)
+(define u# fail)
 
-(check-run* (r)
-            (topo 'adam r)
-            => '((adam . _.0)))
+;; ugh hack because cKanren provides 'fail'
+(require (prefix-in t: rackunit))
 
-(define (bottomo x l)
-  (conde
-    [(nullo l) u#]
-    [(caro l x) (cdro l '())]
-    [else
-      (fresh (d)
-        (cdro l d)
-        (bottomo x d))]))
+; test macros
+(define-syntax check-run*
+  (syntax-rules (=>)
+    [(_ (vars ...) rules ... => expect)
+     (t:check-equal? (run* (vars ...)
+                       rules ...)
+                     expect)]))
 
-(check-run* (r)
-            (bottomo r '(bill bob adam))
-            => '(adam))
-
-(define (noto g)
-  (conda
-    [g u#]
-    [else s#]))
-
-(define (nototopo x l)
-  (noto (topo x l)))
-
-(check-run* (r)
-            (== '(bill bob adam) r)
-            (nototopo 'adam r)
-            => '((bill bob adam)))
-
-(check-run* (r)
-            (== '(adam bill bob) r)
-            (nototopo 'adam r)
-            => '())
-
-(define (notobottomo x l)
-  (noto (bottomo x l)))
-
-(check-run* (r)
-            (== '(bill bob adam) r)
-            (notobottomo 'adam r)
-            => '())
-
-(check-run* (r)
-            (== '(adam bill bob) r)
-            (notobottomo 'adam r)
-            => '((adam bill bob)))
-
-(define (nexto a b l)
-  (fresh (x)
-    (caro l a)
-    (cdro l x)
-    (caro x b)))
-
-(check-run* (r)
-            (== '(bill bob adam) r)
-            (nexto 'bill 'bob r)
-            => '((bill bob adam)))
-
-(check-run* (r)
-            (== '(bill adam bob) r)
-            (nexto 'bill 'bob r)
-            => '())
-
-(define (notonexto a b l)
-  (noto (nexto a b l)))
-
-(check-run* (a)
-            (notonexto 'bill 'bob '(bill bob adam))
-            (== #t a)
-            => '())
-
-(check-run* (a)
-            (notonexto 'bill 'bob '(bill adam bob))
-            (== #t a)
-            => '(#t))
-
-(define (highero a b l)
-  (conde
-    [(caro l a)
-     (membero b l)]
-    [(fresh (d)
-       (cdro l d)
-       (highero a b d))]))
-
-(check-run* (a)
-            (highero 'bill 'adam '(bill bob adam))
-            (== #t a)
-            => '(#t))
-
-(check-run* (a)
-            (highero 'bob 'bill '(bill adam bob))
-            (== #t a)
-            => '())
+(define-syntax check-run
+  (syntax-rules (=>)
+    [(_ n (vars ...) rules ... => expect)
+     (t:check-equal? (run n (vars ...)
+                       rules ...)
+                     expect)]))
 
 (define (memberso m l)
   (conde
@@ -132,15 +43,78 @@
             (== #t a)
             => '())
 
-(define (permuteo x y)
-  (fresh (xa xd yd)
-    (conso xa xd x)
-    (cdro y yd)
-    (permuteo xd yd)
-    (rembero xa y yd)))
+(define (highero a b l)
+  (conde
+    [(caro l b)
+     (membero a l)]
+    [(fresh (d)
+       (cdro l d)
+       (highero a b d))]))
 
-(check-run 1 (a)
-            (permuteo '(bill susie bob) a)
+(check-run* (a)
+            (highero 'adam 'bill '(bill bob adam))
+            (== #t a)
             => '(#t))
-;; fails
 
+(check-run* (a)
+            (highero 'adam 'bob '(bill adam bob))
+            (== #t a)
+            => '())
+
+(define (eq-caro l x)
+  (caro l x))
+
+(define (neq-caro l x)
+  (fresh (a)
+    (caro l a)
+    (=/= a x)))
+
+(check-run* (q)
+            (eq-caro '(bill bob) 'bill)
+            (== q #t)
+            => '(#t))
+
+(check-run* (q)
+            (neq-caro '(bill bob) 'bob)
+            (== q #t)
+            => '(#t))
+
+(define (not-nexto x1 x2 l)
+  (fresh (a d)
+    (conso a d l)
+    (conda
+      [(== a x1) (neq-caro d x2)]
+      [(== a x2) (neq-caro d x1)]
+      [(not-nexto x1 x2 d)])))
+
+(check-run* (a)
+            (not-nexto 'bill 'bob '(bill bob adam))
+            (== #t a)
+            => '())
+
+(check-run* (a)
+            (not-nexto 'bill 'bob '(bill adam bob))
+            (== #t a)
+            => '(#t))
+
+; 1. Adam does not live on the top floor.
+; 2. Bill does not live on the bottom floor.
+; 3. Cora does not live on either the top or the bottom floor.
+; 4. Dale lives on a higher floor than does Bill.
+; 5. Erin does not live on a floor adjacent to Cora's.
+; 6. Cora does not live on a floor adjacent to Bill's.
+
+(define (aparmento floors)
+  (fresh (f1 f2 f3 f4 f5)
+    (== floors (list f1 f2 f3 f4 f5))
+    (memberso '(adam bill cora dale erin) floors)
+    (=/= 'adam f5)
+    (=/= 'bill f1)
+    (=/= 'cora f1) (=/= 'cora f5)
+    (highero 'dale 'bill floors)
+    (not-nexto 'erin 'cora floors)
+    (not-nexto 'cora 'bill floors)))
+
+(check-run* (floors)
+  (aparmento floors)
+  => '((erin bill adam cora dale)))
